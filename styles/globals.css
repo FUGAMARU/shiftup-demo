@@ -52,3 +52,22 @@ a {
 .dbs {
   font-family: "DEICHO-BoldSlanted";
 }
+
+.flex-center {
+  justify-content: center;
+  align-items: center;
+}
+
+.rotate-icon {
+  animation: rotate-keyframes .3s ease-out;
+}
+
+@keyframes rotate-keyframes {
+  0% {
+    transform: rotateY(0);
+  }
+
+  100% {
+    transform: rotateY(180deg);
+  }
+}

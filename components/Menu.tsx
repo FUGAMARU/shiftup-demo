@@ -8,16 +8,17 @@ import { Box, Text, Popover, PopoverTrigger, PopoverContent, PopoverHeader, Popo
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faChevronCircleDown } from "@fortawesome/free-solid-svg-icons"
 
+// Functions
+import { resp } from "../functions"
+
 const Menu = () => {
-  const [isOpenMenu, setOpenMenu] = useState<boolean>() //Popoverが開いているかどうか
+  const [isOpenedMenu, setOpenedMenu] = useState<boolean>() //Popoverが開いているかどうか
 
   return (
-    <Popover
-      closeOnBlur={true} isOpen={isOpenMenu} onOpen={() => setOpenMenu(true)} onClose={() => setOpenMenu(false)}
-    >
+    <Popover closeOnBlur={true} isOpen={isOpenedMenu} onOpen={() => setOpenedMenu(true)} onClose={() => setOpenedMenu(false)}>
       <PopoverTrigger>
-        <Box cursor="pointer">
-          <FontAwesomeIcon icon={faChevronCircleDown} fontSize={20} />
+        <Box w={resp(90, 150, 150)} h={50} textAlign="center" cursor="pointer" p={1} borderRadius={15} bg={isOpenedMenu ? "rgba(255, 255, 255, 0.2)" : ""} _hover={{ background: "rgba(255, 255, 255, 0.2)" }} transition=".2s ease-in">
+          <FontAwesomeIcon className={isOpenedMenu ? "rotate-icon" : ""} icon={faChevronCircleDown} fontSize="1.2rem" />
           <Text className="kr" fontSize={10}>メニュー</Text>
         </Box>
       </PopoverTrigger>
