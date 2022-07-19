@@ -1,34 +1,55 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+﻿# ShiftUP!
 
-## Getting Started
+### サービス名について
+| 物理名 | 論理名 |
+| ---- | ---- |
+| shiftup | ShiftUP!|
 
-First, run the development server:
+### エンドユーザー一覧
+| 名称 | 役割 |
+| ---- | ----| 
+| キャスト | 実際にオープンキャンパスの業務を遂行する学生 |
+| 運営チーム | 新しいキャストの募集、各種連絡、シフトを組んだりと<br>オープンキャンパス業務の運営管理を行う |
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+### 現状のオープンキャンパスバイト出勤までのフロー
+1. 運営チームが任意のタイミングで、向こう1ヶ月分のオープンキャンパス開催日程を提示する
+2. キャストはそれぞれの開催日程に対して、出勤できるのかできないのかをアンケートで回答する
+3. 運営チームが`2`の回答結果を元に、1日分の出勤者リストを作り、これをオープンキャンパス当日の1週間以内にキャストに送信する
+4. キャストは`3`で送られてきたリストに自分が入っているか確認し、入っていればDiscordにて`◯◯ ◯◯ □月□日 確定`のように名前と日付を送信して自分の出勤を確定させる。
+5. 運営チームはオープンキャンパス当日の朝に、役割ごと(受付、誘導など)のスケジュール表を作り、配布する。
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 実装したい機能
+- シフト希望日程アンケート作成 / 回答(`1`と`2`に該当)
+- シフト希望日程ごとの、出勤可能者のリストアップ
+- `3`の出勤者リストに自分が含まれていればメール通知
+- `3`の出勤者リストに自分が含まれていた場合の、出勤確定処理(通知)ボタン(`4`に該当)
+- 出勤確定した人のリストアップ
+- キャスト用のマイページがあり、PDFファイルを開くことなくそこから自分の1日のスケジュールが確認できる
+- Discord APIにて自動でキャストを該当する役職のチャンネルに参加させる
+- 運営チームが許可したGoogleアカウントのみサービスを利用できるようにする
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+### あったら良いかもしれない機能
+- 月あたりの合計出勤回数
+- 給与確認
+  - 棒グラフなどでグラフィカルだと尚良し 
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### 作る必要のあるページ
+- 共通
+  - アカウント登録 / ログイン
+    - といっても実際はGoogleのOAuthを使うだけ
+- キャストサイド
+  - マイページ
+    - 希望日程アンケート一覧
+    - 出勤確定待ち一覧
+    - その日のスケジュール確認
+    - Optional
+      - 月出勤回数
+      - 給与計算
+  - 希望日程回答
+  -  出勤確定
+- 運営チームサイド
+  - スケジュールテンプレート作成
+  - キャスト情報登録 
+  - 希望日程アンケート作成
+  - アンケート集計・出勤可能者リストアップ・確定処理要求送信
+  - 出勤確定者アサイン
