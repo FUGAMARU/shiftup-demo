@@ -14,3 +14,41 @@ a {
 * {
   box-sizing: border-box;
 }
+
+/* 追記ここから */
+
+@font-face {
+  font-family: "Kazesawa-Regular";
+  src: url(/fonts/Kazesawa-Regular.woff2);
+}
+
+@font-face {
+  font-family: "Kazesawa-Bold";
+  src: url(/fonts/Kazesawa-Bold.woff2);
+}
+
+@font-face {
+  font-family: "Kazesawa-Semibold";
+  src: url(/fonts/Kazesawa-Semibold.woff2);
+}
+
+@font-face {
+  font-family: "DEICHO-BoldSlanted";
+  src: url(/fonts/DEICHO-BoldSlanted.woff2);
+}
+
+.kr {
+  font-family: "Kazesawa-Regular";
+}
+
+.kb {
+  font-family: "Kazesawa-Bold";
+}
+
+.ksb {
+  font-family: "Kazesawa-Semibold";
+}
+
+.dbs {
+  font-family: "DEICHO-BoldSlanted";
+}
