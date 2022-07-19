@@ -1,6 +1,9 @@
 //Custom Hooks
 import useResponsive from "../hooks/useResponsive"
 
+// Next.js Components
+import Image from "next/image"
+
 // Chakra UI Components
 import { Flex, Text, Box } from "@chakra-ui/react"
 
@@ -22,7 +25,9 @@ const Header = () => {
 
         {/* ロゴ */}
         <Flex className="flex-center" w={resp(90, 150, 150)} h={50} textAlign="center">
-          <Text className="dbs" fontSize={{ base: 30, md: "2.5rem", lg: "2.5rem" }} mb="-0.5rem">ShfitUP!</Text>
+          <Box position="relative" w="100%" style={{ height: 40 }}>
+            <Image src="/logo-white.svg" layout="fill" objectFit="contain" />
+          </Box>
         </Flex>
 
         {/* ユーザー名 */}
