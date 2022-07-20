@@ -12,12 +12,12 @@ import { faChevronCircleDown } from "@fortawesome/free-solid-svg-icons"
 import { resp } from "../functions"
 
 const Menu = () => {
-  const [isOpenedMenu, setOpenedMenu] = useState<boolean>() //Popoverが開いているかどうか
+  const [isOpenedMenu, setOpenedMenu] = useState<boolean>() //メニューが開いているかどうか
 
   return (
     <Popover closeOnBlur={true} isOpen={isOpenedMenu} onOpen={() => setOpenedMenu(true)} onClose={() => setOpenedMenu(false)}>
       <PopoverTrigger>
-        <Box w={resp(90, 150, 150)} h={50} textAlign="center" cursor="pointer" p={1} borderRadius={15} bg={isOpenedMenu ? "rgba(255, 255, 255, 0.2)" : ""} _hover={{ background: "rgba(255, 255, 255, 0.2)" }} transition=".2s ease-in">
+        <Box w={resp(90, 150, 150)} h={50} p={1} pt={2} textAlign="center" cursor="pointer" borderRadius={15} bg={isOpenedMenu ? "rgba(255, 255, 255, 0.2)" : ""} _hover={{ background: "rgba(255, 255, 255, 0.2)" }} transition=".2s ease-in">
           <FontAwesomeIcon className={isOpenedMenu ? "rotate-icon" : ""} icon={faChevronCircleDown} fontSize="1.2rem" />
           <Text className="kr" fontSize={10} color="white">メニュー</Text>
         </Box>
