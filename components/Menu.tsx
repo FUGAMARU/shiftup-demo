@@ -19,7 +19,7 @@ const Menu = () => {
       <PopoverTrigger>
         <Box w={resp(90, 150, 150)} h={50} textAlign="center" cursor="pointer" p={1} borderRadius={15} bg={isOpenedMenu ? "rgba(255, 255, 255, 0.2)" : ""} _hover={{ background: "rgba(255, 255, 255, 0.2)" }} transition=".2s ease-in">
           <FontAwesomeIcon className={isOpenedMenu ? "rotate-icon" : ""} icon={faChevronCircleDown} fontSize="1.2rem" />
-          <Text className="kr" fontSize={10}>メニュー</Text>
+          <Text className="kr" fontSize={10} color="white">メニュー</Text>
         </Box>
       </PopoverTrigger>
       <PopoverContent borderRadius={15} textAlign="left" color="#4a4a4a">

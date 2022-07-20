@@ -17,6 +17,18 @@ a {
 
 /* 追記ここから */
 
+.primary-color {
+  color: #48c3eb;
+}
+
+.secondary-color {
+  color: #718edd;
+}
+
+.gray-color {
+  color: #4a4848;
+}
+
 @font-face {
   font-family: "Kazesawa-Regular";
   src: url(/fonts/Kazesawa-Regular.woff2);
@@ -33,24 +45,38 @@ a {
 }
 
 @font-face {
+  font-family: "Kazesawa-Extrabold";
+  src: url(/fonts/Kazesawa-Extrabold.woff2);
+}
+
+@font-face {
   font-family: "DEICHO-BoldSlanted";
   src: url(/fonts/DEICHO-BoldSlanted.woff2);
 }
 
 .kr {
   font-family: "Kazesawa-Regular";
+  color: #4a4848;
 }
 
 .kb {
   font-family: "Kazesawa-Bold";
+  color: #4a4848;
 }
 
 .ksb {
   font-family: "Kazesawa-Semibold";
+  color: #4a4848;
+}
+
+.keb {
+  font-family: "Kazesawa-Extrabold";
+  color: #4a4848;
 }
 
 .dbs {
   font-family: "DEICHO-BoldSlanted";
+  color: #4a4848;
 }
 
 .flex-center {
