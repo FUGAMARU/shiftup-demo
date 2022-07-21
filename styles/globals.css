@@ -97,3 +97,33 @@ a {
     transform: rotateY(180deg);
   }
 }
+
+.bubble-heading {
+  margin: 0.3rem auto 1rem auto;
+  position: relative;
+  border-bottom: 3px solid #4a4848;
+}
+
+.bubble-heading:before,
+.bubble-heading:after {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  content: "";
+  height: 0;
+  width: 0;
+}
+
+.bubble-heading:before {
+  border: 14px solid;
+  border-color: transparent;
+  border-top-color: #4a4848;
+  margin-left: -14px;
+}
+
+.bubble-heading:after {
+  border: 10px solid;
+  border-color: transparent;
+  border-top-color: white;
+  margin-left: -10px;
+}

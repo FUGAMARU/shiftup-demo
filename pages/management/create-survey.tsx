@@ -20,12 +20,12 @@ const CreateSurvey: NextPage = () => {
   return (
     <>
       <Head>
-        <title>アンケート作成 | ShiftUP!</title>
+        <title>希望日程アンケート作成 | ShiftUP!</title>
       </Head>
 
       <Box h="100vh" bg="#e9ebee">
         <Header />
-        <Box w={resp("95%", "90%", "70%")} m="0 auto" bg="white" px={resp(6, 10, 14)} pt={8} pb={10} boxShadow="2xl" borderBottomRadius={15}>
+        <Box maxW={resp("95%", "90%", 900)} m="0 auto" bg="white" px={resp(6, 10, 14)} pt={8} pb={10} boxShadow="2xl" borderBottomRadius={15}>
           <RibbonHeading text="アンケート作成" />
 
           <Flex alignItems="center" mt={3}>

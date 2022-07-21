@@ -45,12 +45,12 @@
     - Optional
       - 月出勤回数
       - 給与計算
-  - 希望日程回答
+  - [希望日程回答](https://shiftup.vercel.app/answer-survey)
   -  出勤確定
 - 運営チームサイド
   - スケジュールテンプレート作成
   - キャスト情報登録 
-  - 希望日程アンケート作成
+  - [希望日程アンケート作成](https://shiftup.vercel.app/management/create-survey)
   - アンケート集計・出勤可能者リストアップ・確定処理要求送信
   - 出勤確定者アサイン
 
