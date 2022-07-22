@@ -51,12 +51,12 @@
   - スケジュールテンプレート作成
   - キャスト情報登録 
   - [希望日程アンケート作成](https://shiftup.vercel.app/management/create-survey)
-  - [アンケート集計・出勤可能者リストアップ・確定処理要求送信](https://shiftup.vercel.app/tally-survey)
+  - [アンケート集計・出勤可能者リストアップ・確定処理要求送信](https://shiftup.vercel.app/management/tally-survey)
   - 出勤確定者アサイン
 
 ### 開発メモ
 
-#### 属性記述の優先順位(気づいたら修正)
+#### 属性記述の優先順位目安(気づいたら修正)
 
 1. クラス名
 1. サイジング
