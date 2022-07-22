@@ -53,15 +53,15 @@ const CreateSurvey: NextPage = () => {
               <VStack divider={<StackDivider borderColor="gray.200" />} spacing={3} align="stretch" mt={3} ml={1}>
                 <Flex alignItems="center">
                   <Tooltip label="リストから削除"><FontAwesomeIcon className="primary-color" cursor="pointer" icon={faXmark} fontSize={25} /></Tooltip>
-                  <Text ml={3}>2022/08/14</Text>
+                  <Text ml={3}>2022/08/14 (日)</Text>
                 </Flex>
                 <Flex alignItems="center">
                   <Tooltip label="リストから削除"><FontAwesomeIcon className="primary-color" cursor="pointer" icon={faXmark} fontSize={25} /></Tooltip>
-                  <Text ml={3}>2022/08/21</Text>
+                  <Text ml={3}>2022/08/21 (日)</Text>
                 </Flex>
                 <Flex alignItems="center">
                   <Tooltip label="リストから削除"><FontAwesomeIcon className="primary-color" cursor="pointer" icon={faXmark} fontSize={25} /></Tooltip>
-                  <Text ml={3}>2022/08/28</Text>
+                  <Text ml={3}>2022/08/28 (日)</Text>
                 </Flex>
               </VStack>
             </Box>
