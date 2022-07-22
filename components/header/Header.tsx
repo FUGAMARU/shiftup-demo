@@ -1,5 +1,5 @@
 //Custom Hooks
-import useResponsive from "../hooks/useResponsive"
+import useResponsive from "../../hooks/useResponsive"
 
 // Next.js Components
 import Image from "next/image"
@@ -11,7 +11,7 @@ import { Flex, Text, Box } from "@chakra-ui/react"
 import Menu from "./Menu"
 
 // Functions
-import { resp } from "../functions"
+import { resp } from "../../functions"
 
 const Header = () => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC

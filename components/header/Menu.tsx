@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faChevronCircleDown } from "@fortawesome/free-solid-svg-icons"
 
 // Functions
-import { resp } from "../functions"
+import { resp } from "../../functions"
 
 const Menu = () => {
   const [isOpenedMenu, setOpenedMenu] = useState<boolean>() //メニューが開いているかどうか

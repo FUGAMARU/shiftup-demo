@@ -1,5 +1,5 @@
 // Custom Components
-import Header from "../components/Header"
+import Header from "../components/header/Header"
 
 // Next.js Types
 import type { NextPage } from "next"
