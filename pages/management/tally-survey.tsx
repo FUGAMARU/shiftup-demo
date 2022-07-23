@@ -23,26 +23,11 @@ import { faUserGroup, faCalendar, faCheck } from "@fortawesome/free-solid-svg-ic
 import { resp } from "../../functions"
 
 const TallySurvey: NextPage = () => {
-  //高さの同期
-  const [elementHight, setElementHight] = useState({
-    castList: 0,
-    sendButton: 0
-  })
-
-  const [elementRef] = useState({
-    castList: useRef(null),
-    sendButton: useRef(null)
-  })
-
-  const { getElementProperty: castListProperty } = useGetElementProperty<HTMLDivElement>(elementRef.castList)
-  const { getElementProperty: sendButtonProperty } = useGetElementProperty<HTMLDivElement>(elementRef.sendButton)
-
-  useEffect(() => {
-    setElementHight({
-      castList: castListProperty("height"),
-      sendButton: sendButtonProperty("height")
-    })
-  }, [elementRef.castList])
+  // 学生(キャスト)リストとドットの高さの同期
+  const castListRef = useRef(null)
+  const [castListHeight, setCastListHeight] = useState(0)
+  const { getElementProperty: castListProperty } = useGetElementProperty<HTMLDivElement>(castListRef)
+  useEffect(() => setCastListHeight(castListProperty("height")), [castListRef])
 
   return (
     <>
@@ -51,9 +36,8 @@ const TallySurvey: NextPage = () => {
       </Head>
 
       <Body title="アンケート集計" content={<>
-
         <Flex justifyContent="center">
-          <Box className="tally-survey-grid">
+          <Box display="grid" gridTemplateColumns="repeat(2, auto)" gridTemplateRows="repeat(6, auto)">
             <Flex className="flex-center">
               <FontAwesomeIcon className="secondary-color" icon={faCalendar} fontSize={25}></FontAwesomeIcon>
             </Flex>
@@ -64,7 +48,7 @@ const TallySurvey: NextPage = () => {
                 <option value="20220828">2022/08/28 (日)</option>
               </Select>
             </Flex>
-            <Flex justifyContent="center">
+            <Flex className="flex-center">
               <Box className="secondary-color" h={10} borderLeft="dotted 4px"></Box>
             </Flex>
             <Box>{/* 消さない！ */}</Box>
@@ -75,9 +59,9 @@ const TallySurvey: NextPage = () => {
               <Heading className="kb" size="lg">出勤依頼する学生を選択</Heading>
             </Flex>
             <Flex className="flex-center">
-              <Box className="secondary-color" h={elementHight.castList} borderLeft="dotted 4px"></Box>
+              <Box className="secondary-color" h={castListHeight} borderLeft="dotted 4px"></Box>
             </Flex>
-            <Flex pl={resp(9, 16, 16)} alignItems="center" ref={elementRef.castList}>
+            <Flex pl={resp(9, 16, 16)} alignItems="center" ref={castListRef}>
               <VStack py={5} divider={<StackDivider borderColor="gray.200" />} spacing={3} align="stretch">
                 <Checkbox>
                   <Flex alignItems="center">
@@ -114,16 +98,14 @@ const TallySurvey: NextPage = () => {
             <Flex className="flex-center">
               <FontAwesomeIcon className="secondary-color" icon={faCheck} fontSize={25}></FontAwesomeIcon>
             </Flex>
-            <Flex pl={resp(6, 12, 12)}>
+            <Flex pl={resp(6, 12, 12)} alignItems="center">
               <Heading className="kb" size="lg">送信</Heading>
             </Flex>
             <Flex className="flex-center">
-              <Box className="secondary-color" h={elementHight.sendButton} borderLeft="dotted 4px"></Box>
+              <Box className="secondary-color" h="74px" borderLeft="dotted 4px"></Box>
             </Flex>
-            <Flex justifyContent="center" ref={elementRef.sendButton}>
-              <Box mt="2rem">
-                <AnimatedButton text="確定依頼を送信"></AnimatedButton>
-              </Box>
+            <Flex className="flex-center" pt="2rem">
+              <AnimatedButton text="確定依頼を送信"></AnimatedButton>
             </Flex>
           </Box>
         </Flex>

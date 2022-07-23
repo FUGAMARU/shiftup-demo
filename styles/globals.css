@@ -127,9 +127,3 @@ a {
   border-top-color: white;
   margin-left: -10px;
 }
-
-.tally-survey-grid {
-  display: grid;
-  grid-template-columns: auto auto;
-  grid-template-rows: auto auto auto auto auto auto;
-}
