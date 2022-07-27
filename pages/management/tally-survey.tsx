@@ -9,7 +9,7 @@ import { useState, useRef, useEffect } from "react"
 import { useGetElementProperty } from "../../hooks/useGetElementProperty"
 
 // Chakra UI Components
-import { Box, Heading, Flex, VStack, StackDivider, Text, Select, Checkbox } from "@chakra-ui/react"
+import { Box, Heading, Flex, VStack, StackDivider, Text, Select, Checkbox, Grid } from "@chakra-ui/react"
 
 // Custom Components
 import AnimatedButton from "../../components/AnimatedButton"
@@ -37,7 +37,7 @@ const TallySurvey: NextPage = () => {
 
       <Body title="アンケート集計" content={<>
         <Flex justifyContent="center">
-          <Box display="grid" gridTemplateColumns="repeat(2, auto)" gridTemplateRows="repeat(6, auto)">
+          <Grid gridTemplateColumns="repeat(2, auto)" gridTemplateRows="repeat(6, auto)">
             <Flex className="flex-center">
               <FontAwesomeIcon className="secondary-color" icon={faCalendar} fontSize={25}></FontAwesomeIcon>
             </Flex>
@@ -107,7 +107,7 @@ const TallySurvey: NextPage = () => {
             <Flex className="flex-center" pt="2rem">
               <AnimatedButton text="確定依頼を送信"></AnimatedButton>
             </Flex>
-          </Box>
+          </Grid>
         </Flex>
       </>
       }></Body>

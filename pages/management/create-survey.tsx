@@ -9,7 +9,7 @@ import { useState, useRef, useEffect } from "react"
 import { useGetElementProperty } from "../../hooks/useGetElementProperty"
 
 // Chakra UI Components
-import { Box, Heading, Input, Flex, Button, Tooltip, VStack, StackDivider, Text } from "@chakra-ui/react"
+import { Box, Heading, Input, Flex, Grid, Tooltip, VStack, StackDivider, Text } from "@chakra-ui/react"
 
 // Custom Components
 import Body from "../../components/Body"
@@ -37,7 +37,7 @@ const CreateSurvey: NextPage = () => {
 
       <Body title="アンケート作成" content={<>
         <Flex justifyContent="center">
-          <Box display="grid" gridTemplateColumns="repeat(2, auto)" gridTemplateRows="repeat(6, auto)">
+          <Grid gridTemplateColumns="repeat(2, auto)" gridTemplateRows="repeat(6, auto)">
             <Flex className="flex-center">
               <FontAwesomeIcon className="secondary-color" icon={faPen} fontSize={25}></FontAwesomeIcon>
             </Flex>
@@ -93,7 +93,7 @@ const CreateSurvey: NextPage = () => {
             <Flex className="flex-center" pt="2rem">
               <AnimatedButton text="アンケートを作成"></AnimatedButton>
             </Flex>
-          </Box>
+          </Grid>
         </Flex>
       </>}></Body>
     </>

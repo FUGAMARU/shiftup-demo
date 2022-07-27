@@ -3,7 +3,7 @@ import type { NextPage } from "next"
 import Head from "next/head"
 
 // Chakra UI Components
-import { Box, Heading, Text, VStack, StackDivider, Checkbox } from "@chakra-ui/react"
+import { Box, Flex, Heading, Text, VStack, StackDivider, Checkbox } from "@chakra-ui/react"
 
 // Custom Components
 import AnimatedButton from "../components/AnimatedButton"
@@ -30,9 +30,9 @@ const AnswerSurvey: NextPage = () => {
           <Checkbox className="kr" justifyContent="center">2022/08/28 (日)</Checkbox>
         </VStack>
 
-        <Box mt={7} textAlign="center">
+        <Flex mt={7} justifyContent="center">
           <AnimatedButton text="アンケート送信"></AnimatedButton>
-        </Box>
+        </Flex>
       </>}></Body>
     </>
   )
