@@ -33,14 +33,14 @@ const Header = () => {
             {/* ヘッダー */}
           </DrawerHeader>
           <DrawerBody pt={10}>
-            <Box className="kb">管理者メニュー</Box>
-            <SimpleGrid columns={3} spacing={3} pt={3}>
+            <Box className="kb" borderBottom="solid 2px #615f5f">管理者メニュー</Box>
+            <SimpleGrid columns={3} spacing={3} pt={3} justifyItems="center">
               <MenuItem href="/management/create-survey" icon={faCalendarPlus} title={<Text>希望日程<br />アンケート作成</Text>} onClose={onClose} />
               <MenuItem href="/management/tally-survey" icon={faListCheck} title={<Text>希望日程<br />アンケート集計</Text>} onClose={onClose} />
             </SimpleGrid>
 
-            <Box className="kb" mt={8}>キャストメニュー</Box>
-            <SimpleGrid columns={3} spacing={3} pt={3}>
+            <Box className="kb" mt={8} borderBottom="solid 2px #615f5f">キャストメニュー</Box>
+            <SimpleGrid columns={3} spacing={3} pt={3} justifyItems="center">
               <MenuItem href="/answer-survey" icon={faCalendarCheck} title={<Text>希望日程<br />アンケート回答</Text>} onClose={onClose} />
             </SimpleGrid>
           </DrawerBody>
