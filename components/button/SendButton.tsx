@@ -5,9 +5,9 @@ import { useState } from "react"
 import { Flex, Text, Spinner } from "@chakra-ui/react"
 
 // CSS Modules
-import styles from "../styles/AnimatedButton.module.css"
+import styles from "../../styles/button/SendButton.module.css"
 
-const AnimatedButton = (props: { text: string }) => {
+const SendButton = (props: { text: string }) => {
   const [animationTrigger, setAnimationTrigger] = useState(false)
   const [textClassSwitcher, setTextClassSwitcher] = useState(false)
 
@@ -25,4 +25,4 @@ const AnimatedButton = (props: { text: string }) => {
   )
 }
 
-export default AnimatedButton
+export default SendButton

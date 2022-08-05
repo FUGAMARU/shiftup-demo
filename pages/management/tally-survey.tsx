@@ -12,7 +12,7 @@ import { useGetElementProperty } from "../../hooks/useGetElementProperty"
 import { Box, Heading, Flex, VStack, StackDivider, Text, Select, Checkbox, Grid } from "@chakra-ui/react"
 
 // Custom Components
-import AnimatedButton from "../../components/AnimatedButton"
+import AnimatedButton from "../../components/button/SendButton"
 import Body from "../../components/Body"
 
 //Libraries

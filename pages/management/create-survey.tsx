@@ -13,7 +13,7 @@ import { Box, Heading, Input, Flex, Grid, Tooltip, VStack, StackDivider, Text } 
 
 // Custom Components
 import Body from "../../components/Body"
-import AnimatedButton from "../../components/AnimatedButton"
+import AnimatedButton from "../../components/button/SendButton"
 
 //Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
