@@ -22,7 +22,7 @@ const AnswerSurvey: NextPage = () => {
       <Body title="アンケート回答" content={<>
         <Heading className="kb" size="lg" textAlign="center">8月 シフトアンケート</Heading>
         <Box className="bubble-heading" w={resp(250, 300, 350)}></Box>
-        <Text className="kr" textAlign="center" fontSize={resp(12, 12, 13)}>出勤可能な日にちにチェックを入れてください</Text>
+        <Text className="kr" textAlign="center" fontSize={13}>出勤可能な日にちにチェックを入れてください</Text>
 
         <VStack maxW={resp(250, 300, 300)} mt={5} mx="auto" divider={<StackDivider borderColor="gray.200" />} spacing={3} align="stretch">
           <Checkbox className="kr" justifyContent="center">2022/08/14 (日)</Checkbox>

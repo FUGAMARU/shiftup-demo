@@ -128,3 +128,61 @@ a {
   border-top-color: white;
   margin-left: -10px;
 }
+
+.confirm-btn {
+  background-image: linear-gradient(45deg, #00b55d 0%, #61d851 51%, #67fc52 100%)
+}
+
+.confirm-btn {
+  padding: 8px 20px;
+  cursor: pointer;
+  text-align: center;
+  text-transform: uppercase;
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: white;
+  border-radius: 10px;
+  display: block;
+  border: 0px;
+  font-weight: 700;
+  box-shadow: 0px 0px 14px -7px #11e058;
+}
+
+.confirm-btn:hover {
+  background-position: right center;
+  color: #fff;
+  text-decoration: none;
+}
+
+.confirm-btn:active {
+  transform: scale(0.95);
+}
+
+.cancel-btn {
+  background-image: linear-gradient(45deg, #ff0006 0%, #fd6d14 51%, #f99700 100%)
+}
+
+.cancel-btn {
+  padding: 8px 20px;
+  cursor: pointer;
+  text-align: center;
+  text-transform: uppercase;
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: white;
+  border-radius: 10px;
+  display: block;
+  border: 0px;
+  font-weight: 700;
+  box-shadow: 0px 0px 14px -7px #f09819;
+}
+
+.cancel-btn:hover {
+  background-position: right center;
+  color: #fff;
+  text-decoration: none;
+}
+
+.cancel-btn:active {
+  transform: scale(0.95);
+}

@@ -46,7 +46,7 @@
       - 月出勤回数
       - 給与計算
   - [希望日程回答](https://shiftup.vercel.app/answer-survey)
-  -  出勤確定
+  -  [出勤確定](https://shiftup.vercel.app/confirm-attendance)
 - 運営チームサイド
   - スケジュールテンプレート作成
   - キャスト情報登録 
