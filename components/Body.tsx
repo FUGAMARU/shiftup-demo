@@ -18,7 +18,7 @@ const Body = (props: Props) => {
   return (
     <>
       <Header />
-      <Box minH="100vh" bg="#e9ebee" pb={10}>
+      <Box bg="#e9ebee" pb={10}>
         <Box maxW={resp("95%", "90%", 900)} mx="auto" px={resp(6, 10, 14)} pb="4.5rem" position="relative" bg="white" boxShadow="2xl" borderBottomRadius={15}>
           <Box py={6}>
             <RibbonHeading text={props.title} />
@@ -26,7 +26,7 @@ const Body = (props: Props) => {
           {props.content}
         </Box>
       </Box>
-      <Debugger />
+      {/*<Debugger />*/}
     </>
   )
 }

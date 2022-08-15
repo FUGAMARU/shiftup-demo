@@ -2648,6 +2648,11 @@ slash@^3.0.0:
   resolved "https://registry.yarnpkg.com/slash/-/slash-3.0.0.tgz#6539be870c165adbd5240220dbe361f1bc4d4634"
   integrity sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==
 
+slide-element@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/slide-element/-/slide-element-2.3.0.tgz#93043c91d3dbac2d74536e2daa93aec8398427c4"
+  integrity sha512-fpTirolLFfQmu/8Wg78Eq9T6wW1ER4H3PPEgc4k0giUQDjI47cYghtFwj+9oczv1kkwecHFwvUqlXF1gFUR6Yg==
+
 source-map-js@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/source-map-js/-/source-map-js-1.0.2.tgz#adbc361d9c62df380125e7f161f71c826f1e490c"
