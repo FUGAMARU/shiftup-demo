@@ -14,6 +14,7 @@ import MenuItem from "./MenuItem"
 // Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faChevronCircleRight, faCalendarPlus, faListCheck, faCalendarCheck, faThumbsUp } from "@fortawesome/free-solid-svg-icons"
+
 // Functions
 import { resp } from "../../functions"
 
@@ -29,7 +30,7 @@ const Header = () => {
         <DrawerContent borderRightRadius={20} bg="rgba(98, 168, 228, 0.2)" backdropFilter="blur(5px)">
           <DrawerCloseButton color="white" />
           <DrawerHeader>
-            {/* ヘッダー */}
+            {/* メニューコンテンツ */}
           </DrawerHeader>
           <DrawerBody pt={10}>
             <Box className="kb" borderBottom="solid 2px #615f5f">管理者メニュー</Box>
@@ -72,7 +73,7 @@ const Header = () => {
 
           {/* ユーザー名 */}
           <Flex className="flex-center" w={resp(90, 150, 150)} h={50} textAlign="center" cursor="pointer" borderRadius={15} _hover={{ background: "rgba(255, 255, 255, 0.2)" }} transition=".2s cubic-bezier(0.250, 0.250, 0.750, 0.750)">
-            <Text className="ksb" display="inline" fontSize={resp(13, 15, 17)} color="white">夏目美緒</Text>
+            <Text className="ksb" display="inline" fontSize={resp(13, 15, 17)} color="white">七海麻美</Text>
             {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" display="inline" fontSize={resp(10, 10, 12)} ml={1} color="white">さん</Text> : null}
           </Flex>
 
