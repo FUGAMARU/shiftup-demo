@@ -191,8 +191,35 @@ a {
   transform: scale(1.03);
 }
 
+.hidden {
+  visibility: hidden;
+}
+
+/* マイページの挨拶のアニメーション */
 .greeting {
-  animation: fadeIn;
+  animation: fadeInLeft;
   animation-duration: .5s;
-  animation-delay: .8s;
+  animation-delay: .3s;
+}
+
+/* マイページのカード表示の際のアニメーション */
+.card-in {
+  animation: flipInX;
+  animation-duration: .1s;
+}
+
+.card1 {
+  animation-delay: .7s;
+}
+
+.card2 {
+  animation-delay: .9s;
+}
+
+.card3 {
+  animation-delay: 1.1s;
+}
+
+.card4 {
+  animation-delay: 1.3s;
 }

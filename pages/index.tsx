@@ -2,8 +2,8 @@
 import type { NextPage } from "next"
 import Head from "next/head"
 
-// Custom Hooks
-import useGreeting from "../hooks/useGreeting"
+// React Hooks
+import { useState } from "react"
 
 // Chakra UI Components
 import { Box, Text, Flex, SimpleGrid } from "@chakra-ui/react"
@@ -11,6 +11,7 @@ import { Box, Text, Flex, SimpleGrid } from "@chakra-ui/react"
 // Custom Components
 import Header from "../components/header/Header"
 import Visualizer from "../components/card/Visualizer"
+import GreetingMessage from "../components/text/GreetingMessage"
 
 // Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -20,7 +21,7 @@ import { faUpRightFromSquare, faCalendarCheck, faThumbsUp, faYenSign } from "@fo
 import { resp } from "../functions"
 
 const Home: NextPage = () => {
-  const { greeting } = useGreeting("七海麻美")
+  const [cardAnimationTrigger, setCardAnimationTrigger] = useState(false)
 
   return (
     <>
@@ -37,13 +38,21 @@ const Home: NextPage = () => {
 
         <Flex minH="65vh" maxW={resp("100%", "100%", "85%")} mx="auto" justifyContent="center" alignItems="center">
           <Box>{/* 消さない！ */}
-            <Text className="keb animate__animated greeting" h={resp("1.8rem", "3rem", "3rem")} mb="1rem" fontSize={resp("1.2rem", "2rem", "2rem")} borderBottom="solid 1px gray">{greeting}</Text>
+            <GreetingMessage name="七海麻美" fireCardAnimationTrigger={() => { setCardAnimationTrigger(true) }} />
 
             <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={5} justifyItems="center" alignItems="center">
-              <Visualizer color="#32ccbc" icon={faCalendarCheck} title="未回答の希望日程アンケート" gradientColor1="#90f7ec" gradientColor2="#32ccbc" value={1} unit="件" />
-              <Visualizer color="#ea5455" icon={faThumbsUp} title="未確定の出勤" gradientColor1="#feb692" gradientColor2="#ea5455" value={1} unit="件" />
-              <Visualizer color="#0396ff" icon={faCalendarCheck} title="今月の出勤回数" gradientColor1="#abdcff" gradientColor2="#0396ff" value={3} unit="回" />
-              <Visualizer color="#f8d800" icon={faYenSign} title="今月の見込み給与" gradientColor1="#fdeb71" gradientColor2="#f8d800" value={20400} unit="円" />
+              <Box className={cardAnimationTrigger ? "animate__animated card-in card1" : "hidden"}>
+                <Visualizer color="#32ccbc" icon={faCalendarCheck} title="未回答の希望日程アンケート" gradientColor1="#90f7ec" gradientColor2="#32ccbc" value={1} unit="件" />
+              </Box>
+              <Box className={cardAnimationTrigger ? "animate__animated card-in card2" : "hidden"}>
+                <Visualizer color="#ea5455" icon={faThumbsUp} title="未確定の出勤" gradientColor1="#feb692" gradientColor2="#ea5455" value={1} unit="件" />
+              </Box>
+              <Box className={cardAnimationTrigger ? "animate__animated card-in card3" : "hidden"}>
+                <Visualizer color="#0396ff" icon={faCalendarCheck} title="今月の出勤回数" gradientColor1="#abdcff" gradientColor2="#0396ff" value={3} unit="回" />
+              </Box>
+              <Box className={cardAnimationTrigger ? "animate__animated card-in card4" : "hidden"}>
+                <Visualizer color="#f8d800" icon={faYenSign} title="今月の見込み給与" gradientColor1="#fdeb71" gradientColor2="#f8d800" value={20400} unit="円" />
+              </Box>
             </SimpleGrid>
           </Box>
         </Flex>
