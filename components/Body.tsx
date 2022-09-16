@@ -3,7 +3,7 @@ import { Box } from "@chakra-ui/react"
 
 //Custom Components
 import Header from "./header/Header"
-import RibbonHeading from "./RibbonHeading"
+import RibbonHeading from "./heading/RibbonHeading"
 import Debugger from "./Debugger"
 
 // Functions
