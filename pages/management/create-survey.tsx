@@ -9,7 +9,7 @@ import { useState, useRef, useEffect } from "react"
 import { useGetElementProperty } from "../../hooks/useGetElementProperty"
 
 // Chakra UI Components
-import { Box, Heading, Input, Flex, Grid, Tooltip, VStack, StackDivider, Text } from "@chakra-ui/react"
+import { Box, Input, Flex, Grid, Tooltip, VStack, StackDivider, Text } from "@chakra-ui/react"
 
 // Custom Components
 import Body from "../../components/Body"
@@ -42,7 +42,7 @@ const CreateSurvey: NextPage = () => {
               <FontAwesomeIcon className="secondary-color" icon={faPen} fontSize={25}></FontAwesomeIcon>
             </Flex>
             <Flex pl={resp(6, 12, 12)} alignItems="center">
-              <Heading className="kb" size="lg">タイトルを入力</Heading>
+              <Text className="kb" fontSize={resp("1.5rem", "1.8rem", "1.9rem")}>タイトルを入力</Text>
             </Flex>
             <Flex className="flex-center">
               <Box className="secondary-color" h="80px" borderLeft="dotted 4px"></Box>
@@ -54,7 +54,7 @@ const CreateSurvey: NextPage = () => {
               <FontAwesomeIcon className="secondary-color" icon={faCalendar} fontSize={25}></FontAwesomeIcon>
             </Flex>
             <Flex pl={resp(6, 12, 12)} alignItems="center">
-              <Heading className="kb" size="lg">日程を追加</Heading>
+              <Text className="kb" fontSize={resp("1.5rem", "1.8rem", "1.9rem")}>日程を追加</Text>
             </Flex>
             <Flex className="flex-center">
               <Box className="secondary-color" h={shceduleListHeight} borderLeft="dotted 4px"></Box>
@@ -85,7 +85,7 @@ const CreateSurvey: NextPage = () => {
               <FontAwesomeIcon className="secondary-color" icon={faCheck} fontSize={25}></FontAwesomeIcon>
             </Flex>
             <Flex pl={resp(6, 12, 12)} alignItems="center">
-              <Heading className="kb" size="lg">作成</Heading>
+              <Text className="kb" fontSize={resp("1.5rem", "1.8rem", "1.9rem")}>作成</Text>
             </Flex>
             <Flex className="flex-center">
               <Box className="secondary-color" h="74px" borderLeft="dotted 4px"></Box>

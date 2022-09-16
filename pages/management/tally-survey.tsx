@@ -9,7 +9,7 @@ import { useState, useRef, useEffect } from "react"
 import { useGetElementProperty } from "../../hooks/useGetElementProperty"
 
 // Chakra UI Components
-import { Box, Heading, Flex, VStack, StackDivider, Text, Select, Checkbox, Grid } from "@chakra-ui/react"
+import { Box, Flex, VStack, StackDivider, Text, Select, Checkbox, Grid } from "@chakra-ui/react"
 
 // Custom Components
 import AnimatedButton from "../../components/button/SendButton"
@@ -56,7 +56,7 @@ const TallySurvey: NextPage = () => {
               <FontAwesomeIcon className="secondary-color" icon={faUserGroup} fontSize={25}></FontAwesomeIcon>
             </Flex>
             <Flex pl={resp(6, 12, 12)} alignItems="center">
-              <Heading className="kb" size="lg">出勤依頼する学生を選択</Heading>
+              <Text className="kb" fontSize={resp("1.45rem", "1.8rem", "1.9rem")}>出勤依頼する学生を選択</Text>
             </Flex>
             <Flex className="flex-center">
               <Box className="secondary-color" h={castListHeight} borderLeft="dotted 4px"></Box>
@@ -99,7 +99,7 @@ const TallySurvey: NextPage = () => {
               <FontAwesomeIcon className="secondary-color" icon={faCheck} fontSize={25}></FontAwesomeIcon>
             </Flex>
             <Flex pl={resp(6, 12, 12)} alignItems="center">
-              <Heading className="kb" size="lg">送信</Heading>
+              <Text className="kb" fontSize={resp("1.5rem", "1.8rem", "1.9rem")}>送信</Text>
             </Flex>
             <Flex className="flex-center">
               <Box className="secondary-color" h="74px" borderLeft="dotted 4px"></Box>

@@ -3,7 +3,7 @@ import type { NextPage } from "next"
 import Head from "next/head"
 
 // Chakra UI Components
-import { Box, Flex, Heading, Text, VStack, StackDivider, Checkbox } from "@chakra-ui/react"
+import { Flex, Text, VStack, StackDivider, Checkbox } from "@chakra-ui/react"
 
 // Custom Components
 import Body from "../components/Body"
