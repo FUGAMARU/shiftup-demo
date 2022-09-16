@@ -2,8 +2,11 @@
 import type { NextPage } from "next"
 import Head from "next/head"
 
+// Custom Hooks
+import useGreeting from "../hooks/useGreeting"
+
 // Chakra UI Components
-import { Box, Text, Flex, Heading, SimpleGrid } from "@chakra-ui/react"
+import { Box, Text, Flex, SimpleGrid } from "@chakra-ui/react"
 
 // Custom Components
 import Header from "../components/header/Header"
@@ -17,6 +20,8 @@ import { faUpRightFromSquare, faCalendarCheck, faThumbsUp, faYenSign } from "@fo
 import { resp } from "../functions"
 
 const Home: NextPage = () => {
+  const { greeting } = useGreeting("七海麻美")
+
   return (
     <>
       <Head>
@@ -32,7 +37,7 @@ const Home: NextPage = () => {
 
         <Flex minH="65vh" maxW={resp("100%", "100%", "85%")} mx="auto" justifyContent="center" alignItems="center">
           <Box>{/* 消さない！ */}
-            <Text className="keb" mb="1rem" fontSize={resp("1.2rem", "2rem", "2rem")} borderBottom="solid 1px gray">こんばんは、七海麻美さん。</Text>
+            <Text className="keb animate__animated greeting" h={resp("1.8rem", "3rem", "3rem")} mb="1rem" fontSize={resp("1.2rem", "2rem", "2rem")} borderBottom="solid 1px gray">{greeting}</Text>
 
             <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={5} justifyItems="center" alignItems="center">
               <Visualizer color="#32ccbc" icon={faCalendarCheck} title="未回答の希望日程アンケート" gradientColor1="#90f7ec" gradientColor2="#32ccbc" value={1} unit="件" />

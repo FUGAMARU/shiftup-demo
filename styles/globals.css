@@ -190,3 +190,9 @@ a {
 .hover-zoom:hover {
   transform: scale(1.03);
 }
+
+.greeting {
+  animation: fadeIn;
+  animation-duration: .5s;
+  animation-delay: .8s;
+}
