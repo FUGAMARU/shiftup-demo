@@ -15,7 +15,9 @@ import GreetingMessage from "../components/text/GreetingMessage"
 
 // Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faUpRightFromSquare, faCalendarCheck, faThumbsUp, faYenSign } from "@fortawesome/free-solid-svg-icons"
+import { IconDefinition } from "@fortawesome/fontawesome-svg-core"
+import { faUpRightFromSquare, faCalendarCheck, faThumbsUp, faYenSign, faForward } from "@fortawesome/free-solid-svg-icons"
+import { faDiscord } from "@fortawesome/free-brands-svg-icons"
 
 // Functions
 import { resp } from "../functions"
@@ -42,16 +44,22 @@ const Home: NextPage = () => {
 
             <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={5} justifyItems="center" alignItems="center">
               <Box className={cardAnimationTrigger ? "animate__animated card-in card1" : "hidden"}>
-                <Visualizer color="#32ccbc" icon={faCalendarCheck} title="未回答の希望日程アンケート" gradientColor1="#90f7ec" gradientColor2="#32ccbc" value={1} unit="件" />
+                <Visualizer color="#32ccbc" icon={faCalendarCheck} title="未回答の希望日程アンケート" gradientColor1="#90f7ec" gradientColor2="#32ccbc" value={1} unit="件" isShowButton={true} linkURL="/answer-survey" />
               </Box>
               <Box className={cardAnimationTrigger ? "animate__animated card-in card2" : "hidden"}>
-                <Visualizer color="#ea5455" icon={faThumbsUp} title="未確定の出勤" gradientColor1="#feb692" gradientColor2="#ea5455" value={1} unit="件" />
+                <Visualizer color="#ea5455" icon={faThumbsUp} title="未確定の出勤" gradientColor1="#feb692" gradientColor2="#ea5455" value={1} unit="件" isShowButton={true} linkURL="/confirm-attendance" />
               </Box>
               <Box className={cardAnimationTrigger ? "animate__animated card-in card3" : "hidden"}>
-                <Visualizer color="#0396ff" icon={faCalendarCheck} title="今月の出勤回数" gradientColor1="#abdcff" gradientColor2="#0396ff" value={3} unit="回" />
+                <Visualizer color="#28c76f" icon={faForward} title="次の出勤日" gradientColor1="#81fbb8" gradientColor2="#28c76f" value="9/16" unit="" isShowButton={false} />
               </Box>
               <Box className={cardAnimationTrigger ? "animate__animated card-in card4" : "hidden"}>
-                <Visualizer color="#f8d800" icon={faYenSign} title="今月の見込み給与" gradientColor1="#fdeb71" gradientColor2="#f8d800" value={20400} unit="円" />
+                <Visualizer color="#0396ff" icon={faCalendarCheck} title="今月の出勤回数" gradientColor1="#abdcff" gradientColor2="#0396ff" value={3} unit="回" isShowButton={false} />
+              </Box>
+              <Box className={cardAnimationTrigger ? "animate__animated card-in card5" : "hidden"}>
+                <Visualizer color="#f8d800" icon={faYenSign} title="今月の見込み給与" gradientColor1="#fdeb71" gradientColor2="#f8d800" value={20400} unit="円" isShowButton={false} />
+              </Box>
+              <Box className={cardAnimationTrigger ? "animate__animated card-in card6" : "hidden"}>
+                <Visualizer color="#9f44d3" icon={faDiscord as IconDefinition} title="Discord" gradientColor1="#e2b0ff" gradientColor2="#9f44d3" value="専門OC" unit="" isShowButton={true} linkURL="https://discord.com/channels/947388983179091969/947390083445715035" />
               </Box>
             </SimpleGrid>
           </Box>
