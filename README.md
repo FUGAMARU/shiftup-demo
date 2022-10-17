@@ -53,6 +53,8 @@
   - [希望日程アンケート作成](https://shiftup.vercel.app/management/create-survey)
   - [アンケート集計・出勤可能者リストアップ・確定処理要求送信](https://shiftup.vercel.app/management/tally-survey)
   - 出勤確定者アサイン
+- 各種エラーページ
+  - [認証エラー](https://shiftup.vercel.app/error/authentication-error)
 
 ### 開発メモ
 

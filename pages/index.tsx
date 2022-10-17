@@ -12,9 +12,9 @@ import { Box, Text, Flex, SimpleGrid } from "@chakra-ui/react"
 import Header from "../components/header/Header"
 import Visualizer from "../components/card/Visualizer"
 import GreetingMessage from "../components/text/GreetingMessage"
+import SimpleButton from "../components/button/SimpleButton"
 
 // Libraries
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core"
 import { faUpRightFromSquare, faCalendarCheck, faThumbsUp, faYenSign, faForward } from "@fortawesome/free-solid-svg-icons"
 import { faDiscord } from "@fortawesome/free-brands-svg-icons"
@@ -25,6 +25,10 @@ import { resp } from "../functions"
 const Home: NextPage = () => {
   const [cardAnimationTrigger, setCardAnimationTrigger] = useState(false)
 
+  const viewTodaySchedule = () => {
+    // 「今日のタイムテーブルを見る」 ボタンをクリックした時の処理をそのうち書く
+  }
+
   return (
     <>
       <Head>
@@ -33,10 +37,7 @@ const Home: NextPage = () => {
       <Header />
 
       <Box py={5} bg="#f5f5f7">
-        <Flex className="hover-zoom" w="20rem" mx="auto" mb={resp(10, 0, 0)} p={2} bg="white" borderRadius={15} justifyContent="center" alignItems="center" boxShadow="lg" cursor="pointer">
-          <Text className="kb" mr={3}>今日のタイムテーブルを見る</Text>
-          <FontAwesomeIcon icon={faUpRightFromSquare} />
-        </Flex>
+        <SimpleButton title="今日のタイムテーブルを見る" icon={faUpRightFromSquare} onClick={viewTodaySchedule} />
 
         <Flex minH="65vh" maxW={resp("100%", "100%", "85%")} mx="auto" justifyContent="center" alignItems="center">
           <Box>{/* 消さない！ */}
