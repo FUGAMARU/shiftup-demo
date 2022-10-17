@@ -13,7 +13,7 @@ import MenuItem from "./MenuItem"
 
 // Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faChevronCircleRight, faCalendarPlus, faListCheck, faCalendarCheck, faThumbsUp } from "@fortawesome/free-solid-svg-icons"
+import { faChevronCircleRight, faCalendarPlus, faListCheck, faCalendarCheck, faThumbsUp, faUserPlus } from "@fortawesome/free-solid-svg-icons"
 
 // Functions
 import { resp } from "../../functions"
@@ -37,6 +37,7 @@ const Header = () => {
             <SimpleGrid columns={3} spacing={3} pt={3} justifyItems="center">
               <MenuItem href="/management/create-survey" icon={faCalendarPlus} title={<Text>希望日程<br />アンケート作成</Text>} onClose={onClose} />
               <MenuItem href="/management/tally-survey" icon={faListCheck} title={<Text>希望日程<br />アンケート集計</Text>} onClose={onClose} />
+              <MenuItem href="/management/add-approved-user" icon={faUserPlus} title={<Text>認可ユーザー<br />追加</Text>} onClose={onClose} />
             </SimpleGrid>
 
             <Box className="kb" mt={8} borderBottom="solid 2px #615f5f">キャストメニュー</Box>

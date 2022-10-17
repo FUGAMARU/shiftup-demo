@@ -48,6 +48,7 @@
   - [希望日程回答](https://shiftup.vercel.app/answer-survey)
   -  [出勤確定](https://shiftup.vercel.app/confirm-attendance)
 - 運営チームサイド
+  - [認可ユーザー追加](https://shiftup.vercel.app/management/add-approved-user)
   - スケジュールテンプレート作成
   - キャスト情報登録 
   - [希望日程アンケート作成](https://shiftup.vercel.app/management/create-survey)

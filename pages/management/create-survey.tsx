@@ -13,7 +13,7 @@ import { Box, Input, Flex, Grid, Tooltip, VStack, StackDivider, Text } from "@ch
 
 // Custom Components
 import Body from "../../components/Body"
-import AnimatedButton from "../../components/button/SendButton"
+import SendButton from "../../components/button/SendButton"
 
 //Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -91,7 +91,7 @@ const CreateSurvey: NextPage = () => {
               <Box className="secondary-color" h="74px" borderLeft="dotted 4px"></Box>
             </Flex>
             <Flex className="flex-center" pt="2rem">
-              <AnimatedButton text="アンケートを作成"></AnimatedButton>
+              <SendButton text="アンケートを作成"></SendButton>
             </Flex>
           </Grid>
         </Flex>
