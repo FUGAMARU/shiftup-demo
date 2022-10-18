@@ -8,6 +8,7 @@ import { useEffect } from "react"
 // Libraries
 import "focus-visible/dist/focus-visible"
 import { toggle } from "slide-element"
+import { CookiesProvider } from "react-cookie"
 
 // Stylings
 import { ChakraProvider } from "@chakra-ui/react"
@@ -58,7 +59,9 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
         </div>
       </div>
       <ChakraProvider>
-        <Component {...pageProps} />
+        <CookiesProvider>
+          <Component {...pageProps} />
+        </CookiesProvider>
       </ChakraProvider>
     </>
   )
