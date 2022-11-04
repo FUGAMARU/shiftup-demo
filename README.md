@@ -7,7 +7,7 @@
 
 ### エンドユーザー一覧
 | 名称 | 役割 |
-| ---- | ----| 
+| ---- | ----|
 | キャスト | 実際にオープンキャンパスの業務を遂行する学生(工科大生を含む) |
 | 運営チーム | 新しいキャストの募集、各種連絡、シフトを組んだりと<br>オープンキャンパス業務の運営管理を行う |
 
@@ -31,11 +31,11 @@
 ### あったら良いかもしれない機能
 - 月あたりの合計出勤回数
 - 給与確認
-  - 棒グラフなどでグラフィカルだと尚良し 
+  - 棒グラフなどでグラフィカルだと尚良し
 
 ### 作る必要のあるページ
 - 共通
-  - [ログイン(トップページにて表示切り替え)](https://shiftup.vercel.app/)
+  - [ログイン(トップページにて表示切り替え)](https://shiftup.works/)
 - キャストサイド
   - マイページ
     - 未回答の希望日程アンケート件数
@@ -45,16 +45,17 @@
     - 今月の見込み給与
     - Discordリンク
     - その日のタイムテーブルへのリンク
-  - [希望日程回答](https://shiftup.vercel.app/answer-survey)
-  -  [出勤確定](https://shiftup.vercel.app/confirm-attendance)
+  - [希望日程回答](https://shiftup.works/answer-survey)
+  -  [出勤確定](https://shiftup.works/confirm-attendance)
 - 運営チームサイド
-  - [認可ユーザー追加](https://shiftup.vercel.app/management/add-approved-user)
+  - [認可ユーザー追加](https://shiftup.works/management/add-approved-user)
   - スケジュールテンプレート作成
-  - [希望日程アンケート作成](https://shiftup.vercel.app/management/create-survey)
-  - [アンケート集計・出勤可能者リストアップ・確定処理要求送信](https://shiftup.vercel.app/management/tally-survey)
+  - [希望日程アンケート作成](https://shiftup.works/management/create-survey)
+  - [アンケート集計・出勤可能者リストアップ・確定処理要求送信](https://shiftup.works/management/tally-survey)
   - 出勤確定者アサイン
 - 各種エラーページ
-  - [認証エラー](https://shiftup.vercel.app/error/authentication-error)
+  - [認証エラー](https://shiftup.works/error/authentication-error)
+  - [認可エラー](https://shiftup.works/error/invalid-user)
 
 ### 開発メモ
 
