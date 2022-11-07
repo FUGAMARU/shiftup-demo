@@ -17,7 +17,7 @@ import Body from "../../components/Body"
 
 //Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faUserGroup, faCalendar, faCheck } from "@fortawesome/free-solid-svg-icons"
+import { faUserGroup, faCalendar, faCheck, faListCheck } from "@fortawesome/free-solid-svg-icons"
 
 // Functions
 import { resp } from "../../functions"
@@ -38,6 +38,19 @@ const TallySurvey: NextPage = () => {
       <Body title="アンケート集計" content={<>
         <Flex justifyContent="center">
           <Grid gridTemplateColumns="repeat(2, auto)" gridTemplateRows="repeat(6, auto)">
+            <Flex className="flex-center">
+              <FontAwesomeIcon className="secondary-color" icon={faListCheck} fontSize={25}></FontAwesomeIcon>
+            </Flex>
+            <Flex pl={resp(6, 12, 12)} alignItems="center">
+              <Select w={resp(250, 300, 350)} placeholder="集計するアンケートを選択">
+                <option value="11月 シフトアンケート">11月 シフトアンケート</option>
+                <option value="11月授業見学会 シフト募集">11月授業見学会 シフト募集</option>
+              </Select>
+            </Flex>
+            <Flex className="flex-center">
+              <Box className="secondary-color" h={10} borderLeft="dotted 4px"></Box>
+            </Flex>
+            <Box>{/* 消さない！ */}</Box>
             <Flex className="flex-center">
               <FontAwesomeIcon className="secondary-color" icon={faCalendar} fontSize={25}></FontAwesomeIcon>
             </Flex>
