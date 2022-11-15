@@ -3,7 +3,7 @@ import type { NextPage } from "next"
 import Head from "next/head"
 
 // React Hooks
-import { useLayoutEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 // Chakra UI Components
 import { Box, Button, Flex, Text } from "@chakra-ui/react"
@@ -20,9 +20,9 @@ const Home: NextPage = () => {
   const [cookies, setCookie, removeCookie] = useCookies(["user_session"])
   const [token, setToken] = useState("")
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setToken(cookies.user_session)
-  }, [])
+  }, [cookies.user_session])
 
   const setDummyCookie = () => {
     setCookie("user_session", "DUMMY_TOKEN")

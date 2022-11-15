@@ -27,7 +27,7 @@ const TallySurvey: NextPage = () => {
   const castListRef = useRef(null)
   const [castListHeight, setCastListHeight] = useState(0)
   const { getElementProperty: castListProperty } = useGetElementProperty<HTMLDivElement>(castListRef)
-  useEffect(() => setCastListHeight(castListProperty("height")), [castListRef])
+  useEffect(() => setCastListHeight(castListProperty("height")), [castListRef, castListProperty])
 
   return (
     <>

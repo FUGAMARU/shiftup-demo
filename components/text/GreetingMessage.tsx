@@ -20,6 +20,7 @@ const GreetingMessage = (props: Props) => {
   const { data: apiData, error } = useSWRImmutable("http://worldtimeapi.org/api/timezone/Asia/Tokyo", fetcher)
   const [greeting, setGreeting] = useState("")
   const [classNameChanger, setClassNameChanger] = useState(false)
+  const { name, fireCardAnimationTrigger } = props
 
   useEffect(() => {
     if (apiData) {
@@ -41,21 +42,21 @@ const GreetingMessage = (props: Props) => {
       const datetime = new Date(apiData.datetime)
 
       if (datetime >= fourOclock && datetime < tenOclock) { //4時〜9時59分
-        setGreeting(`おはようございます、${props.name}さん。`)
+        setGreeting(`おはようございます、${name}さん。`)
       } else if (datetime >= tenOclock && datetime < seventeenOclock) { //10時〜16時59分
-        setGreeting(`こんにちは、${props.name}さん。`)
+        setGreeting(`こんにちは、${name}さん。`)
       } else {
-        setGreeting(`こんばんは、${props.name}さん。`)
+        setGreeting(`こんばんは、${name}さん。`)
       }
     }
 
     if (error) {
-      setGreeting(`ようこそ、${props.name}さん。`)
+      setGreeting(`ようこそ、${name}さん。`)
     }
 
     setClassNameChanger(true)
-    props.fireCardAnimationTrigger()
-  }, [apiData, error])
+    fireCardAnimationTrigger()
+  }, [apiData, error, name, fireCardAnimationTrigger])
 
   return <Text className={classNameChanger ? "keb animate__animated greeting" : "hidden"} h={resp("1.8rem", "3rem", "3rem")} mb="1rem" fontSize={resp("1.2rem", "2rem", "2rem")} borderBottom="solid 1px gray">{greeting}</Text>
 }

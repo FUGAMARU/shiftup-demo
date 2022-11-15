@@ -3,7 +3,7 @@ import Image from "next/image"
 import Link from "next/link"
 
 // React Hooks
-import { useState, useLayoutEffect } from "react"
+import { useState, useEffect } from "react"
 
 //Custom Hooks
 import useResponsive from "../../hooks/useResponsive"
@@ -28,9 +28,9 @@ const Header = () => {
   const [cookies] = useCookies(["user_session"])
   const [token, setToken] = useState("")
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     setToken(cookies.user_session)
-  }, [])
+  }, [cookies.user_session])
 
   return (
     <>
@@ -80,7 +80,7 @@ const Header = () => {
             <a>
               <Flex className="flex-center" w={resp(90, 150, 150)} h={50} textAlign="center">
                 <Box position="relative" w="100%" style={{ height: 40 }}>
-                  <Image src="/logo-white.svg" layout="fill" objectFit="contain" />
+                  <Image src="/logo-white.svg" layout="fill" objectFit="contain" alt="White ShiftUP! logo" />
                 </Box>
               </Flex>
             </a>

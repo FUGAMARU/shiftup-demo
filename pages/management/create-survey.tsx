@@ -27,7 +27,7 @@ const CreateSurvey: NextPage = () => {
   const scheduleListRef = useRef(null)
   const [shceduleListHeight, setScheduleListHeight] = useState(0)
   const { getElementProperty: scheduleListProperty } = useGetElementProperty<HTMLDivElement>(scheduleListRef)
-  useEffect(() => setScheduleListHeight(scheduleListProperty("height")), [scheduleListRef])
+  useEffect(() => setScheduleListHeight(scheduleListProperty("height")), [scheduleListRef, scheduleListProperty])
 
   return (
     <>
