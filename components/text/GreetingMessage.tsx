@@ -17,7 +17,7 @@ interface Props {
 }
 
 const GreetingMessage = (props: Props) => {
-  const { data: apiData, error } = useSWRImmutable("http://worldtimeapi.org/api/timezone/Asia/Tokyo", fetcher)
+  const { data: apiData, error } = useSWRImmutable("https://worldtimeapi.org/api/timezone/Asia/Tokyo", fetcher)
   const [greeting, setGreeting] = useState("")
   const [classNameChanger, setClassNameChanger] = useState(false)
   const { name, fireCardAnimationTrigger } = props
