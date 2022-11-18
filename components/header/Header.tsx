@@ -17,7 +17,7 @@ import MenuItem from "./MenuItem"
 // Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faChevronCircleRight, faCalendarPlus, faListCheck, faCalendarCheck, faThumbsUp, faUserPlus } from "@fortawesome/free-solid-svg-icons"
-import { useCookies } from "react-cookie"
+import { parseCookies } from "nookies"
 
 // Functions
 import { resp } from "../../functions"
@@ -25,11 +25,11 @@ import { resp } from "../../functions"
 const Header = () => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
   const { isOpen: isMenuOpened, onOpen, onClose } = useDisclosure()
-  const [cookies] = useCookies(["user_session"])
+  const cookies = parseCookies()
   const [token, setToken] = useState("")
 
   useEffect(() => {
-    setToken(cookies.user_session)
+    if (cookies.user_session) setToken(cookies.user_session)
   }, [cookies.user_session])
 
   return (

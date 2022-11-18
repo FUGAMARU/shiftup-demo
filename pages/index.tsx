@@ -14,23 +14,23 @@ import MyPage from "../components/toppage-view/MyPage"
 import Login from "../components/toppage-view/Login"
 
 // Libraries
-import { useCookies } from "react-cookie"
+import { parseCookies, setCookie, destroyCookie } from "nookies"
 
 const Home: NextPage = () => {
-  const [cookies, setCookie, removeCookie] = useCookies(["user_session"])
   const [token, setToken] = useState("")
 
   useEffect(() => {
-    setToken(cookies.user_session)
-  }, [cookies.user_session])
+    const cookies = parseCookies()
+    if (cookies.user_session) setToken(cookies.user_session)
+  }, [])
 
   const setDummyCookie = () => {
-    setCookie("user_session", "DUMMY_TOKEN")
+    setCookie(null, "user_session", "DUMMY_TOKEN")
     window.location.reload()
   }
 
   const deleteDummyCookie = () => {
-    removeCookie("user_session")
+    destroyCookie(null, "user_session")
     window.location.reload()
   }
 
