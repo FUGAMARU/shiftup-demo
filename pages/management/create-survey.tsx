@@ -9,7 +9,7 @@ import { useState, useRef, useEffect } from "react"
 import { useGetElementProperty } from "../../hooks/useGetElementProperty"
 
 // Chakra UI Components
-import { Box, Input, Flex, Grid, Tooltip, VStack, StackDivider, Text } from "@chakra-ui/react"
+import { Box, Input, Flex, Grid, Tooltip, VStack, StackDivider, Text, Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverCloseButton, PopoverHeader, PopoverBody, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
 import Body from "../../components/Body"
@@ -20,14 +20,58 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faPen, faCalendar, faCheck, faCirclePlus, faXmark } from "@fortawesome/free-solid-svg-icons"
 
 // Functions
-import { resp } from "../../functions"
+import { resp, formatDateToSlash, getWeekDay } from "../../functions"
 
 const CreateSurvey: NextPage = () => {
+  const dateInputRef = useRef<HTMLInputElement>(null)
+  const [scheduleList, setScheduleList] = useState<string[]>([])
+  const [isInvalidInputDate, setInvalidInputDate] = useState(false)
+
+  const [errorMessage, setErrorMessage] = useState("")
+  const { isOpen: isErrorMessageOpened, onOpen: openError, onClose: closeError } = useDisclosure()
+
   // 日程リストとドットの高さの動機
   const scheduleListRef = useRef(null)
   const [shceduleListHeight, setScheduleListHeight] = useState(0)
   const { getElementProperty: scheduleListProperty } = useGetElementProperty<HTMLDivElement>(scheduleListRef)
-  useEffect(() => setScheduleListHeight(scheduleListProperty("height")), [scheduleListRef, scheduleListProperty])
+  useEffect(() => setScheduleListHeight(scheduleListProperty("height")), [scheduleListRef, scheduleListProperty, shceduleListHeight])
+
+  const handlePlusButtonClick = () => {
+    const ref = dateInputRef.current
+    const pattern = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/
+
+    setInvalidInputDate(true)
+
+    // Nullチェック
+    if (!!!ref) {
+      setErrorMessage("入力値が不正です")
+      openError()
+      return
+    }
+
+    // フォーマットチェック
+    if (!!!pattern.test(ref.value)) {
+      setErrorMessage("入力された日付のフォーマットが正しくありません")
+      openError()
+      return
+    }
+
+    // 重複チェック
+    if (scheduleList.indexOf(ref.value) !== -1) {
+      setErrorMessage("既に追加されている日付です")
+      openError()
+      return
+    }
+
+    setInvalidInputDate(false)
+    setScheduleList([...scheduleList, ref.value])
+    setScheduleListHeight(0)
+  }
+
+  const handleRemoveButtonClick = (target: string) => {
+    setScheduleList(scheduleList.filter(val => (val !== target)))
+    setScheduleListHeight(0)
+  }
 
   return (
     <>
@@ -62,22 +106,27 @@ const CreateSurvey: NextPage = () => {
             <Flex pl={resp(9, 16, 16)} py={5} alignItems="center" ref={scheduleListRef}>
               <Box>
                 <Flex>
-                  <Input type="date" w={resp(210, 310, 310)} focusBorderColor="#48c3eb" size="sm" mr={5}></Input>
-                  <Tooltip label="日程をリストに追加"><FontAwesomeIcon className="primary-color" fontSize={30} cursor="pointer" icon={faCirclePlus} /></Tooltip>
+                  <Popover isOpen={isErrorMessageOpened} onClose={closeError}>
+                    <PopoverTrigger>
+                      <Input ref={dateInputRef} w={resp(210, 310, 310)} mr={5} type="date" size="sm" focusBorderColor="#48c3eb" isInvalid={isInvalidInputDate} errorBorderColor="red.200" />
+                    </PopoverTrigger>
+                    <PopoverContent>
+                      <PopoverArrow bg="red.100" />
+                      <PopoverBody className="ksb" bg="red.100">{errorMessage}</PopoverBody>
+                    </PopoverContent>
+                  </Popover>
+                  <Tooltip label="日程をリストに追加"><FontAwesomeIcon className="primary-color" fontSize={30} cursor="pointer" icon={faCirclePlus} onClick={handlePlusButtonClick} /></Tooltip>
                 </Flex>
                 <VStack mt={3} divider={<StackDivider borderColor="gray.200" />} spacing={3} align="stretch">
-                  <Flex alignItems="center">
-                    <Tooltip label="リストから削除"><FontAwesomeIcon className="primary-color" cursor="pointer" icon={faXmark} fontSize={25} /></Tooltip>
-                    <Text ml={3}>2022/08/14 (日)</Text>
-                  </Flex>
-                  <Flex alignItems="center">
-                    <Tooltip label="リストから削除"><FontAwesomeIcon className="primary-color" cursor="pointer" icon={faXmark} fontSize={25} /></Tooltip>
-                    <Text ml={3}>2022/08/21 (日)</Text>
-                  </Flex>
-                  <Flex alignItems="center">
-                    <Tooltip label="リストから削除"><FontAwesomeIcon className="primary-color" cursor="pointer" icon={faXmark} fontSize={25} /></Tooltip>
-                    <Text ml={3}>2022/08/28 (日)</Text>
-                  </Flex>
+                  {scheduleList.map((val, idx) => {
+                    const dt = new Date(val)
+                    return (
+                      <Flex alignItems="center" key={idx}>
+                        <Tooltip label="リストから削除"><FontAwesomeIcon className="primary-color" cursor="pointer" icon={faXmark} fontSize={25} onClick={() => handleRemoveButtonClick(val)} /></Tooltip>
+                        <Text ml={3}>{`${formatDateToSlash(dt)} (${getWeekDay(dt)})`}</Text>
+                      </Flex>
+                    )
+                  })}
                 </VStack>
               </Box>
             </Flex>
