@@ -2,11 +2,9 @@
 import Image from "next/image"
 import Link from "next/link"
 
-// React Hooks
-import { useState, useEffect } from "react"
-
 //Custom Hooks
 import useResponsive from "../../hooks/useResponsive"
+import useLoginCheck from "../../hooks/useLoginCheck"
 
 // Chakra UI Components
 import { Flex, Text, Box, Drawer, SimpleGrid, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, useDisclosure } from "@chakra-ui/react"
@@ -17,20 +15,17 @@ import MenuItem from "./MenuItem"
 // Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faChevronCircleRight, faCalendarPlus, faListCheck, faCalendarCheck, faThumbsUp, faUserPlus } from "@fortawesome/free-solid-svg-icons"
-import { parseCookies } from "nookies"
+import { loginState } from "../../atoms/LoginStateAtom"
+import { useRecoilValue } from "recoil"
 
 // Functions
 import { resp } from "../../functions"
 
 const Header = () => {
+  useLoginCheck()
+  const isLoggedIn = useRecoilValue(loginState)
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
   const { isOpen: isMenuOpened, onOpen, onClose } = useDisclosure()
-  const cookies = parseCookies()
-  const [token, setToken] = useState("")
-
-  useEffect(() => {
-    if (cookies.user_session) setToken(cookies.user_session)
-  }, [cookies.user_session])
 
   return (
     <>
@@ -66,7 +61,7 @@ const Header = () => {
         <Flex maxW="1300px" m="0 auto" justifyContent="space-between" alignItems="center">
 
           {/* メニューボタン */}
-          {token ?
+          {isLoggedIn ?
             <Box w={resp(90, 150, 150)} h={50} p={1} pt={2} textAlign="center" cursor="pointer" borderRadius={15} bg={isMenuOpened ? "rgba(255, 255, 255, 0.2)" : ""} _hover={{ background: "rgba(255, 255, 255, 0.2)" }} transition=".2s ease-in" onClick={onOpen}>
               <FontAwesomeIcon className={isMenuOpened ? "rotate-icon" : ""} icon={faChevronCircleRight} fontSize="1.2rem" />
               <Text className="kr" fontSize={10} color="white">メニュー</Text>
@@ -87,7 +82,7 @@ const Header = () => {
           </Link>
 
           {/* ユーザー名 */}
-          {token ?
+          {isLoggedIn ?
             <Flex className="flex-center" w={resp(90, 150, 150)} h={50} textAlign="center" cursor="pointer" borderRadius={15} _hover={{ background: "rgba(255, 255, 255, 0.2)" }} transition=".2s cubic-bezier(0.250, 0.250, 0.750, 0.750)">
               <Text className="ksb" display="inline" fontSize={resp(13, 15, 17)} color="white">七海麻美</Text>
               {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" display="inline" fontSize={resp(10, 10, 12)} ml={1} color="white">さん</Text> : null}

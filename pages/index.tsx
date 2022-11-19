@@ -2,9 +2,6 @@
 import type { NextPage } from "next"
 import Head from "next/head"
 
-// React Hooks
-import { useEffect, useState } from "react"
-
 // Chakra UI Components
 import { Box, Button, Flex, Text } from "@chakra-ui/react"
 
@@ -14,23 +11,21 @@ import MyPage from "../components/toppage-view/MyPage"
 import Login from "../components/toppage-view/Login"
 
 // Libraries
-import { parseCookies, setCookie, destroyCookie } from "nookies"
+import { setCookie, destroyCookie } from "nookies"
+import { loginState } from "../atoms/LoginStateAtom"
+import { useRecoilValue } from "recoil"
 
 const Home: NextPage = () => {
-  const [token, setToken] = useState("")
-
-  useEffect(() => {
-    const cookies = parseCookies()
-    if (cookies.user_session) setToken(cookies.user_session)
-  }, [])
+  const isLoggedIn = useRecoilValue(loginState)
 
   const setDummyCookie = () => {
-    setCookie(null, "user_session", "DUMMY_TOKEN")
+    //setCookie(null, "user_session", "DUMMY_TOKEN")
+    setCookie(null, "logged_in", "true")
     window.location.reload()
   }
 
   const deleteDummyCookie = () => {
-    destroyCookie(null, "user_session")
+    destroyCookie(null, "logged_in")
     window.location.reload()
   }
 
@@ -41,7 +36,7 @@ const Home: NextPage = () => {
       </Head>
       <Header />
 
-      {token ? <MyPage /> : <Login />}
+      {isLoggedIn === null ? null : isLoggedIn === true ? <MyPage /> : <Login />}
 
       <Box w="7rem" mt={5} py={2} position="fixed" right={0} bottom={10} bg="#dbebff" borderTopLeftRadius={15} borderBottomLeftRadius={15}>
         <Text className="ksb" textAlign="center">Cookie管理</Text>
