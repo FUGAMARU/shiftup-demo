@@ -13,6 +13,9 @@ import CancelButton from "../components/button/CancelButton"
 // Functions
 import { resp } from "../functions"
 
+// Filter
+import { AuthFilter } from "../hoc/AuthFilter"
+
 const ConfirmAttendance: NextPage = () => {
   return (
     <>
@@ -41,4 +44,4 @@ const ConfirmAttendance: NextPage = () => {
   )
 }
 
-export default ConfirmAttendance
+export default AuthFilter(ConfirmAttendance)

@@ -19,6 +19,9 @@ import { up } from "slide-element"
 // Functions
 import { resp } from "../functions"
 
+// Filter
+import { AuthFilter } from "../hoc/AuthFilter"
+
 const AnswerSurvey: NextPage = () => {
   const [selectedSurvey, setSelectedSurvey] = useState("")
   const [contentVisibility, setContentVisibility] = useState(false)
@@ -62,4 +65,4 @@ const AnswerSurvey: NextPage = () => {
   )
 }
 
-export default AnswerSurvey
+export default AuthFilter(AnswerSurvey)

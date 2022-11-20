@@ -19,7 +19,6 @@ const Home: NextPage = () => {
   const isLoggedIn = useRecoilValue(loginState)
 
   const setDummyCookie = () => {
-    //setCookie(null, "user_session", "DUMMY_TOKEN")
     setCookie(null, "logged_in", "true")
     window.location.reload()
   }

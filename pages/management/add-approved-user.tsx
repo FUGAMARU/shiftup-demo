@@ -19,6 +19,9 @@ import { faPen, faCheck, faScrewdriverWrench, faUser } from "@fortawesome/free-s
 // Functions
 import { resp } from "../../functions"
 
+// Filter
+import { AuthFilter } from "../../hoc/AuthFilter"
+
 const AddApprovedUser: NextPage = () => {
   const [userAttribute, setUserAttribute] = useState("cast")
 
@@ -141,4 +144,4 @@ const AddApprovedUser: NextPage = () => {
   )
 }
 
-export default AddApprovedUser
+export default AuthFilter(AddApprovedUser)
