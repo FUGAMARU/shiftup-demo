@@ -41,15 +41,15 @@ const Header = () => {
           <DrawerBody pt={10}>
             <Box className="kb" borderBottom="solid 2px #615f5f">管理者メニュー</Box>
             <SimpleGrid columns={3} spacing={3} pt={3} justifyItems="center">
-              <MenuItem href="/management/create-survey" icon={faCalendarPlus} title={<Text>希望日程<br />アンケート作成</Text>} onClose={closeMenu} />
-              <MenuItem href="/management/tally-survey" icon={faListCheck} title={<Text>希望日程<br />アンケート集計</Text>} onClose={closeMenu} />
-              <MenuItem href="/management/add-approved-user" icon={faUserPlus} title={<Text>認可ユーザー<br />追加</Text>} onClose={closeMenu} />
+              <MenuItem href="/management/create-survey" icon={faCalendarPlus} title={"希望日程\nアンケート作成"} onClose={closeMenu} />
+              <MenuItem href="/management/tally-survey" icon={faListCheck} title={"希望日程\nアンケート集計"} onClose={closeMenu} />
+              <MenuItem href="/management/add-approved-user" icon={faUserPlus} title={"認可ユーザー\n追加"} onClose={closeMenu} />
             </SimpleGrid>
 
             <Box className="kb" mt={8} borderBottom="solid 2px #615f5f">キャストメニュー</Box>
             <SimpleGrid columns={3} spacing={3} pt={3} justifyItems="center">
-              <MenuItem href="/answer-survey" icon={faCalendarCheck} title={<Text>希望日程<br />アンケート回答</Text>} onClose={closeMenu} />
-              <MenuItem href="/confirm-attendance" icon={faThumbsUp} title={<Text>出勤確定処理</Text>} onClose={closeMenu} />
+              <MenuItem href="/answer-survey" icon={faCalendarCheck} title={"希望日程\nアンケート回答"} onClose={closeMenu} />
+              <MenuItem href="/confirm-attendance" icon={faThumbsUp} title={"出金確定処理"} onClose={closeMenu} />
             </SimpleGrid>
           </DrawerBody>
           <DrawerFooter>
