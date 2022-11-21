@@ -24,7 +24,7 @@ const MenuItem = (props: Props) => {
   }
 
   return (
-    <Flex className="kb flex-center" h={20} w={20} color="white" bg="rgba(112, 145, 222, 0.7)" backdropFilter="blur(3px)" lineHeight={3} borderRadius={15} flexDirection="column" textAlign="center" cursor="pointer" _hover={{ transform: "scale(1.05)" }} transition="all 0.3s 0s ease" onClick={handleButtonClick}>
+    <Flex className="kb flex-center" h={20} w={20} color="white" bgGradient="linear(to-br, #a39af9, #469fff)" backdropFilter="blur(3px)" lineHeight={3} borderRadius={15} flexDirection="column" textAlign="center" cursor="pointer" _hover={{ transform: "scale(1.05)" }} transition="all 0.3s 0s ease" onClick={handleButtonClick}>
       <FontAwesomeIcon icon={props.icon} fontSize={30} />
       <Text mt={2} fontSize={10} whiteSpace="pre-wrap">{props.title}</Text>
     </Flex>
