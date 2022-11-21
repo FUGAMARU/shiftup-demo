@@ -7,14 +7,14 @@ import useResponsive from "../../hooks/useResponsive"
 import useLoginCheck from "../../hooks/useLoginCheck"
 
 // Chakra UI Components
-import { Flex, Text, Box, Drawer, SimpleGrid, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, useDisclosure, Popover, PopoverTrigger, PopoverContent, PopoverHeader, PopoverBody, PopoverFooter, PopoverArrow, PopoverCloseButton, PopoverAnchor } from "@chakra-ui/react"
+import { Flex, Text, Box, Drawer, SimpleGrid, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, useDisclosure, Popover, PopoverTrigger, PopoverContent, PopoverBody, PopoverArrow } from "@chakra-ui/react"
 
 // Custom Components
 import MenuItem from "./MenuItem"
 
 // Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faChevronCircleRight, faCalendarPlus, faListCheck, faCalendarCheck, faThumbsUp, faUserPlus, faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons"
+import { faChevronCircleRight, faCalendarPlus, faListCheck, faCalendarCheck, faThumbsUp, faUserPlus, faArrowRightFromBracket, faScrewdriverWrench } from "@fortawesome/free-solid-svg-icons"
 import { loginState } from "../../atoms/LoginStateAtom"
 import { useRecoilValue } from "recoil"
 
@@ -96,15 +96,22 @@ const Header = () => {
                   {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" display="inline" fontSize={resp(10, 10, 12)} ml={1} color="white">さん</Text> : null}
                 </Flex>
               </PopoverTrigger>
-              <PopoverContent borderRadius={15}>
-                <PopoverArrow />
-                <PopoverBody>
-                  <a href="/api/logout">
-                    <Box className="ksb" fontSize="0.9rem" textAlign="center" borderRadius={15} transition="0.3s all ease-out" _hover={{ backgroundColor: "#718edd", color: "white" }}>
-                      <FontAwesomeIcon icon={faArrowRightFromBracket} />
-                      <Text>サインアウト</Text>
+              <PopoverContent borderRadius={20} bg="rgba(98, 168, 228, 0.2)" backdropFilter="blur(5px)">
+                <PopoverArrow bg="rgba(98, 168, 228, 0.2)" backdropFilter="blur(5px)" />
+                <PopoverBody borderRadius={20} boxShadow="xl">
+                  <Flex alignItems="center" justifyContent="space-around">
+                    <Box className="ksb" w="8rem" p={2} fontSize="0.8rem" textAlign="center" cursor="pointer" borderRadius={15} color="white" bgGradient="linear(to-br, #a39af9, #469fff)" _hover={{ transform: "scale(1.05)" }} transition="all 0.3s 0s ease">
+                      <FontAwesomeIcon icon={faScrewdriverWrench} fontSize="1.3rem" />
+                      <Text>ユーザー情報編集</Text>
                     </Box>
-                  </a>
+
+                    <a href="/api/logout">
+                      <Box className="ksb" w="8rem" p={2} fontSize="0.8rem" textAlign="center" cursor="pointer" borderRadius={15} color="white" bgGradient="linear(to-br, #a39af9, #469fff)" _hover={{ transform: "scale(1.05)" }} transition="all 0.3s 0s ease">
+                        <FontAwesomeIcon icon={faArrowRightFromBracket} fontSize="1.3rem" />
+                        <Text>サインアウト</Text>
+                      </Box>
+                    </a>
+                  </Flex>
                 </PopoverBody>
               </PopoverContent>
             </Popover>
