@@ -60,7 +60,7 @@ const CreateSurvey: NextPage = () => {
     }
 
     // 重複チェック
-    if (scheduleList.indexOf(ref.value) !== -1) {
+    if (scheduleList.includes(ref.value)) {
       setErrorMessage("既に追加されている日付です")
       openError()
       return
