@@ -1,5 +1,5 @@
 // Next.js
-import { NextPage } from "next"
+import { NextPage, InferGetStaticPropsType } from "next"
 import Head from "next/head"
 
 // React Hooks
@@ -20,9 +20,25 @@ import { faPen, faCheck, faScrewdriverWrench, faUser } from "@fortawesome/free-s
 import { resp } from "../../functions"
 
 // Filter
-import { AuthFilter } from "../../hoc/AuthFilter"
+import { withSession } from "../../hoc/withSession"
 
-const AddApprovedUser: NextPage = () => {
+// Importing Symbols
+import * as fs from "fs"
+import * as path from "path"
+type Symbols = { [key: string]: string }
+type Props = InferGetStaticPropsType<typeof getStaticProps>
+
+export const getStaticProps = async () => {
+  const jsonPath = path.join(process.cwd(), "public", "symbols.json")
+  const jsonText = fs.readFileSync(jsonPath, "utf-8")
+  const symbols = JSON.parse(jsonText) as Symbols
+
+  return {
+    props: { symbols: symbols }
+  }
+}
+
+const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
   const [userAttribute, setUserAttribute] = useState("cast")
 
   return (
@@ -57,55 +73,17 @@ const AddApprovedUser: NextPage = () => {
             </Flex>
             <Flex pl={resp(9, 16, 16)} py={5} alignItems="center">
               <Select w={resp(245, 350, 350)} placeholder="学科を選択">
-                <optgroup label="クリエイターズカレッジ">
-                  <option value="B2">放送芸術科</option>
-                  <option value="T2">声優・演劇科</option>
-                  <option value="LA">マンガ・アニメーション科四年制</option>
-                  <option value="AN">マンガ・アニメーション科</option>
-                </optgroup>
-
-                <optgroup label="デザインカレッジ">
-                  <option value="L4">ゲームクリエイター科四年制</option>
-                  <option value="GM">ゲームクリエイター科</option>
-                  <option value="CG">CG映像科</option>
-                  <option value="G2">デザイン科</option>
-                </optgroup>
-
-                <optgroup label="ミュージックカレッジ">
-                  <option value="R2">ミュージックアーティスト科</option>
-                  <option value="F2">コンサート・イベント科</option>
-                  <option value="M2">音響芸術科</option>
-                </optgroup>
-
-                <optgroup label="ITカレッジ">
-                  <option value="IS">ITスペシャリスト科</option>
-                  <option value="AI">AIシステム科</option>
-                  <option value="C2">情報処理科</option>
-                  <option value="PN">ネットワークセキュリティ科</option>
-                  <option value="L2">情報ビジネス科</option>
-                </optgroup>
-
-                <optgroup label="テクノロジーカレッジ">
-                  <option value="AR">ロボット科</option>
-                  <option value="E2">電子・電気科</option>
-                  <option value="EV">一級自動車整備科</option>
-                  <option value="RV">自動車整備科</option>
-                  <option value="BN">応用生物学科</option>
-                  <option value="X4">建築科</option>
-                  <option value="X2">建築設計科</option>
-                  <option value="YZ">土木・造園科</option>
-                  <option value="DC">機械設計科</option>
-                </optgroup>
-
-                <optgroup label="スポート・医療カレッジ">
-                  <option value="N3">スポーツトレーナー科三年制</option>
-                  <option value="NA">スポーツトレーナー科</option>
-                  <option value="NE">スポーツ健康学科三年制</option>
-                  <option value="N2">スポーツ健康学科</option>
-                  <option value="S3">鍼灸科</option>
-                  <option value="J3">柔道整復科</option>
-                  <option value="MI">医療事務科</option>
-                </optgroup>
+                {Object.keys(symbols).map((label, idx) => {
+                  return (
+                    <optgroup label={label} key={idx}>
+                      {Object.keys(symbols[label]).map((subKey, subIdx) => {
+                        return (
+                          <option value={subKey} key={idx + subIdx}>{Object.values(symbols[label])[subIdx]}</option>
+                        )
+                      })}
+                    </optgroup>
+                  )
+                })}
               </Select>
             </Flex>
             <Flex className="flex-center">
@@ -138,10 +116,10 @@ const AddApprovedUser: NextPage = () => {
               <SendButton text="ユーザーを追加"></SendButton>
             </Flex>
           </Grid>
-        </Flex>
+        </Flex >
       } />
     </>
   )
 }
 
-export default AuthFilter(AddApprovedUser)
+export default withSession(AddApprovedUser)

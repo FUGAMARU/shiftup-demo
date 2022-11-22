@@ -23,7 +23,7 @@ import { faUserGroup, faCalendar, faCheck, faListCheck } from "@fortawesome/free
 import { resp } from "../../functions"
 
 // Filter
-import { AuthFilter } from "../../hoc/AuthFilter"
+import { withSession } from "../../hoc/withSession"
 
 const TallySurvey: NextPage = () => {
   // 学生(キャスト)リストとドットの高さの同期
@@ -131,4 +131,4 @@ const TallySurvey: NextPage = () => {
   )
 }
 
-export default AuthFilter(TallySurvey)
+export default withSession(TallySurvey)

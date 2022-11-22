@@ -18,6 +18,7 @@ import "animate.css"
 const MyApp = ({ Component, pageProps }: AppProps) => {
   const router = useRouter()
 
+  // ローディングアニメーション
   const handleStart = (url: string) => {
     url !== router.asPath
     toggle(document.getElementById("loadingBanner") as HTMLElement)

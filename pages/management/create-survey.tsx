@@ -23,7 +23,7 @@ import { faPen, faCalendar, faCheck, faCirclePlus, faXmark } from "@fortawesome/
 import { resp, formatDateToSlash, getWeekDay } from "../../functions"
 
 // Filter
-import { AuthFilter } from "../../hoc/AuthFilter"
+import { withSession } from "../../hoc/withSession"
 
 const CreateSurvey: NextPage = () => {
   const dateInputRef = useRef<HTMLInputElement>(null)
@@ -152,4 +152,4 @@ const CreateSurvey: NextPage = () => {
   )
 }
 
-export default AuthFilter(CreateSurvey)
+export default withSession(CreateSurvey)

@@ -20,7 +20,7 @@ import { up } from "slide-element"
 import { resp } from "../functions"
 
 // Filter
-import { AuthFilter } from "../hoc/AuthFilter"
+import { withSession } from "../hoc/withSession"
 
 const AnswerSurvey: NextPage = () => {
   const [selectedSurvey, setSelectedSurvey] = useState("")
@@ -65,4 +65,4 @@ const AnswerSurvey: NextPage = () => {
   )
 }
 
-export default AuthFilter(AnswerSurvey)
+export default withSession(AnswerSurvey)
