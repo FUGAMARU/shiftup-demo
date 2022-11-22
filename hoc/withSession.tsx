@@ -5,22 +5,21 @@ import Router from "next/router"
 // Custom Components
 import Header from "../components/header/Header"
 
-// Libraries
-import useSWR from "swr"
-import useSWRImmutable from "swr/immutable"
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
-const statusCodeFetcher = (url: string) => fetch(url).then((res) => res.status)
+// Global State Management
+import { useRecoilValue } from "recoil"
+import { sessionState } from "../atoms/SessionStateAtom"
+import { isManager } from "../atoms/RoleAtom"
 
 export const withSession = (Page: NextPage<any>, isManagementPage: boolean) => {
   return (props: any) => {
-    const { data: statusCode, error } = useSWR(process.env.NEXT_PUBLIC_SESSION_AVAILABLE_CHECK_URL, statusCodeFetcher)
-    const { data: role } = useSWRImmutable(process.env.NEXT_PUBLIC_CHECK_ROLE_URL, fetcher)
+    const isInSession = useRecoilValue(sessionState)
+    const isIamManager = useRecoilValue(isManager)
 
-    if (error) Router.push("/error/authentication-error")
-    if (statusCode === undefined) return <Header />
-    if (statusCode !== 200) Router.push("/error/authentication-error")
+    if (isInSession === null || isIamManager === null) return <Header />
 
-    if ((!isManagementPage) || (statusCode === 200 && isManagementPage && role && role.includes("Manager"))) {
+    if (isInSession === false) Router.push("/error/authentication-error")
+
+    if ((!isManagementPage) || (isManagementPage && isIamManager)) {
       return <Page {...props} />
     } else {
       Router.push("/error/not-permitted")

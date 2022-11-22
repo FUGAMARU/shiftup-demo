@@ -2,12 +2,9 @@
 import Image from "next/image"
 import Link from "next/link"
 
-// React Hooks
-import { useState, useEffect } from "react"
-
 //Custom Hooks
 import useResponsive from "../../hooks/useResponsive"
-import useLoginCheck from "../../hooks/useLoginCheck"
+import { useStatusCheck } from "../../hooks/useStatusCheck"
 
 // Chakra UI Components
 import { Flex, Text, Box, Drawer, SimpleGrid, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, useDisclosure, Popover, PopoverTrigger, PopoverContent, PopoverBody, PopoverArrow } from "@chakra-ui/react"
@@ -18,26 +15,20 @@ import MenuItem from "./MenuItem"
 // Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faChevronCircleRight, faCalendarPlus, faListCheck, faCalendarCheck, faThumbsUp, faUserPlus, faArrowRightFromBracket, faScrewdriverWrench } from "@fortawesome/free-solid-svg-icons"
-import { loginState } from "../../atoms/LoginStateAtom"
+
+// Global State Management
 import { useRecoilValue } from "recoil"
-import useSWRImmutable from "swr/immutable"
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
+import { sessionState } from "../../atoms/SessionStateAtom"
+import { isManager } from "../../atoms/RoleAtom"
 
 // Functions
 import { resp } from "../../functions"
 
 const Header = () => {
-  useLoginCheck()
-  const isLoggedIn = useRecoilValue(loginState)
+  useStatusCheck() // ページ遷移の度に呼ばれてかつRecoilが使えるコンポーネント内でこのメソッドを呼ぶ
 
-  // 役職判定
-  const [isManager, setManager] = useState<null | boolean>(null)
-  const { data: role } = useSWRImmutable(process.env.NEXT_PUBLIC_CHECK_ROLE_URL, fetcher)
-  useEffect(() => {
-    if (role && role.includes("Manager")) {
-      setManager(true)
-    }
-  }, [role])
+  const isInSession = useRecoilValue(sessionState)
+  const isIamManager = useRecoilValue(isManager)
 
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
   const { isOpen: isMenuOpened, onOpen: openMenu, onClose: closeMenu } = useDisclosure()
@@ -54,7 +45,7 @@ const Header = () => {
             {/* メニューコンテンツ */}
           </DrawerHeader>
           <DrawerBody pt={10}>
-            {isManager ?
+            {isIamManager ?
               <Box mb={8}>
                 <Box className="kb" borderBottom="solid 2px #615f5f">管理者メニュー</Box>
                 <SimpleGrid columns={3} spacing={3} pt={3} justifyItems="center">
@@ -82,7 +73,7 @@ const Header = () => {
         <Flex maxW="1300px" m="0 auto" justifyContent="space-between" alignItems="center">
 
           {/* メニューボタン */}
-          {isLoggedIn ?
+          {isInSession ?
             <Box w={resp(90, 150, 150)} h={50} p={1} pt={2} textAlign="center" cursor="pointer" borderRadius={15} bg={isMenuOpened ? "rgba(255, 255, 255, 0.2)" : ""} _hover={{ background: "rgba(255, 255, 255, 0.2)" }} transition=".2s ease-in" onClick={openMenu}>
               <FontAwesomeIcon className={isMenuOpened ? "rotate-icon" : ""} icon={faChevronCircleRight} fontSize="1.2rem" />
               <Text className="kr" fontSize={10} color="white">メニュー</Text>
@@ -103,7 +94,7 @@ const Header = () => {
           </Link>
 
           {/* ユーザー名 */}
-          {isLoggedIn ?
+          {isInSession ?
             <Popover
               isOpen={isUserMenuOpened}
               onOpen={openUserMenu}
