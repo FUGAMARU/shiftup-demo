@@ -2,6 +2,9 @@
 import Image from "next/image"
 import Link from "next/link"
 
+// React Hooks
+import { useState, useEffect } from "react"
+
 //Custom Hooks
 import useResponsive from "../../hooks/useResponsive"
 import useLoginCheck from "../../hooks/useLoginCheck"
@@ -17,6 +20,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faChevronCircleRight, faCalendarPlus, faListCheck, faCalendarCheck, faThumbsUp, faUserPlus, faArrowRightFromBracket, faScrewdriverWrench } from "@fortawesome/free-solid-svg-icons"
 import { loginState } from "../../atoms/LoginStateAtom"
 import { useRecoilValue } from "recoil"
+import useSWRImmutable from "swr/immutable"
+const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 // Functions
 import { resp } from "../../functions"
@@ -24,6 +29,16 @@ import { resp } from "../../functions"
 const Header = () => {
   useLoginCheck()
   const isLoggedIn = useRecoilValue(loginState)
+
+  // 役職判定
+  const [isManager, setManager] = useState<null | boolean>(null)
+  const { data: role } = useSWRImmutable(process.env.NEXT_PUBLIC_CHECK_ROLE_URL, fetcher)
+  useEffect(() => {
+    if (role && role.includes("Manager")) {
+      setManager(true)
+    }
+  }, [role])
+
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
   const { isOpen: isMenuOpened, onOpen: openMenu, onClose: closeMenu } = useDisclosure()
   const { isOpen: isUserMenuOpened, onOpen: openUserMenu, onClose: closeUserMenu } = useDisclosure()
@@ -39,18 +54,23 @@ const Header = () => {
             {/* メニューコンテンツ */}
           </DrawerHeader>
           <DrawerBody pt={10}>
-            <Box className="kb" borderBottom="solid 2px #615f5f">管理者メニュー</Box>
-            <SimpleGrid columns={3} spacing={3} pt={3} justifyItems="center">
-              <MenuItem href="/management/create-survey" icon={faCalendarPlus} title={"希望日程\nアンケート作成"} onClose={closeMenu} />
-              <MenuItem href="/management/tally-survey" icon={faListCheck} title={"希望日程\nアンケート集計"} onClose={closeMenu} />
-              <MenuItem href="/management/add-approved-user" icon={faUserPlus} title={"認可ユーザー\n追加"} onClose={closeMenu} />
-            </SimpleGrid>
+            {isManager ?
+              <Box mb={8}>
+                <Box className="kb" borderBottom="solid 2px #615f5f">管理者メニュー</Box>
+                <SimpleGrid columns={3} spacing={3} pt={3} justifyItems="center">
+                  <MenuItem href="/management/create-survey" icon={faCalendarPlus} title={"希望日程\nアンケート作成"} onClose={closeMenu} />
+                  <MenuItem href="/management/tally-survey" icon={faListCheck} title={"希望日程\nアンケート集計"} onClose={closeMenu} />
+                  <MenuItem href="/management/add-approved-user" icon={faUserPlus} title={"認可ユーザー\n追加"} onClose={closeMenu} />
+                </SimpleGrid>
+              </Box>
+              : null}
 
-            <Box className="kb" mt={8} borderBottom="solid 2px #615f5f">キャストメニュー</Box>
+            <Box className="kb" borderBottom="solid 2px #615f5f">キャストメニュー</Box>
             <SimpleGrid columns={3} spacing={3} pt={3} justifyItems="center">
               <MenuItem href="/answer-survey" icon={faCalendarCheck} title={"希望日程\nアンケート回答"} onClose={closeMenu} />
               <MenuItem href="/confirm-attendance" icon={faThumbsUp} title={"出金確定処理"} onClose={closeMenu} />
             </SimpleGrid>
+
           </DrawerBody>
           <DrawerFooter>
             <Text fontSize={12}>© 2022 TrinityTrick team</Text>

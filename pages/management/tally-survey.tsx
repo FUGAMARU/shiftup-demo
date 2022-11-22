@@ -131,4 +131,4 @@ const TallySurvey: NextPage = () => {
   )
 }
 
-export default withSession(TallySurvey)
+export default withSession(TallySurvey, true)

@@ -44,4 +44,4 @@ const ConfirmAttendance: NextPage = () => {
   )
 }
 
-export default withSession(ConfirmAttendance)
+export default withSession(ConfirmAttendance, false)
