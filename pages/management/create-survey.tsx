@@ -152,4 +152,4 @@ const CreateSurvey: NextPage = () => {
   )
 }
 
-export default withSession(CreateSurvey, true)
+export default withSession(CreateSurvey)

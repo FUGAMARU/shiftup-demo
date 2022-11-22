@@ -122,4 +122,4 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
   )
 }
 
-export default withSession(AddApprovedUser, true)
+export default withSession(AddApprovedUser)
