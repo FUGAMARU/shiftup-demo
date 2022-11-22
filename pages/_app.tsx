@@ -14,6 +14,9 @@ import { RecoilRoot } from "recoil"
 import { ChakraProvider } from "@chakra-ui/react"
 import "../styles/globals.css"
 import "animate.css"
+import "@fortawesome/fontawesome-svg-core/styles.css"
+import { config } from "@fortawesome/fontawesome-svg-core"
+config.autoAddCss = false
 
 const MyApp = ({ Component, pageProps }: AppProps) => {
   const router = useRouter()
