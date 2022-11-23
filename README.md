@@ -48,6 +48,7 @@
   - [希望日程回答](https://shiftup.works/answer-survey)
   -  [出勤確定](https://shiftup.works/confirm-attendance)
 - 運営チームサイド
+  - [ユーザー管理](https://shiftup.works/management/manage-users)
   - [認可ユーザー追加](https://shiftup.works/management/add-approved-user)
   - スケジュールテンプレート作成
   - [希望日程アンケート作成](https://shiftup.works/management/create-survey)
@@ -56,6 +57,8 @@
 - 各種エラーページ
   - [認証エラー](https://shiftup.works/error/authentication-error)
   - [認可エラー](https://shiftup.works/error/invalid-user)
+  - [権限エラー](https://shiftup.works/error/not-permitted)
+  - [不明なエラー](https://shiftup.works/error/unknown-error)
 
 ### 開発メモ
 
