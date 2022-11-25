@@ -88,7 +88,7 @@ const Header = () => {
             <a>
               <Flex className="flex-center" w={resp(90, 150, 150)} h={50} textAlign="center">
                 <Box position="relative" w="100%" style={{ height: 40 }}>
-                  <Image src="/logo-white.svg" layout="fill" objectFit="contain" alt="White ShiftUP! logo" />
+                  <Image src="/logos/logo-white.svg" layout="fill" objectFit="contain" alt="White ShiftUP! logo" />
                 </Box>
               </Flex>
             </a>
