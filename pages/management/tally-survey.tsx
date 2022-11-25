@@ -121,7 +121,7 @@ const TallySurvey: NextPage = () => {
               <Box className="secondary-color" h="74px" borderLeft="dotted 4px"></Box>
             </Flex>
             <Flex className="flex-center" pt="2rem">
-              <AnimatedButton text="確定依頼を送信"></AnimatedButton>
+              <AnimatedButton text="確定依頼を送信" state="text"></AnimatedButton>
             </Flex>
           </Grid>
         </Flex>

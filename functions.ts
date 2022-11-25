@@ -12,3 +12,17 @@ export const formatDateToSlash = (dt: Date): string => {
 export const getWeekDay = (dt: Date): string => {
   return ["日", "月", "火", "水", "木", "金", "土"][dt.getDay()]
 }
+
+export const toHankaku = (str: string) => {
+  return str.replace(/[Ａ-Ｚａ-ｚ０-９]/g, s => {
+    return String.fromCharCode(s.charCodeAt(0) - 0xFEE0)
+  })
+}
+
+export const standBy = (milliseconds: number) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve("")
+    }, milliseconds)
+  })
+}

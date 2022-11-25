@@ -40,21 +40,16 @@ const CreateSurvey: NextPage = () => {
   useEffect(() => setScheduleListHeight(scheduleListProperty("height")), [scheduleListRef, scheduleListProperty, shceduleListHeight])
 
   const handlePlusButtonClick = () => {
+    if (!!!dateInputRef.current) return
+
     const ref = dateInputRef.current
     const pattern = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/
 
     setInvalidInputDate(true)
 
-    // Nullチェック
-    if (!!!ref) {
-      setErrorMessage("入力値が不正です")
-      openError()
-      return
-    }
-
     // フォーマットチェック
     if (!!!pattern.test(ref.value)) {
-      setErrorMessage("入力された日付のフォーマットが正しくありません")
+      setErrorMessage("日付が正しく指定されていません")
       openError()
       return
     }
@@ -115,7 +110,7 @@ const CreateSurvey: NextPage = () => {
                     </PopoverTrigger>
                     <PopoverContent>
                       <PopoverArrow bg="red.100" />
-                      <PopoverBody className="ksb" bg="red.100">{errorMessage}</PopoverBody>
+                      <PopoverBody className="ksb" color="red.500" bg="red.100">{errorMessage}</PopoverBody>
                     </PopoverContent>
                   </Popover>
                   <Tooltip label="日程をリストに追加"><FontAwesomeIcon className="primary-color" fontSize={30} cursor="pointer" icon={faCirclePlus} onClick={handlePlusButtonClick} /></Tooltip>
@@ -143,7 +138,7 @@ const CreateSurvey: NextPage = () => {
               <Box className="secondary-color" h="74px" borderLeft="dotted 4px"></Box>
             </Flex>
             <Flex className="flex-center" pt="2rem">
-              <SendButton text="アンケートを作成"></SendButton>
+              <SendButton text="アンケートを作成" state="text"></SendButton>
             </Flex>
           </Grid>
         </Flex>

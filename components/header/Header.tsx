@@ -60,7 +60,7 @@ const Header = () => {
             <Box className="kb" borderBottom="solid 2px #615f5f">キャストメニュー</Box>
             <SimpleGrid columns={3} spacing={3} pt={3} justifyItems="center">
               <MenuItem href="/answer-survey" icon={faCalendarCheck} title={"希望日程\nアンケート回答"} onClose={closeMenu} />
-              <MenuItem href="/confirm-attendance" icon={faThumbsUp} title={"出金確定処理"} onClose={closeMenu} />
+              <MenuItem href="/confirm-attendance" icon={faThumbsUp} title={"出勤確定処理"} onClose={closeMenu} />
             </SimpleGrid>
 
           </DrawerBody>

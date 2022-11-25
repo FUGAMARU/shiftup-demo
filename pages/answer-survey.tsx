@@ -57,7 +57,7 @@ const AnswerSurvey: NextPage = () => {
           </VStack>
 
           <Flex mt={7} justifyContent="center">
-            <AnimatedButton text="アンケート送信"></AnimatedButton>
+            <AnimatedButton text="アンケート送信" state="text"></AnimatedButton>
           </Flex>
         </Box>
       </>}></Body>
