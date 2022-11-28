@@ -14,7 +14,7 @@ import MenuItem from "./MenuItem"
 
 // Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faChevronCircleRight, faCalendarPlus, faListCheck, faCalendarCheck, faThumbsUp, faUserPlus, faArrowRightFromBracket, faScrewdriverWrench, faUsersGear } from "@fortawesome/free-solid-svg-icons"
+import { faChevronCircleRight, faCalendarPlus, faListCheck, faCalendarCheck, faThumbsUp, faUserPlus, faArrowRightFromBracket, faScrewdriverWrench, faUsersGear, faSquarePollHorizontal } from "@fortawesome/free-solid-svg-icons"
 
 // Global State Management
 import { useRecoilValue } from "recoil"
@@ -54,6 +54,7 @@ const Header = () => {
               <Box pt={5} pb={5}>
                 <Box className="kb" borderBottom="solid 2px #615f5f">管理者メニュー</Box>
                 <SimpleGrid columns={3} spacing={3} pt={3} justifyItems="center">
+                  <MenuItem href="/management/manage-surveys" icon={faSquarePollHorizontal} title={"希望日程\nアンケート管理"} onClose={closeMenu} />
                   <MenuItem href="/management/create-survey" icon={faCalendarPlus} title={"希望日程\nアンケート作成"} onClose={closeMenu} />
                   <MenuItem href="/management/tally-survey" icon={faListCheck} title={"希望日程\nアンケート集計"} onClose={closeMenu} />
                   <MenuItem href="/management/manage-users" icon={faUsersGear} title={"ユーザー管理"} onClose={closeMenu} />
