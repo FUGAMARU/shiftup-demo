@@ -44,9 +44,14 @@ const Header = () => {
           <DrawerHeader>
             {/* メニューコンテンツ */}
           </DrawerHeader>
-          <DrawerBody pt={10}>
+          <DrawerBody>
+            <Link href="/">
+              <a>
+                <Box className="kb" mt={5} borderRadius={15} border="solid 2px #4a4848" textAlign="center" cursor="pointer" onClick={closeMenu}>トップページに戻る</Box>
+              </a>
+            </Link>
             {isIamManager ?
-              <Box mb={8}>
+              <Box pt={5} pb={5}>
                 <Box className="kb" borderBottom="solid 2px #615f5f">管理者メニュー</Box>
                 <SimpleGrid columns={3} spacing={3} pt={3} justifyItems="center">
                   <MenuItem href="/management/create-survey" icon={faCalendarPlus} title={"希望日程\nアンケート作成"} onClose={closeMenu} />
@@ -57,7 +62,7 @@ const Header = () => {
               </Box>
               : null}
 
-            <Box className="kb" borderBottom="solid 2px #615f5f">キャストメニュー</Box>
+            <Box className="kb" pt={5} borderBottom="solid 2px #615f5f">キャストメニュー</Box>
             <SimpleGrid columns={3} spacing={3} pt={3} justifyItems="center">
               <MenuItem href="/answer-survey" icon={faCalendarCheck} title={"希望日程\nアンケート回答"} onClose={closeMenu} />
               <MenuItem href="/confirm-attendance" icon={faThumbsUp} title={"出勤確定処理"} onClose={closeMenu} />
