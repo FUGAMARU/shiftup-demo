@@ -61,7 +61,7 @@ const ManageUsers: NextPage = () => {
 
             <Flex justifyContent="space-between" alignItems="center">
               <Flex alignItems="center" px={3}>
-                <Box className="kb" mr={2} fontSize={resp("1rem", "1.2rem", "1.2rem")}>安原絵麻</Box>
+                <Box className="kb" mr={2} fontSize={resp("1rem", "1.2rem", "1.2rem")}>木春由乃</Box>
                 <Text className="kr" ml={2} mr={1} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">◯◯学部 3年</Text>
                 {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" ml={1} fontSize="0.75rem" color="#5f5f5f">C0B19999</Text> : null}
               </Flex>
@@ -77,7 +77,7 @@ const ManageUsers: NextPage = () => {
 
             <Flex justifyContent="space-between" alignItems="center">
               <Flex alignItems="center" px={3}>
-                <Box className="kb" mr={2} fontSize={resp("1rem", "1.2rem", "1.2rem")}>今井みどり</Box>
+                <Box className="kb" mr={2} fontSize={resp("1rem", "1.2rem", "1.2rem")}>松前緒花</Box>
                 <Text className="kr" ml={2} mr={1} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">◯◯学部 1年</Text>
                 {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" ml={1} fontSize="0.75rem" color="#5f5f5f">C0B21000</Text> : null}
               </Flex>
