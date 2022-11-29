@@ -40,7 +40,7 @@ const AnswerSurvey: NextPage = () => {
 
       <Body title="アンケート回答" content={<>
         <Box id="selector">
-          <Select w={resp(220, 270, 320)} mx="auto" mb={5} placeholder="回答するアンケートを選択" onChange={(e) => handleSurveySelect(e)}>
+          <Select w={resp("90%", 270, 320)} mx="auto" mb={5} placeholder="回答するアンケートを選択" onChange={(e) => handleSurveySelect(e)}>
             <option value="11月 シフトアンケート">11月 シフトアンケート</option>
             <option value="11月授業見学会 シフト募集">11月授業見学会 シフト募集</option>
           </Select>
