@@ -28,9 +28,7 @@ const ConfirmAttendance: NextPage = () => {
         <title>出勤確定処理 | ShiftUP!</title>
       </Head>
 
-      <Body title="出勤確定処理" content={<>
-        <Text className="ksb" fontSize="0.85rem" textAlign="center">出勤確定待ちの日程が2件あります</Text>
-
+      <Body title="出勤確定処理" statusMessage="出勤確定待ちの日程が2件あります" content={<>
         <SimpleGrid w={resp("100%", "80%", "80%")} mx="auto" my={5} py={3} columns={{ sm: 1, md: 2, lg: 2 }} spacingX={5} justifyItems="center" alignItems="center" boxShadow="xl" borderRadius={15} borderTop="solid 3px #718eed">
           <Box textAlign={responsiveType === "SmartPhone" ? "center" : "right"}>
             <Text className="kr" maxW={resp("17rem", "13.5rem", "18rem")} fontSize={resp("0.75rem", "0.80rem", "0.85rem")} color="#5f5f5f">12月シフト募集</Text>
