@@ -1,0 +1,18 @@
+{
+  "authentication-error": {
+    "title": "認証エラー",
+    "detail": "認証エラーが発生しました"
+  },
+  "invalid-user": {
+    "title": "認可エラー",
+    "detail": "サービスの利用が許可されていないアカウントです"
+  },
+  "not-permitted": {
+    "title": "権限エラー",
+    "detail": "ページにアクセスする権限がありません"
+  },
+  "unknown-error": {
+    "title": "不明なエラー",
+    "detail": "不明なエラーが発生しました"
+  }
+}

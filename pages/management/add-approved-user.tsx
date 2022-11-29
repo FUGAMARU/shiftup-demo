@@ -33,7 +33,7 @@ type Symbols = { [key: string]: string }
 type Props = InferGetStaticPropsType<typeof getStaticProps>
 
 export const getStaticProps = async () => {
-  const jsonPath = path.join(process.cwd(), "public", "symbols.json")
+  const jsonPath = path.join(process.cwd(), "json", "symbols.json")
   const jsonText = fs.readFileSync(jsonPath, "utf-8")
   const symbols = JSON.parse(jsonText) as Symbols
 
