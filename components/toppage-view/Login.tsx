@@ -20,7 +20,7 @@ const Login = () => {
             <Image src="/logos/google-logo.svg" width={26} height={26} alt="Google logo" />
           </Flex>
 
-          <a href="/api/login">
+          <a href={process.env.NEXT_PUBLIC_SIGNIN_URL}>
             <Text className="kb" h="2.5rem" px={2} lineHeight="2.5rem" fontSize="0.85rem" color="white" bg="#4484f5" borderRightRadius={7}>Googleアカウントでサインイン</Text>
           </a>
         </Flex>

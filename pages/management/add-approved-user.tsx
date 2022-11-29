@@ -15,7 +15,7 @@ import SendButton from "../../components/button/SendButton"
 // Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faPen, faCheck, faScrewdriverWrench, faUser } from "@fortawesome/free-solid-svg-icons"
-import axios from "axios"
+import axios, { isAxiosError } from "axios"
 
 // Functions
 import { resp, toHankaku, standBy } from "../../functions"
@@ -117,17 +117,27 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
       position: userAttribute
     }
 
-    const res = await axios.post(process.env.NEXT_PUBLIC_ADD_APPROVED_USER_URL as string, requestBody)
-    if (res.status === 201) {
-      setSendButtonState("checkmark")
-      setTimeout(() => {
-        if (!!!studentIdNumberRef.current || !!!departmentMenuRef.current) return
-        studentIdNumberRef.current.value = ""
-        departmentMenuRef.current.value = ""
-        setUserAttribute("Cast")
-      }, 1000)
-    } else {
+    try {
+      const res = await axios.post(process.env.NEXT_PUBLIC_ADD_APPROVED_USER_URL as string, requestBody)
+
+      if (res.status === 201) {
+        setSendButtonState("checkmark")
+        setTimeout(() => {
+          if (!!!studentIdNumberRef.current || !!!departmentMenuRef.current) return
+          studentIdNumberRef.current.value = ""
+          departmentMenuRef.current.value = ""
+          setUserAttribute("Cast")
+        }, 1000)
+      }
+    } catch (e) {
       setSendButtonState("error")
+
+      if (isAxiosError(e) && e.response?.status === 405) {
+        setStudentIdNumberPopover({
+          isOpen: true,
+          message: "入力された学籍番号は既に認可ユーザーとして追加済みです"
+        })
+      }
     }
   }
 
