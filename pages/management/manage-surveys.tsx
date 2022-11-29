@@ -44,7 +44,7 @@ const ManageSurveys: NextPage = () => {
             align="stretch"
           >
             <Flex justifyContent="space-between" alignItems="center">
-              <Box className="kb" mr={2} px={3} fontSize={resp("1rem", "1.2rem", "1.2rem")}>12月シフト募集</Box>
+              <Box className="kb" mr={2} px={3} maxW={resp("20rem", "17rem", "25rem")} fontSize={resp("1rem", "1.2rem", "1.2rem")}>12月シフト募集</Box>
               <Flex alignItems="center">
                 {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" mr={resp(3, 5, 5)} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">/ 20件の回答</Text> : null}
                 <Tooltip label="回答を締め切る">
@@ -57,7 +57,7 @@ const ManageSurveys: NextPage = () => {
             </Flex>
 
             <Flex justifyContent="space-between" alignItems="center">
-              <Box className="kb" mr={2} px={3} fontSize={resp("1rem", "1.2rem", "1.2rem")}>【急募】10月30日 友人募集</Box>
+              <Box className="kb" mr={2} px={3} maxW={resp("20rem", "17rem", "25rem")} fontSize={resp("1rem", "1.2rem", "1.2rem")}>【急募】10月30日 友人募集</Box>
               <Flex alignItems="center">
                 {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" mr={resp(3, 5, 5)} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">/ 3件の回答</Text> : null}
                 <Tooltip label="回答の受け付けを再開する">

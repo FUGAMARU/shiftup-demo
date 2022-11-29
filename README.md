@@ -49,6 +49,7 @@
   -  [出勤確定](https://shiftup.works/confirm-attendance)
 - 運営チームサイド
   - [ユーザー管理](https://shiftup.works/management/manage-users)
+  - [アンケート管理](https://shiftup.works/management/manage-surveys)
   - [認可ユーザー追加](https://shiftup.works/management/add-approved-user)
   - スケジュールテンプレート作成
   - [希望日程アンケート作成](https://shiftup.works/management/create-survey)
