@@ -6,7 +6,7 @@ import Head from "next/head"
 import { useState, useRef, useEffect } from "react"
 
 // Chakra UI Components
-import { Flex, Grid, Text, Box, Input, Select, Radio, RadioGroup, Stack, Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverBody } from "@chakra-ui/react"
+import { Flex, Grid, Text, Box, Input, Select, Radio, RadioGroup, Stack, Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverBody, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
 import Body from "../../components/Body"
@@ -51,33 +51,15 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
   // 学籍番号入力欄
   const [studentIdNumberInput, setStudentIdNumberInput] = useState("")
   const [isInputTUT, setInputTUT] = useState(false)
-  const [studentIdNumberPopover, setStudentIdNumberPopover] = useState({
-    isOpen: false,
-    message: ""
-  })
-  const closeStudentIdNumberPopover = () => {
-    const prevMessage = studentIdNumberPopover.message
-    setStudentIdNumberPopover({
-      isOpen: false,
-      message: prevMessage
-    })
-  }
+  const [studentIdNumberInputErrorMessage, setStudentIdNumberInputErrorMessage] = useState("")
+  const { isOpen: isStudentIdNumberInputPopoverOpened, onOpen: openStudentIdNumberInputPopover, onClose: closeStudentIdNumberInputPopover } = useDisclosure()
 
   // 学部・学科プルダウンメニュー
   const departmentMenuRef = useRef<HTMLSelectElement>(null)
   const [croppedSymbols, setCroppedSymbols] = useState<Symbols | Departments>(symbols)
   const [isDisabledDepartmentMenu, setDisabledDepartmentMenu] = useState(true)
-  const [departmentMenuPopover, setDepartmentMenuPopover] = useState({
-    isOpen: false,
-    message: ""
-  })
-  const closeDepartmentMenuPopover = () => {
-    const prevMessage = departmentMenuPopover.message
-    setDepartmentMenuPopover({
-      isOpen: false,
-      message: prevMessage
-    })
-  }
+  const [departmentMenuErrorMessage, setDepartmentMenuErrorMessage] = useState("")
+  const { isOpen: isDepartmentMenuPopoverOpened, onOpen: openDepartmentMenuPopover, onClose: closeDepartmentMenuPopover } = useDisclosure()
 
   // 役職選択ラジオボタン
   const [userAttribute, setUserAttribute] = useState("Cast")
@@ -117,19 +99,15 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
 
     setStudentIdNumberInput((current) => toHankaku(current).toUpperCase())
 
-    if (!!!patternNEEC.test(studentIdNumberInput) || !!!patternTUT.test(studentIdNumberInput)) {
-      setStudentIdNumberPopover({
-        isOpen: true,
-        message: "学籍番号が正しく入力されていません"
-      })
+    if (!!!(patternNEEC.test(studentIdNumberInput) || patternTUT.test(studentIdNumberInput))) {
+      setStudentIdNumberInputErrorMessage("学籍番号が正しく入力されていません")
+      openStudentIdNumberInputPopover()
       valid = false
     }
 
     if (!!!departmentMenuRef.current.value) {
-      setDepartmentMenuPopover({
-        isOpen: true,
-        message: "学部・学科が選択されていません"
-      })
+      setDepartmentMenuErrorMessage("学部・学科が選択されていません")
+      openDepartmentMenuPopover()
       valid = false
     }
 
@@ -165,10 +143,8 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
       setSendButtonState("error")
 
       if (isAxiosError(e) && e.response?.status === 405) {
-        setStudentIdNumberPopover({
-          isOpen: true,
-          message: "入力された学籍番号は既に認可ユーザーとして追加済みです"
-        })
+        setStudentIdNumberInputErrorMessage("入力された学籍番号は既に認可ユーザーとして追加済みです")
+        openStudentIdNumberInputPopover()
       }
     }
   }
@@ -192,13 +168,13 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
               <Box className="secondary-color" h="80px" borderLeft="dotted 4px"></Box>
             </Flex>
             <Flex pl={resp(8, 16, 16)} py={5} alignItems="center">
-              <Popover isOpen={studentIdNumberPopover.isOpen}>
+              <Popover isOpen={isStudentIdNumberInputPopoverOpened} onClose={closeStudentIdNumberInputPopover} autoFocus={false}>
                 <PopoverTrigger>
-                  <Input className="ksb" w={resp(250, 350, 350)} placeholder="(入力例) G021C1234" bg="white" focusBorderColor="#48c3eb" isInvalid={studentIdNumberPopover.isOpen} errorBorderColor="red.200" value={studentIdNumberInput} onChange={(e) => setStudentIdNumberInput(e.target.value)} onClick={closeStudentIdNumberPopover}></Input>
+                  <Input className="ksb" w={resp(250, 350, 350)} placeholder="(入力例) G021C1234" bg="white" focusBorderColor="#48c3eb" isInvalid={isStudentIdNumberInputPopoverOpened} errorBorderColor="red.200" value={studentIdNumberInput} onChange={(e) => setStudentIdNumberInput(e.target.value)}></Input>
                 </PopoverTrigger>
                 <PopoverContent>
                   <PopoverArrow bg="red.100" />
-                  <PopoverBody className="ksb" color="red.500" bg="red.100">{studentIdNumberPopover.message}</PopoverBody>
+                  <PopoverBody className="ksb" color="red.500" bg="red.100">{studentIdNumberInputErrorMessage}</PopoverBody>
                 </PopoverContent>
               </Popover>
             </Flex>
@@ -212,9 +188,9 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
               <Box className="secondary-color" h="80px" borderLeft="dotted 4px"></Box>
             </Flex>
             <Flex pl={resp(9, 16, 16)} py={5} alignItems="center">
-              <Popover isOpen={departmentMenuPopover.isOpen}>
+              <Popover isOpen={isDepartmentMenuPopoverOpened} onClose={closeDepartmentMenuPopover} autoFocus={false}>
                 <PopoverTrigger>
-                  <Select w={resp(245, 350, 350)} placeholder={`${isInputTUT ? "学部" : "学科"}を選択`} ref={departmentMenuRef} focusBorderColor="#48c3eb" isInvalid={departmentMenuPopover.isOpen} isDisabled={isDisabledDepartmentMenu} errorBorderColor="red.200" onClick={closeDepartmentMenuPopover}>
+                  <Select w={resp(245, 350, 350)} placeholder={`${isInputTUT ? "学部" : "学科"}を選択`} ref={departmentMenuRef} focusBorderColor="#48c3eb" isInvalid={isDepartmentMenuPopoverOpened} isDisabled={isDisabledDepartmentMenu} errorBorderColor="red.200">
                     {isInputTUT ? Object.keys(croppedSymbols).map((key, idx) => {
                       return (
                         <option value={key} key={idx}>{Object.values(croppedSymbols[key])}</option>
@@ -234,7 +210,7 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
                 </PopoverTrigger>
                 <PopoverContent>
                   <PopoverArrow bg="red.100" />
-                  <PopoverBody className="ksb" color="red.500" bg="red.100">{departmentMenuPopover.message}</PopoverBody>
+                  <PopoverBody className="ksb" color="red.500" bg="red.100">{departmentMenuErrorMessage}</PopoverBody>
                 </PopoverContent>
               </Popover>
             </Flex>
