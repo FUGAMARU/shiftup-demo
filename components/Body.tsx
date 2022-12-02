@@ -12,7 +12,7 @@ import { resp } from "../functions"
 interface Props {
   title?: string,
   statusMessage?: string,
-  content: JSX.Element
+  children: JSX.Element
 }
 
 const Body = (props: Props) => {
@@ -25,7 +25,7 @@ const Body = (props: Props) => {
             <RibbonHeading text={props.title} />
           </Box>
           <Text className="ksb" py={3} fontSize="0.85rem" textAlign="center">{props.statusMessage}</Text>
-          {props.content}
+          {props.children}
         </Box>
       </Box>
       {/*<Debugger />*/}

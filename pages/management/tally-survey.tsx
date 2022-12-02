@@ -38,7 +38,7 @@ const TallySurvey: NextPage = () => {
         <title>希望日程アンケート集計 | ShiftUP!</title>
       </Head>
 
-      <Body title="アンケート集計" content={<>
+      <Body title="アンケート集計">
         <Flex justifyContent="center">
           <Grid gridTemplateColumns="repeat(2, auto)" gridTemplateRows="repeat(6, auto)">
             <Flex className="flex-center">
@@ -125,8 +125,7 @@ const TallySurvey: NextPage = () => {
             </Flex>
           </Grid>
         </Flex>
-      </>
-      }></Body>
+      </Body>
     </>
   )
 }

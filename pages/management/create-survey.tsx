@@ -154,7 +154,7 @@ const CreateSurvey: NextPage = () => {
         <title>希望日程アンケート作成 | ShiftUP!</title>
       </Head>
 
-      <Body title="アンケート作成" content={<>
+      <Body title="アンケート作成">
         <Flex justifyContent="center">
           <Grid gridTemplateColumns="repeat(2, auto)" gridTemplateRows="repeat(6, auto)">
             <Flex className="flex-center">
@@ -215,7 +215,7 @@ const CreateSurvey: NextPage = () => {
             </Flex>
           </Grid>
         </Flex>
-      </>}></Body>
+      </Body>
     </>
   )
 }

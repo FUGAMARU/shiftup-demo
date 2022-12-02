@@ -30,7 +30,7 @@ const ManageUsers: NextPage = () => {
         <title>ユーザー管理 | ShiftUP!</title>
       </Head>
 
-      <Body title="ユーザー管理" statusMessage="3名のユーザーが登録されています" content={<>
+      <Body title="ユーザー管理" statusMessage="3名のユーザーが登録されています">
         <Box w={resp("100%", "80%", "80%")} mx="auto">
           <Box textAlign="center" mb={8}>
             <Input w={resp("80%", "60%", "60%")} variant="flushed" placeholder="名前を入力してユーザーを検索…" textAlign="center" focusBorderColor="#48c3eb" />
@@ -90,7 +90,7 @@ const ManageUsers: NextPage = () => {
             </Flex>
           </VStack>
         </Box>
-      </>}></Body>
+      </Body>
     </>
   )
 }

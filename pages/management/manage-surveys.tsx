@@ -30,7 +30,7 @@ const ManageSurveys: NextPage = () => {
         <title>希望日程アンケート管理 | ShiftUP!</title>
       </Head>
 
-      <Body title="アンケート管理" statusMessage="2件のアンケートが存在します" content={<>
+      <Body title="アンケート管理" statusMessage="2件のアンケートが存在します">
         <Box w={resp("100%", "80%", "80%")} mx="auto">
           <Box textAlign="center" mb={8}>
             <Input w={resp("80%", "60%", "60%")} variant="flushed" placeholder="タイトルを入力してアンケートを検索…" textAlign="center" focusBorderColor="#48c3eb" />
@@ -68,7 +68,7 @@ const ManageSurveys: NextPage = () => {
             </Flex>
           </VStack>
         </Box>
-      </>}></Body>
+      </Body>
     </>
   )
 }

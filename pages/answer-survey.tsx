@@ -38,29 +38,31 @@ const AnswerSurvey: NextPage = () => {
         <title>希望日程アンケート回答 | ShiftUP!</title>
       </Head>
 
-      <Body title="アンケート回答" content={<>
-        <Box id="selector">
-          <Select w={resp("90%", 270, 320)} mx="auto" mb={5} placeholder="回答するアンケートを選択" onChange={(e) => handleSurveySelect(e)}>
-            <option value="11月 シフトアンケート">11月 シフトアンケート</option>
-            <option value="11月授業見学会 シフト募集">11月授業見学会 シフト募集</option>
-          </Select>
-        </Box>
+      <Body title="アンケート回答">
+        <>
+          <Box id="selector">
+            <Select w={resp("90%", 270, 320)} mx="auto" mb={5} placeholder="回答するアンケートを選択" onChange={(e) => handleSurveySelect(e)}>
+              <option value="11月 シフトアンケート">11月 シフトアンケート</option>
+              <option value="11月授業見学会 シフト募集">11月授業見学会 シフト募集</option>
+            </Select>
+          </Box>
 
-        <Box className={contentVisibility ? "animate__animated animate__fadeIn" : ""} display={contentVisibility ? "static" : "none"} style={{ animationDelay: ".2s" }}>
-          <BumpHeading title={selectedSurvey} />
-          <Text className="kr" textAlign="center" fontSize={13}>出勤可能な日にちにチェックを入れてください</Text>
+          <Box className={contentVisibility ? "animate__animated animate__fadeIn" : ""} display={contentVisibility ? "static" : "none"} style={{ animationDelay: ".2s" }}>
+            <BumpHeading title={selectedSurvey} />
+            <Text className="kr" textAlign="center" fontSize={13}>出勤可能な日にちにチェックを入れてください</Text>
 
-          <VStack maxW={resp(250, 300, 300)} mt={5} mx="auto" divider={<StackDivider borderColor="gray.200" />} spacing={3} align="stretch">
-            <Checkbox className="kr" justifyContent="center">2022/08/14 (日)</Checkbox>
-            <Checkbox className="kr" justifyContent="center">2022/08/21 (日)</Checkbox>
-            <Checkbox className="kr" justifyContent="center">2022/08/28 (日)</Checkbox>
-          </VStack>
+            <VStack maxW={resp(250, 300, 300)} mt={5} mx="auto" divider={<StackDivider borderColor="gray.200" />} spacing={3} align="stretch">
+              <Checkbox className="kr" justifyContent="center">2022/08/14 (日)</Checkbox>
+              <Checkbox className="kr" justifyContent="center">2022/08/21 (日)</Checkbox>
+              <Checkbox className="kr" justifyContent="center">2022/08/28 (日)</Checkbox>
+            </VStack>
 
-          <Flex mt={7} justifyContent="center">
-            <AnimatedButton text="アンケート送信" state="text"></AnimatedButton>
-          </Flex>
-        </Box>
-      </>}></Body>
+            <Flex mt={7} justifyContent="center">
+              <AnimatedButton text="アンケート送信" state="text"></AnimatedButton>
+            </Flex>
+          </Box>
+        </>
+      </Body>
     </>
   )
 }

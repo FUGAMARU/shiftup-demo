@@ -156,7 +156,7 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
         <title>認可ユーザー追加 | ShiftUP!</title>
       </Head>
 
-      <Body title="認可ユーザー追加" content={
+      <Body title="認可ユーザー追加">
         <Flex justifyContent="center">
           <Grid gridTemplateColumns="repeat(2, auto)" gridTemplateRows="repeat(8, auto)">
             <Flex className="flex-center">
@@ -234,7 +234,7 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
             </Flex>
           </Grid>
         </Flex >
-      } />
+      </Body>
     </>
   )
 }
