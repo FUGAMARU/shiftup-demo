@@ -131,7 +131,7 @@ const CreateSurvey: NextPage = () => {
     }
 
     try {
-      const res = await axios.post(process.env.NEXT_PUBLIC_CREATE_SURVEY_URL as string, requestBody)
+      const res = await axios.post(process.env.NEXT_PUBLIC_SURVEYS_URL as string, requestBody)
 
       if (res.status === 201) {
         setSendButtonState("checkmark")
