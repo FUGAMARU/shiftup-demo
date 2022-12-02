@@ -6,11 +6,12 @@ import Head from "next/head"
 import { useState, useRef, useEffect } from "react"
 
 // Chakra UI Components
-import { Flex, Grid, Text, Box, Input, Select, Radio, RadioGroup, Stack, Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverBody, useDisclosure } from "@chakra-ui/react"
+import { Flex, Grid, Text, Box, Input, Select, Radio, RadioGroup, Stack, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
 import Body from "../../components/Body"
 import SendButton from "../../components/button/SendButton"
+import PopOver from "../../components/PopOver"
 
 // Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -168,15 +169,9 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
               <Box className="secondary-color" h="80px" borderLeft="dotted 4px"></Box>
             </Flex>
             <Flex pl={resp(8, 16, 16)} py={5} alignItems="center">
-              <Popover isOpen={isStudentIdNumberInputPopoverOpened} onClose={closeStudentIdNumberInputPopover} autoFocus={false}>
-                <PopoverTrigger>
-                  <Input className="ksb" w={resp(250, 350, 350)} placeholder="(入力例) G021C1234" bg="white" focusBorderColor="#48c3eb" isInvalid={isStudentIdNumberInputPopoverOpened} errorBorderColor="red.200" value={studentIdNumberInput} onChange={(e) => setStudentIdNumberInput(e.target.value)}></Input>
-                </PopoverTrigger>
-                <PopoverContent>
-                  <PopoverArrow bg="red.100" />
-                  <PopoverBody className="ksb" color="red.500" bg="red.100">{studentIdNumberInputErrorMessage}</PopoverBody>
-                </PopoverContent>
-              </Popover>
+              <PopOver isOpen={isStudentIdNumberInputPopoverOpened} onClose={closeStudentIdNumberInputPopover} errorMessage={studentIdNumberInputErrorMessage}>
+                <Input className="ksb" w={resp(250, 350, 350)} placeholder="(入力例) G021C1234" bg="white" focusBorderColor="#48c3eb" isInvalid={isStudentIdNumberInputPopoverOpened} errorBorderColor="red.200" value={studentIdNumberInput} onChange={(e) => setStudentIdNumberInput(e.target.value)}></Input>
+              </PopOver>
             </Flex>
             <Flex className="flex-center">
               <FontAwesomeIcon className="secondary-color" icon={faScrewdriverWrench} fontSize={25}></FontAwesomeIcon>
@@ -188,31 +183,25 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
               <Box className="secondary-color" h="80px" borderLeft="dotted 4px"></Box>
             </Flex>
             <Flex pl={resp(9, 16, 16)} py={5} alignItems="center">
-              <Popover isOpen={isDepartmentMenuPopoverOpened} onClose={closeDepartmentMenuPopover} autoFocus={false}>
-                <PopoverTrigger>
-                  <Select w={resp(245, 350, 350)} placeholder={`${isInputTUT ? "学部" : "学科"}を選択`} ref={departmentMenuRef} focusBorderColor="#48c3eb" isInvalid={isDepartmentMenuPopoverOpened} isDisabled={isDisabledDepartmentMenu} errorBorderColor="red.200">
-                    {isInputTUT ? Object.keys(croppedSymbols).map((key, idx) => {
-                      return (
-                        <option value={key} key={idx}>{Object.values(croppedSymbols[key])}</option>
-                      )
-                    }) : Object.keys(croppedSymbols).map((label, idx) => {
-                      return (
-                        <optgroup label={label} key={idx}>
-                          {Object.keys(croppedSymbols[label]).map((subKey, subIdx) => {
-                            return (
-                              <option value={subKey} key={idx + subIdx}>{Object.values(croppedSymbols[label])[subIdx]}</option>
-                            )
-                          })}
-                        </optgroup>
-                      )
-                    })}
-                  </Select>
-                </PopoverTrigger>
-                <PopoverContent>
-                  <PopoverArrow bg="red.100" />
-                  <PopoverBody className="ksb" color="red.500" bg="red.100">{departmentMenuErrorMessage}</PopoverBody>
-                </PopoverContent>
-              </Popover>
+              <PopOver isOpen={isDepartmentMenuPopoverOpened} onClose={closeDepartmentMenuPopover} errorMessage={departmentMenuErrorMessage}>
+                <Select w={resp(245, 350, 350)} placeholder={`${isInputTUT ? "学部" : "学科"}を選択`} ref={departmentMenuRef} focusBorderColor="#48c3eb" isInvalid={isDepartmentMenuPopoverOpened} isDisabled={isDisabledDepartmentMenu} errorBorderColor="red.200">
+                  {isInputTUT ? Object.keys(croppedSymbols).map((key, idx) => {
+                    return (
+                      <option value={key} key={idx}>{Object.values(croppedSymbols[key])}</option>
+                    )
+                  }) : Object.keys(croppedSymbols).map((label, idx) => {
+                    return (
+                      <optgroup label={label} key={idx}>
+                        {Object.keys(croppedSymbols[label]).map((subKey, subIdx) => {
+                          return (
+                            <option value={subKey} key={idx + subIdx}>{Object.values(croppedSymbols[label])[subIdx]}</option>
+                          )
+                        })}
+                      </optgroup>
+                    )
+                  })}
+                </Select>
+              </PopOver>
             </Flex>
             <Flex className="flex-center">
               <FontAwesomeIcon className="secondary-color" icon={faUser} fontSize={25}></FontAwesomeIcon>

@@ -14,6 +14,7 @@ import { Box, Input, Flex, Grid, Tooltip, VStack, StackDivider, Text, Popover, P
 // Custom Components
 import Body from "../../components/Body"
 import SendButton from "../../components/button/SendButton"
+import PopOver from "../../components/PopOver"
 
 //Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -166,15 +167,9 @@ const CreateSurvey: NextPage = () => {
               <Box className="secondary-color" h="80px" borderLeft="dotted 4px"></Box>
             </Flex>
             <Flex pl={resp(8, 16, 16)} py={5} alignItems="center">
-              <Popover isOpen={isSurveyTitlePopoverOpened} onClose={closeSurveyTitlePopover} autoFocus={false}>
-                <PopoverTrigger>
-                  <Input className="ksb" placeholder="(入力例) 12月シフト募集" bg="white" w={resp(250, 350, 350)} focusBorderColor="#48c3eb" ref={surveyTitleRef}></Input>
-                </PopoverTrigger>
-                <PopoverContent>
-                  <PopoverArrow bg="red.100" />
-                  <PopoverBody className="ksb" color="red.500" bg="red.100">{surveyTitleErrorMessage}</PopoverBody>
-                </PopoverContent>
-              </Popover>
+              <PopOver isOpen={isSurveyTitlePopoverOpened} onClose={closeSurveyTitlePopover} errorMessage={surveyTitleErrorMessage}>
+                <Input className="ksb" placeholder="(入力例) 12月シフト募集" bg="white" w={resp(250, 350, 350)} focusBorderColor="#48c3eb" ref={surveyTitleRef}></Input>
+              </PopOver>
             </Flex>
             <Flex className="flex-center">
               <FontAwesomeIcon className="secondary-color" icon={faCalendar} fontSize={25}></FontAwesomeIcon>
@@ -188,15 +183,9 @@ const CreateSurvey: NextPage = () => {
             <Flex pl={resp(9, 16, 16)} py={5} alignItems="center" ref={scheduleListRef}>
               <Box>
                 <Flex>
-                  <Popover isOpen={isScheduleListPopoverOpened} onClose={closeScheduleListPopover} autoFocus={false}>
-                    <PopoverTrigger>
-                      <Input ref={dateInputRef} w={resp(210, 310, 310)} mr={5} type="date" size="sm" focusBorderColor="#48c3eb" isInvalid={isScheduleListPopoverOpened} errorBorderColor="red.200" />
-                    </PopoverTrigger>
-                    <PopoverContent>
-                      <PopoverArrow bg="red.100" />
-                      <PopoverBody className="ksb" color="red.500" bg="red.100">{scheduleListErrorMessage}</PopoverBody>
-                    </PopoverContent>
-                  </Popover>
+                  <PopOver isOpen={isScheduleListPopoverOpened} onClose={closeScheduleListPopover} errorMessage={scheduleListErrorMessage}>
+                    <Input ref={dateInputRef} w={resp(210, 310, 310)} mr={5} type="date" size="sm" focusBorderColor="#48c3eb" isInvalid={isScheduleListPopoverOpened} errorBorderColor="red.200" />
+                  </PopOver>
                   <Tooltip label="日程をリストに追加"><FontAwesomeIcon className="primary-color" fontSize={30} cursor="pointer" icon={faCirclePlus} onClick={handlePlusButtonClick} /></Tooltip>
                 </Flex>
                 <VStack mt={3} divider={<StackDivider borderColor="gray.200" />} spacing={3} align="stretch">
