@@ -9,7 +9,7 @@ import { useState, useRef, useEffect } from "react"
 import { useGetElementProperty } from "../../hooks/useGetElementProperty"
 
 // Chakra UI Components
-import { Box, Input, Flex, Grid, Tooltip, VStack, StackDivider, Text, Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverBody, useDisclosure } from "@chakra-ui/react"
+import { Box, Input, Flex, Grid, Tooltip, VStack, StackDivider, Text, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
 import Body from "../../components/Body"

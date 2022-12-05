@@ -16,7 +16,7 @@ import { sessionState } from "../atoms/SessionStateAtom"
 import { isManager } from "../atoms/RoleAtom"
 
 export const useStatusCheck = () => {
-  const { data: statusCode, error: sessionCheckError } = useSWR(process.env.NEXT_PUBLIC_SESSION_AVAILABLE_CHECK_URL, statusCodeFetcher)
+  const { data: statusCode, error: sessionCheckError } = useSWR(process.env.NEXT_PUBLIC_CHECK_SESSION_AVAILABLE_URL, statusCodeFetcher)
   const { data: role, error: roleCheckError } = useSWRImmutable(process.env.NEXT_PUBLIC_CHECK_ROLE_URL, fetcher)
 
   const setSessionState = useSetRecoilState(sessionState)

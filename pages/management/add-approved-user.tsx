@@ -129,7 +129,7 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
     }
 
     try {
-      const res = await axios.post(process.env.NEXT_PUBLIC_ADD_APPROVED_USER_URL as string, requestBody)
+      const res = await axios.post(process.env.NEXT_PUBLIC_INVITES_URL as string, requestBody)
 
       if (res.status === 201) {
         setSendButtonState("checkmark")
