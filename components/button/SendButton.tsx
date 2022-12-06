@@ -1,5 +1,5 @@
 // React Hooks
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 
 // Chakra UI Components
 import { Flex, Text, Spinner, Fade, useDisclosure } from "@chakra-ui/react"
@@ -33,7 +33,7 @@ const SendButton = (props: Props) => {
 
   const [forceWhite, setForceWhite] = useState(false)
 
-  const hideAll = () => {
+  const hideAll = useCallback(() => {
     // フェードアウト
     fadeOutText()
     fadeOutSpinner()
@@ -47,9 +47,9 @@ const SendButton = (props: Props) => {
       setShowCheckmark(false)
       setShowError(false)
     }, 500)
-  }
+  }, [fadeOutCheckmark, fadeOutError, fadeOutSpinner, fadeOutText])
 
-  const changeToText = () => {
+  const changeToText = useCallback(() => {
     setTimeout(() => {
       hideAll()
       setTimeout(() => {
@@ -57,7 +57,7 @@ const SendButton = (props: Props) => {
         fadeInText()
       }, 500)
     }, 3000)
-  }
+  }, [fadeInText, hideAll])
 
   useEffect(() => {
     if (props.state === "text") return
@@ -84,7 +84,7 @@ const SendButton = (props: Props) => {
       }
     }, 550)
 
-  }, [props.state])
+  }, [props.state, changeToText, fadeInCheckmark, fadeInError, fadeInSpinner, hideAll])
 
   const handleButtonClick = () => {
     if (props.onClick) props.onClick()

@@ -30,7 +30,7 @@ const MyPage = () => {
 
       <Flex minH="65vh" maxW={resp("100%", "100%", "85%")} mx="auto" justifyContent="center" alignItems="center">
         <Box>{/* 消さない！ */}
-          <GreetingMessage name="七海麻美" fireCardAnimationTrigger={() => { setCardAnimationTrigger(true) }} />
+          <GreetingMessage name="柏崎星奈" fireCardAnimationTrigger={() => { setCardAnimationTrigger(true) }} />
 
           <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={5} justifyItems="center" alignItems="center">
             <Box className={cardAnimationTrigger ? "animate__animated card-in card1" : "hidden"}>

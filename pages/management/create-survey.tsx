@@ -122,7 +122,6 @@ const CreateSurvey: NextPage = () => {
     if (!!!checkValidation() || !!!surveyTitleRef.current) return
 
     setSendButtonState("spinner")
-
     await standBy(1000)
 
     const requestBody = {

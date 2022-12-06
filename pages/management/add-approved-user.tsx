@@ -3,7 +3,7 @@ import { NextPage, InferGetStaticPropsType } from "next"
 import Head from "next/head"
 
 // React Hooks
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useMemo } from "react"
 
 // Chakra UI Components
 import { Flex, Grid, Text, Box, Input, Select, Radio, RadioGroup, Stack, useDisclosure } from "@chakra-ui/react"
@@ -45,8 +45,8 @@ export const getStaticProps = async () => {
 }
 
 const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
-  const patternNEEC = /G\d{3}[A-Z]\d{4}/
-  const patternTUT = /[\dA-Z]{3}\d{5}/
+  const patternNEEC = useMemo(() => /G\d{3}[A-Z]\d{4}/, [])
+  const patternTUT = useMemo(() => /[\dA-Z]{3}\d{5}/, [])
   const [sendButtonState, setSendButtonState] = useState<SendButtonState>("text")
 
   // 学籍番号入力欄
@@ -91,7 +91,7 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
 
     setInputTUT(false)
     setDisabledDepartmentMenu(true)
-  }, [studentIdNumberInput])
+  }, [studentIdNumberInput, patternNEEC, patternTUT, symbols])
 
   const checkValidation = (): boolean => {
     if (!!!departmentMenuRef.current) return false
@@ -119,7 +119,6 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
     if (!!!checkValidation() || !!!departmentMenuRef.current) return
 
     setSendButtonState("spinner")
-
     await standBy(1000)
 
     const requestBody = {

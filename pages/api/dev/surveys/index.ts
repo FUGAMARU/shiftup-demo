@@ -21,6 +21,20 @@ export default function handler(
           "answerCount": 0
         },
         {
+          "id": "37eaaef0-1494-4c34-994c-52d0f0d62d47",
+          "name": "テスト2",
+          "openCampusSchedule": [
+            "2022-12-30",
+            "2022-12-31",
+            "2023-01-01",
+            "2023-01-02",
+            "2023-01-03"
+          ],
+          "creationDate": "2022-12-02",
+          "available": false,
+          "answerCount": 0
+        },
+        {
           "id": "f57c089c-b770-401e-977f-0a2c8d412e96",
           "name": "大学OC（プレ入試）スタッフ募集",
           "openCampusSchedule": [

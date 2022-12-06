@@ -94,7 +94,7 @@ const Header = () => {
             <a>
               <Flex className="flex-center" w={resp(90, 150, 150)} h={50} textAlign="center">
                 <Box position="relative" w="100%" style={{ height: 40 }}>
-                  <Image src="/logos/logo-white.svg" layout="fill" objectFit="contain" alt="White ShiftUP! logo" />
+                  <Image src="/logos/logo-white.svg" layout="fill" priority={true} objectFit="contain" alt="White ShiftUP! logo" />
                 </Box>
               </Flex>
             </a>
@@ -110,7 +110,7 @@ const Header = () => {
             >
               <PopoverTrigger>
                 <Flex className="flex-center" w={resp(90, 150, 150)} h={50} textAlign="center" cursor="pointer" borderRadius={15} _hover={{ background: "rgba(255, 255, 255, 0.2)" }} transition=".2s cubic-bezier(0.250, 0.250, 0.750, 0.750)">
-                  <Text className="ksb" display="inline" fontSize={resp(13, 15, 17)} color="white">七海麻美</Text>
+                  <Text className="ksb" display="inline" fontSize={resp(13, 15, 17)} color="white">柏崎星奈</Text>
                   {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" display="inline" fontSize={resp(10, 10, 12)} ml={1} color="white">さん</Text> : null}
                 </Flex>
               </PopoverTrigger>

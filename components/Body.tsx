@@ -24,7 +24,7 @@ const Body = (props: Props) => {
           <Box pt={6} pb={3}>
             <RibbonHeading text={props.title} />
           </Box>
-          <Text className="ksb" py={3} fontSize="0.85rem" textAlign="center">{props.statusMessage}</Text>
+          {props.statusMessage ? <Text className="ksb" py={3} fontSize="0.85rem" textAlign="center">{props.statusMessage}</Text> : null}
           {props.children}
         </Box>
       </Box>

@@ -6,30 +6,88 @@ import Head from "next/head"
 import { ChangeEvent, useState } from "react"
 
 // Chakra UI Components
-import { Box, Flex, Text, VStack, StackDivider, Checkbox, Select } from "@chakra-ui/react"
+import { Box, Flex, Text, VStack, StackDivider, Checkbox, Select, useToast, useCheckboxGroup, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
 import Body from "../components/Body"
 import BumpHeading from "../components/heading/BumpHeading"
-import AnimatedButton from "../components/button/SendButton"
+import SendButton from "../components/button/SendButton"
+import PopOver from "../components/PopOver"
 
 // Libraries
-import { up } from "slide-element"
+import { toggle } from "slide-element"
+import axios from "axios"
+import useSWR from "swr"
+const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 // Functions
-import { resp } from "../functions"
+import { resp, getWeekDay, standBy } from "../functions"
 
 // Filter
 import { withSession } from "../hoc/withSession"
 
+// Types
+import { SendButtonState } from "../types/SendButtonState"
+
+// Interfaces
+import { Survey } from "../interfaces/Survey"
+
 const AnswerSurvey: NextPage = () => {
-  const [selectedSurvey, setSelectedSurvey] = useState("")
-  const [contentVisibility, setContentVisibility] = useState(false)
+  const toast = useToast()
+  const { value: selectedSchedules, getCheckboxProps } = useCheckboxGroup()
+  const [sendButtonState, setSendButtonState] = useState<SendButtonState>("text")
+  const { data: surveys, error: fetchError } = useSWR<Survey[], Error>(process.env.NEXT_PUBLIC_SURVEYS_URL, fetcher, { fallback: [] })
+
+  if (fetchError) {
+    toast({
+      title: "エラー",
+      description: "アンケートの一覧の取得に失敗しました",
+      status: "error",
+      variant: "left-accent",
+      position: "top-right"
+    })
+  }
+
+  // チェックボックス
+  const [schedulesErrorMessage, setSchedulesErrorMessage] = useState("")
+  const { isOpen: isSchedulesPopoverOpened, onOpen: openSchedulesPopover, onClose: closeSchedulesPopover } = useDisclosure()
+  const [selectedSurvey, setSelectedSurvey] = useState<Survey>()
 
   const handleSurveySelect = (e: ChangeEvent<HTMLSelectElement>) => {
-    setSelectedSurvey(e.target.value)
-    up(document.getElementById("selector") as HTMLElement, { duration: 500, easing: "ease-in-out" })
-    setContentVisibility(true)
+    if (!!!e.target.value) return
+    setSelectedSurvey(surveys?.filter(survey => survey.id === e.target.value)[0])
+    toggle(document.getElementById("selector") as HTMLElement, { duration: 500, easing: "ease-in-out" })
+  }
+
+  const checkValidation = () => {
+    if (!!!selectedSchedules.length) {
+      setSchedulesErrorMessage("日程が1つも選択されていません")
+      openSchedulesPopover()
+      return false
+    }
+
+    return true
+  }
+
+  const handleSendButtonClick = async () => {
+    if (!!!checkValidation()) return
+
+    setSendButtonState("spinner")
+    await standBy(1000)
+
+    try {
+      const res = await axios.put(`${process.env.NEXT_PUBLIC_SURVEYS_URL}/${selectedSurvey?.id}/answers`, selectedSchedules)
+
+      if (res.status === 204) {
+        setSendButtonState("checkmark")
+        setTimeout(() => {
+          toggle(document.getElementById("selector") as HTMLElement, { duration: 500, easing: "ease-in-out" })
+          setSelectedSurvey(undefined)
+        }, 1500)
+      }
+    } catch (e) {
+      setSendButtonState("error")
+    }
   }
 
   return (
@@ -38,30 +96,36 @@ const AnswerSurvey: NextPage = () => {
         <title>希望日程アンケート回答 | ShiftUP!</title>
       </Head>
 
-      <Body title="アンケート回答">
-        <>
+      <Body title="アンケート回答" statusMessage={!!!(surveys?.length && selectedSurvey) ? "回答するアンケートを選択" : undefined}>
+        <Box display={surveys?.length ? "block" : "none"}>
           <Box id="selector">
-            <Select w={resp("90%", 270, 320)} mx="auto" mb={5} placeholder="回答するアンケートを選択" onChange={(e) => handleSurveySelect(e)}>
-              <option value="11月 シフトアンケート">11月 シフトアンケート</option>
-              <option value="11月授業見学会 シフト募集">11月授業見学会 シフト募集</option>
+            <Select w={resp("90%", 270, 320)} mx="auto" mb={5} placeholder="回答するアンケートを選択…" onChange={(e) => handleSurveySelect(e)}>
+              {surveys?.filter(survey => survey.available).map(survey => {
+                return <option key={survey.id} value={survey.id} label={survey.name} />
+              })}
             </Select>
           </Box>
 
-          <Box className={contentVisibility ? "animate__animated animate__fadeIn" : ""} display={contentVisibility ? "static" : "none"} style={{ animationDelay: ".2s" }}>
-            <BumpHeading title={selectedSurvey} />
+          <Box className={selectedSurvey ? "animate__animated animate__fadeIn" : ""} display={selectedSurvey ? "block" : "none"} style={{ animationDelay: ".2s" }}>
+            <BumpHeading title={selectedSurvey?.name as string} />
             <Text className="kr" textAlign="center" fontSize={13}>出勤可能な日にちにチェックを入れてください</Text>
 
-            <VStack maxW={resp(250, 300, 300)} mt={5} mx="auto" divider={<StackDivider borderColor="gray.200" />} spacing={3} align="stretch">
-              <Checkbox className="kr" justifyContent="center">2022/08/14 (日)</Checkbox>
-              <Checkbox className="kr" justifyContent="center">2022/08/21 (日)</Checkbox>
-              <Checkbox className="kr" justifyContent="center">2022/08/28 (日)</Checkbox>
-            </VStack>
+            <PopOver isOpen={isSchedulesPopoverOpened} onClose={closeSchedulesPopover} errorMessage={schedulesErrorMessage}>
+              <VStack maxW={resp(250, 300, 300)} mt={5} mx="auto" divider={<StackDivider borderColor="gray.200" />} spacing={3} align="stretch">
+                {selectedSurvey?.openCampusSchedule.map(schedule => {
+                  const formattedSchedule = schedule.replace(/-/g, "/")
+                  return (
+                    <Checkbox key={schedule} className="kr" justifyContent="center" {...getCheckboxProps({ value: `${schedule}` })}>{`${formattedSchedule} (${getWeekDay(new Date(schedule))})`}</Checkbox>
+                  )
+                })}
+              </VStack>
+            </PopOver>
 
             <Flex mt={7} justifyContent="center">
-              <AnimatedButton text="アンケート送信" state="text"></AnimatedButton>
+              <SendButton text="アンケート送信" state={sendButtonState} onClick={handleSendButtonClick}></SendButton>
             </Flex>
           </Box>
-        </>
+        </Box>
       </Body>
     </>
   )
