@@ -1,5 +1,5 @@
 // Custom Hooks
-import useResponsive from "../hooks/useResponsive"
+import { useResponsive } from "../hooks/useResponsive"
 
 // Chakra UI Components
 import { Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton } from "@chakra-ui/react"

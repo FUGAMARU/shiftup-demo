@@ -6,7 +6,7 @@ import Head from "next/head"
 import { useState, useEffect } from "react"
 
 // Custom Hooks
-import useResponsive from "../../hooks/useResponsive"
+import { useResponsive } from "../../hooks/useResponsive"
 
 // Chakra UI Components
 import { Box, Flex, Text, VStack, StackDivider, Button, Tooltip, Input, useToast, Popover, PopoverTrigger, PopoverContent, PopoverBody, PopoverArrow, useDisclosure } from "@chakra-ui/react"

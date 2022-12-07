@@ -3,7 +3,7 @@ import Image from "next/image"
 import Link from "next/link"
 
 //Custom Hooks
-import useResponsive from "../../hooks/useResponsive"
+import { useResponsive } from "../../hooks/useResponsive"
 import { useStatusCheck } from "../../hooks/useStatusCheck"
 
 // Chakra UI Components

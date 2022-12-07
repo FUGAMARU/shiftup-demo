@@ -3,7 +3,7 @@ import type { NextPage } from "next"
 import Head from "next/head"
 
 // Custom Hooks
-import useResponsive from "../hooks/useResponsive"
+import { useResponsive } from "../hooks/useResponsive"
 
 // Chakra UI Components
 import { Box, Flex, Text, SimpleGrid, StackDivider, VStack, Button } from "@chakra-ui/react"
