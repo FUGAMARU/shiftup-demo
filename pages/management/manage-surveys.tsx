@@ -9,10 +9,11 @@ import { useState, useEffect } from "react"
 import useResponsive from "../../hooks/useResponsive"
 
 // Chakra UI Components
-import { Box, Flex, Text, VStack, StackDivider, Button, Tooltip, Input, useToast, Popover, PopoverTrigger, PopoverContent, PopoverBody, PopoverArrow } from "@chakra-ui/react"
+import { Box, Flex, Text, VStack, StackDivider, Button, Tooltip, Input, useToast, Popover, PopoverTrigger, PopoverContent, PopoverBody, PopoverArrow, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
 import Body from "../../components/Body"
+import ConfirmationModal from "../../components/ConfirmationModal"
 
 //Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -37,7 +38,9 @@ interface DynamicObject {
 const ManageSurveys: NextPage = () => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
   const toast = useToast()
+  const [clickedSurveyId, setClickedSurveyId] = useState("")
   const [popoverState, setPopoverState] = useState<DynamicObject>({})
+  const { isOpen: isModalOpened, onOpen: openModal, onClose: closeModal } = useDisclosure()
   const { data: surveys, error: fetchError, mutate } = useSWR<Survey[], Error>(process.env.NEXT_PUBLIC_SURVEYS_URL, fetcher, { fallback: [] })
 
   useEffect(() => {
@@ -158,7 +161,7 @@ const ManageSurveys: NextPage = () => {
                       <Button mr={resp(3, 5, 5)} size="xs" colorScheme={survey.available ? "whatsapp" : "red"} variant="outline" onClick={() => toggleAvailable(survey.id, !!!survey.available)}>{survey.available ? "回答受付中" : "締切済み"}</Button>
                     </Tooltip>
                     <Tooltip label="アンケートを削除する">
-                      <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color={survey.available ? "#159848" : "#c43030"} cursor="pointer" onClick={() => deleteSurvey(survey.id)} />
+                      <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color={survey.available ? "#159848" : "#c43030"} cursor="pointer" onClick={() => { openModal(); setClickedSurveyId(survey.id) }} />
                     </Tooltip>
                   </Flex>
                 </Flex>
@@ -167,6 +170,11 @@ const ManageSurveys: NextPage = () => {
           </VStack>
         </Box>
       </Body>
+
+      <ConfirmationModal isOpen={isModalOpened} onClose={closeModal} text="本当にアンケートを削除してもよろしいですか？">
+        <Button mr={1} colorScheme="red" onClick={() => { deleteSurvey(clickedSurveyId); closeModal() }}>削除する</Button>
+        <Button ml={1} colorScheme="gray" variant="outline" onClick={closeModal}>削除しない</Button>
+      </ConfirmationModal>
     </>
   )
 }

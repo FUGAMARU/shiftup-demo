@@ -12,7 +12,7 @@ import { resp } from "../functions"
 interface Props {
   title?: string,
   statusMessage?: string,
-  children: JSX.Element
+  children: React.ReactNode
 }
 
 const Body = (props: Props) => {

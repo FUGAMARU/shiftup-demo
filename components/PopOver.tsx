@@ -2,7 +2,7 @@
 import { Popover, PopoverTrigger, PopoverContent, PopoverArrow, PopoverBody } from "@chakra-ui/react"
 
 interface Props {
-  children: JSX.Element,
+  children: React.ReactNode,
   isOpen: boolean,
   onClose: VoidFunction,
   errorMessage: string

@@ -38,7 +38,7 @@ const ConfirmAttendance: NextPage = () => {
               <Text className="kr" mx={resp("auto", 0, 0)} px={resp("auto", 3, 3)} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} textAlign={responsiveType === "SmartPhone" ? "center" : "left"} color="#5f5f5f">12月シフト募集</Text>
               <Flex w="100%" mt={resp("0.5rem", 0, 0)} justifyContent={responsiveType === "SmartPhone" ? "center" : "end"} alignItems="center">
                 <Button mr={resp(2, 3, 3)} size="sm" colorScheme="whatsapp" variant="outline">確定する</Button>
-                <Button ml={resp(2, 3, 3)} size="sm" colorScheme="red" variant="outline">拒否する</Button>
+                <Button ml={resp(2, 3, 3)} size="sm" colorScheme="red" variant="outline">辞退する</Button>
               </Flex>
             </SimpleGrid>
 
@@ -47,7 +47,7 @@ const ConfirmAttendance: NextPage = () => {
               <Text className="kr" mx={resp("auto", 0, 0)} px={resp("auto", 3, 3)} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} textAlign={responsiveType === "SmartPhone" ? "center" : "left"} color="#5f5f5f">大学OC(プレ入試)スタッフ募集</Text>
               <Flex w="100%" mt={resp("0.5rem", 0, 0)} justifyContent={responsiveType === "SmartPhone" ? "center" : "end"} alignItems="center">
                 <Button mr={resp(2, 3, 3)} size="sm" colorScheme="whatsapp" variant="outline">確定する</Button>
-                <Button ml={resp(2, 3, 3)} size="sm" colorScheme="red" variant="outline">拒否する</Button>
+                <Button ml={resp(2, 3, 3)} size="sm" colorScheme="red" variant="outline">辞退する</Button>
               </Flex>
             </SimpleGrid>
 
@@ -56,7 +56,7 @@ const ConfirmAttendance: NextPage = () => {
               <Text className="kr" mx={resp("auto", 0, 0)} px={resp("auto", 3, 3)} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} textAlign={responsiveType === "SmartPhone" ? "center" : "left"} color="#5f5f5f">妙に文字数が多くて今にも見切れそうなアンケートタイトル</Text>
               <Flex w="100%" mt={resp("0.5rem", 0, 0)} justifyContent={responsiveType === "SmartPhone" ? "center" : "end"} alignItems="center">
                 <Button mr={resp(2, 3, 3)} size="sm" colorScheme="whatsapp" variant="outline">確定する</Button>
-                <Button ml={resp(2, 3, 3)} size="sm" colorScheme="red" variant="outline">拒否する</Button>
+                <Button ml={resp(2, 3, 3)} size="sm" colorScheme="red" variant="outline">辞退する</Button>
               </Flex>
             </SimpleGrid>
           </VStack>
