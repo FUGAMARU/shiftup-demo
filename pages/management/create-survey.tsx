@@ -19,13 +19,13 @@ import PopOver from "../../components/PopOver"
 //Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faPen, faCalendar, faCheck, faCirclePlus, faXmark } from "@fortawesome/free-solid-svg-icons"
+import { subMonths } from "date-fns"
 import axios from "axios"
 import useSWRImmutable from "swr/immutable"
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
-import moment from "moment"
 
 // Functions
-import { resp, formatDateToSlash, getWeekDay, standBy } from "../../functions"
+import { resp, formatDateForDisplay, standBy } from "../../functions"
 
 // Filter
 import { withSession } from "../../hoc/withSession"
@@ -107,7 +107,7 @@ const CreateSurvey: NextPage = () => {
 
     const academicYears: number[] = []
     scheduleList.forEach(date => {
-      academicYears.push(moment(date, "YYYY-MM-DD").subtract(3, "months").year())
+      academicYears.push(subMonths(new Date(date), 3).getFullYear())
     })
     if (!!!academicYears.every(val => val === academicYears[0])) {
       setScheduleListErrorMessage("年度を跨いだ日程を設定することはできません")
@@ -189,11 +189,10 @@ const CreateSurvey: NextPage = () => {
                 </Flex>
                 <VStack mt={3} divider={<StackDivider borderColor="gray.200" />} spacing={3} align="stretch">
                   {scheduleList.map((val, idx) => {
-                    const dt = new Date(val)
                     return (
                       <Flex alignItems="center" key={idx}>
                         <Tooltip label="リストから削除"><FontAwesomeIcon className="primary-color" cursor="pointer" icon={faXmark} fontSize={25} onClick={() => handleRemoveButtonClick(val)} /></Tooltip>
-                        <Text ml={3}>{`${formatDateToSlash(dt)} (${getWeekDay(dt)})`}</Text>
+                        <Text ml={3}>{formatDateForDisplay(val)}</Text>
                       </Flex>
                     )
                   })}

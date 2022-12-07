@@ -21,7 +21,7 @@ import useSWR from "swr"
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 // Functions
-import { resp, getWeekDay, standBy } from "../functions"
+import { resp, standBy, formatDateForDisplay } from "../functions"
 
 // Filter
 import { withSession } from "../hoc/withSession"
@@ -113,9 +113,8 @@ const AnswerSurvey: NextPage = () => {
             <PopOver isOpen={isSchedulesPopoverOpened} onClose={closeSchedulesPopover} errorMessage={schedulesErrorMessage}>
               <VStack maxW={resp(250, 300, 300)} mt={5} mx="auto" divider={<StackDivider borderColor="gray.200" />} spacing={3} align="stretch">
                 {selectedSurvey?.openCampusSchedule.map(schedule => {
-                  const formattedSchedule = schedule.replace(/-/g, "/")
                   return (
-                    <Checkbox key={schedule} className="kr" justifyContent="center" {...getCheckboxProps({ value: `${schedule}` })}>{`${formattedSchedule} (${getWeekDay(new Date(schedule))})`}</Checkbox>
+                    <Checkbox key={schedule} className="kr" justifyContent="center" {...getCheckboxProps({ value: `${schedule}` })}>{formatDateForDisplay(schedule)}</Checkbox>
                   )
                 })}
               </VStack>
