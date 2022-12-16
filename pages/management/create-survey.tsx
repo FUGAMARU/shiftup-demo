@@ -39,9 +39,9 @@ const CreateSurvey: NextPage = () => {
 
   // 日程リストとドットの高さの同期
   const scheduleListRef = useRef(null)
-  const [shceduleListHeight, setScheduleListHeight] = useState(0)
+  const [scheduleListHeight, setScheduleListHeight] = useState(0)
   const { getElementProperty: scheduleListProperty } = useGetElementProperty<HTMLDivElement>(scheduleListRef)
-  useEffect(() => setScheduleListHeight(scheduleListProperty("height")), [scheduleListRef, scheduleListProperty, shceduleListHeight])
+  useEffect(() => setScheduleListHeight(scheduleListProperty("height")), [scheduleListRef, scheduleListProperty, scheduleListHeight])
 
   // アンケートタイトル入力欄
   const surveyTitleRef = useRef<HTMLInputElement>(null)
@@ -92,13 +92,15 @@ const CreateSurvey: NextPage = () => {
 
     let valid = true
 
-    if (!!!scheduleList.some((schedule) => {
+    const isValidSchedules = !!!scheduleList.some((schedule) => {
       if (!!!isDateOrderCorrect(new Date(data.datetime), new Date(schedule))) {
         setScheduleListErrorMessage("現在より過去の日付が指定されています")
         openScheduleListPopover()
         return true
       }
-    })) valid = false
+    })
+
+    if (!!!isValidSchedules) valid = false
 
     const surveyTitlePattern = /^[ 　\r\n\t]*$/
     if (surveyTitlePattern.test(surveyTitleRef.current.value)) {
@@ -185,7 +187,7 @@ const CreateSurvey: NextPage = () => {
               <Text className="kb" fontSize={resp("1.5rem", "1.8rem", "1.9rem")}>日程を追加</Text>
             </Flex>
             <Flex className="flex-center">
-              <Box className="secondary-color" h={shceduleListHeight} borderLeft="dotted 4px"></Box>
+              <Box className="secondary-color" h={scheduleListHeight} borderLeft="dotted 4px"></Box>
             </Flex>
             <Flex pl={resp(9, 16, 16)} py={5} alignItems="center" ref={scheduleListRef}>
               <Box>
