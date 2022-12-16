@@ -45,8 +45,8 @@ export const getStaticProps = async () => {
 }
 
 const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
-  const patternNEEC = useMemo(() => /G\d{3}[A-Z]\d{4}/, [])
-  const patternTUT = useMemo(() => /[\dA-Z]{3}\d{5}/, [])
+  const patternNEEC = useMemo(() => /^G\d{3}[A-Z]\d{4}$/, [])
+  const patternTUT = useMemo(() => /^[\dA-Z]{3}\d{5}$/, [])
   const [sendButtonState, setSendButtonState] = useState<SendButtonState>("text")
 
   // 学籍番号入力欄
