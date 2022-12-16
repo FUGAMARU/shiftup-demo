@@ -54,6 +54,8 @@ const CreateSurvey: NextPage = () => {
   const [scheduleListErrorMessage, setScheduleListErrorMessage] = useState("")
   const { isOpen: isScheduleListPopoverOpened, onOpen: openScheduleListPopover, onClose: closeScheduleListPopover } = useDisclosure()
 
+  const isDateOrderCorrect = (current: Date, target: Date) => new Date(current.toDateString()) <= new Date(target.toDateString())
+
   const handlePlusButtonClick = () => {
     if (!!!dateInputRef.current) return
 
@@ -70,9 +72,7 @@ const CreateSurvey: NextPage = () => {
       return
     }
 
-    const today = new Date(data.datetime)
-    const inputDate = new Date(dateInputRef.current.value)
-    if (today >= inputDate) {
+    if (!!!isDateOrderCorrect(new Date(data.datetime), new Date(dateInputRef.current.value))) {
       setScheduleListErrorMessage("現在より過去の日付が指定されています")
       openScheduleListPopover()
       return
@@ -91,6 +91,14 @@ const CreateSurvey: NextPage = () => {
     if (!!!surveyTitleRef.current) return false
 
     let valid = true
+
+    if (!!!scheduleList.some((schedule) => {
+      if (!!!isDateOrderCorrect(new Date(data.datetime), new Date(schedule))) {
+        setScheduleListErrorMessage("現在より過去の日付が指定されています")
+        openScheduleListPopover()
+        return true
+      }
+    })) valid = false
 
     const surveyTitlePattern = /^[ 　\r\n\t]*$/
     if (surveyTitlePattern.test(surveyTitleRef.current.value)) {

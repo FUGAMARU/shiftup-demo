@@ -16,9 +16,9 @@ export const toHankaku = (str: string) => {
 }
 
 export const standBy = (milliseconds: number) => {
-  return new Promise((resolve) => {
+  return new Promise<boolean>(resolve => {
     setTimeout(() => {
-      resolve("")
+      resolve(true)
     }, milliseconds)
   })
 }
