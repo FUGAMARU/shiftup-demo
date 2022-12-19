@@ -121,7 +121,7 @@ const ManageSurveys: NextPage = () => {
   }
 
   return (
-    <>
+    <Box>
       <Head>
         <title>希望日程アンケート管理 | ShiftUP!</title>
       </Head>
@@ -175,7 +175,7 @@ const ManageSurveys: NextPage = () => {
         <Button mr={1} colorScheme="red" onClick={() => { deleteSurvey(clickedSurveyId); closeModal() }}>削除する</Button>
         <Button ml={1} colorScheme="gray" variant="outline" onClick={closeModal}>削除しない</Button>
       </ConfirmationModal>
-    </>
+    </Box>
   )
 }
 

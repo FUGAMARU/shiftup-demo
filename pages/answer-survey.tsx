@@ -91,7 +91,7 @@ const AnswerSurvey: NextPage = () => {
   }
 
   return (
-    <>
+    <Box>
       <Head>
         <title>希望日程アンケート回答 | ShiftUP!</title>
       </Head>
@@ -126,7 +126,7 @@ const AnswerSurvey: NextPage = () => {
           </Box>
         </Box>
       </Body>
-    </>
+    </Box>
   )
 }
 

@@ -35,7 +35,7 @@ const Header = () => {
   const { isOpen: isUserMenuOpened, onOpen: openUserMenu, onClose: closeUserMenu } = useDisclosure()
 
   return (
-    <>
+    <Box>
       {/* Drawer */}
       <Drawer placement="left" isOpen={isMenuOpened} onClose={closeMenu}>
         <DrawerOverlay bg="transparent" />
@@ -139,7 +139,7 @@ const Header = () => {
 
         </Flex>
       </Box>
-    </>
+    </Box>
   )
 }
 

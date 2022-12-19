@@ -20,7 +20,7 @@ const Home: NextPage = () => {
   const setIamManager = useSetRecoilState(isManager)
 
   return (
-    <>
+    <Box>
       <Head>
         <title>ShiftUP!</title>
       </Head>
@@ -41,7 +41,7 @@ const Home: NextPage = () => {
           <Button size="xs" colorScheme="red" onClick={() => setIamManager(false)}>解除</Button>
         </Flex>
       </Box>
-    </>
+    </Box>
   )
 }
 

@@ -17,7 +17,7 @@ interface Props {
 
 const Body = (props: Props) => {
   return (
-    <>
+    <Box>
       <Header />
       <Box bg="#f5f5f7" pb={10}>
         <Box maxW={resp("95%", "90%", 900)} mx="auto" px={resp(6, 10, 14)} pb="4.5rem" position="relative" bg="white" boxShadow="2xl" borderBottomRadius={15}>
@@ -29,7 +29,7 @@ const Body = (props: Props) => {
         </Box>
       </Box>
       {/*<Debugger />*/}
-    </>
+    </Box>
   )
 }
 

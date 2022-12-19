@@ -46,7 +46,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
   })
 
   return (
-    <>
+    <div>
       <div id="loadingBanner" style={{ height: "1.5rem", display: "none", overflowX: "hidden" }}>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
           <div style={{ marginRight: "1rem" }}>
@@ -67,7 +67,7 @@ const MyApp = ({ Component, pageProps }: AppProps) => {
           <Component {...pageProps} />
         </RecoilRoot>
       </ChakraProvider>
-    </>
+    </div>
   )
 }
 

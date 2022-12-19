@@ -33,7 +33,7 @@ const TallySurvey: NextPage = () => {
   useEffect(() => setCastListHeight(castListProperty("height")), [castListRef, castListProperty])
 
   return (
-    <>
+    <Box>
       <Head>
         <title>希望日程アンケート集計 | ShiftUP!</title>
       </Head>
@@ -126,7 +126,7 @@ const TallySurvey: NextPage = () => {
           </Grid>
         </Flex>
       </Body>
-    </>
+    </Box>
   )
 }
 

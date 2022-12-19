@@ -150,7 +150,7 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
   }
 
   return (
-    <>
+    <Box>
       <Head>
         <title>認可ユーザー追加 | ShiftUP!</title>
       </Head>
@@ -234,7 +234,7 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
           </Grid>
         </Flex >
       </Body>
-    </>
+    </Box>
   )
 }
 

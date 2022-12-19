@@ -50,7 +50,7 @@ const Error: NextPage<Props> = ({ errors }) => {
   const { errorTitle } = router.query
 
   return (
-    <>
+    <Box>
       <Head>
         <title>{`${errors[errorTitle as string].title} | ShiftUP!`}</title>
       </Head>
@@ -68,7 +68,7 @@ const Error: NextPage<Props> = ({ errors }) => {
           <SimpleButton title="トップページに戻る" icon={faRightToBracket} onClick={() => router.push("/")} />
         </Box>
       </Box>
-    </>
+    </Box>
   )
 }
 

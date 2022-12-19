@@ -21,7 +21,7 @@ const ConfirmAttendance: NextPage = () => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
 
   return (
-    <>
+    <Box>
       <Head>
         <title>出勤確定処理 | ShiftUP!</title>
       </Head>
@@ -62,7 +62,7 @@ const ConfirmAttendance: NextPage = () => {
           </VStack>
         </Box>
       </Body>
-    </>
+    </Box>
   )
 }
 

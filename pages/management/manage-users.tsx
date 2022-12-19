@@ -25,7 +25,7 @@ const ManageUsers: NextPage = () => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
 
   return (
-    <>
+    <Box>
       <Head>
         <title>ユーザー管理 | ShiftUP!</title>
       </Head>
@@ -91,7 +91,7 @@ const ManageUsers: NextPage = () => {
           </VStack>
         </Box>
       </Body>
-    </>
+    </Box>
   )
 }
 

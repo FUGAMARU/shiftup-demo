@@ -158,7 +158,7 @@ const CreateSurvey: NextPage = () => {
   }
 
   return (
-    <>
+    <Box>
       <Head>
         <title>希望日程アンケート作成 | ShiftUP!</title>
       </Head>
@@ -224,7 +224,7 @@ const CreateSurvey: NextPage = () => {
           </Grid>
         </Flex>
       </Body>
-    </>
+    </Box>
   )
 }
 
