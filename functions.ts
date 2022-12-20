@@ -22,3 +22,5 @@ export const standBy = (milliseconds: number) => {
     }, milliseconds)
   })
 }
+
+export const isDateOrderCorrect = (current: Date, target: Date) => new Date(current.toDateString()) <= new Date(target.toDateString())

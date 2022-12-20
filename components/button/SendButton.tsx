@@ -1,5 +1,5 @@
-// React Hooks
-import { useState, useEffect, useCallback } from "react"
+// React
+import { useState, useEffect, useCallback, memo } from "react"
 
 // Chakra UI Components
 import { Flex, Text, Spinner, Fade, useDisclosure } from "@chakra-ui/react"
@@ -106,4 +106,4 @@ const SendButton = (props: Props) => {
   )
 }
 
-export default SendButton
+export default memo(SendButton)

@@ -17,13 +17,13 @@ export const withSession = (Page: NextPage<any>) => {
     const isManagementPage = router.pathname.indexOf("/management/") !== -1
 
     const isInSession = useRecoilValue(sessionState)
-    const isIamManager = useRecoilValue(isManager)
+    const amIManager = useRecoilValue(isManager)
 
-    if (isInSession === null || isIamManager === null) return <Header />
+    if (isInSession === null || amIManager === null) return <Header />
 
     if (isInSession === false) Router.push("/error/authentication-error")
 
-    if ((!isManagementPage) || (isManagementPage && isIamManager)) {
+    if ((!isManagementPage) || (isManagementPage && amIManager)) {
       return <Page {...props} />
     } else {
       Router.push("/error/not-permitted")

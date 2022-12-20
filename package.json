@@ -35,6 +35,7 @@
     "@types/node": "18.0.6",
     "@types/react": "18.0.15",
     "@types/react-dom": "18.0.6",
+    "@welldone-software/why-did-you-render": "^7.0.1",
     "eslint": "8.20.0",
     "eslint-config-next": "12.2.2",
     "next-intercept-stdout": "^1.0.1",

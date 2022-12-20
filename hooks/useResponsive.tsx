@@ -1,5 +1,5 @@
 import { useBreakpointValue } from "@chakra-ui/react"
 
 export const useResponsive = () => {
-  return useBreakpointValue({ base: "SmartPhone", md: "Tablet", lg: "PC" })
+  return useBreakpointValue({ base: "SmartPhone", md: "Tablet", lg: "PC" }, { ssr: false })
 }

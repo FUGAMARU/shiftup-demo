@@ -3,7 +3,7 @@ import { NextPage, InferGetStaticPropsType } from "next"
 import Head from "next/head"
 
 // React Hooks
-import { useState, useRef, useEffect, useMemo } from "react"
+import { useState, useRef, useEffect, useMemo, useCallback } from "react"
 
 // Chakra UI Components
 import { Flex, Grid, Text, Box, Input, Select, Radio, RadioGroup, Stack, useDisclosure } from "@chakra-ui/react"
@@ -115,7 +115,7 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
     return valid
   }
 
-  const handleSendButtonClick = async () => {
+  const handleSendButtonClick = useCallback(async () => {
     if (!!!checkValidation() || !!!departmentMenuRef.current) return
 
     setSendButtonState("spinner")
@@ -147,7 +147,7 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
         openStudentIdNumberInputPopover()
       }
     }
-  }
+  }, [])
 
   return (
     <Box>

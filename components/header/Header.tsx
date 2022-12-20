@@ -31,7 +31,7 @@ const Header = () => {
   useStatusCheck() // ページ遷移の度に呼ばれてかつRecoilが使えるコンポーネント内でこのメソッドを呼ぶ
 
   const isInSession = useRecoilValue(sessionState)
-  const isIamManager = useRecoilValue(isManager)
+  const amIManager = useRecoilValue(isManager)
 
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
   const { isOpen: isMenuOpened, onOpen: openMenu, onClose: closeMenu } = useDisclosure()
@@ -53,7 +53,7 @@ const Header = () => {
                 <Box className="kb" mt={5} borderRadius={15} border="solid 2px #4a4848" textAlign="center" cursor="pointer" onClick={closeMenu}>トップページに戻る</Box>
               </a>
             </Link>
-            {isIamManager ?
+            {amIManager ?
               <Box pt={5} pb={5}>
                 <Box className="kb" borderBottom="solid 2px #615f5f">管理者メニュー</Box>
                 <SimpleGrid columns={3} spacing={3} pt={3} justifyItems="center">
