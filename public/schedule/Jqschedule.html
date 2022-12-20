@@ -17,9 +17,18 @@
   <link rel="stylesheet" type="text/css" href="style.css" />
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="screen">
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+  <style type="text/css">
+    .hero-unit{
+      padding: 0px;
+    }
+  </style>
 </head>
 
 <body>
+  <div class="container">
+    <div class="hero-unit">
+    </div>
+    
   <div>
     <input id="templateName" type="text" placeholder="テンプレート名を入力" />
     <select name="template" id="templateSelector">
@@ -134,12 +143,12 @@
           ],
           businessHours: [{
             dow: ['0'],
-            start: '08:00',
-            end: '16:00'
+            start: '07:00',
+            end: '19:00'
           }, {
             dow: ['1'],
-            start: '08:00',
-            end: '16:00'
+            start: '07:00',
+            end: '19:00'
           }],
           schedule: []
         })
@@ -156,7 +165,7 @@
           endDate: '2022/08/18', // LIN 追加機能 - 終了日
           weekday: ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'], // LIN 追加機能 - DOW表示
           startTime: "07:00",
-          endTime: "18:00",
+          endTime: "19:00",
           widthTimeX: 45,
           widthTime: 60 * 15,
           timeLineY: 132,
@@ -313,12 +322,12 @@
           ],
           businessHours: [{
             dow: ['0'],
-            start: '08:00',
-            end: '16:00'
+            start: '07:00',
+            end: '19:00'
           }, {
             dow: ['1'],
-            start: '08:00',
-            end: '16:00'
+            start: '07:00',
+            end: '19:00'
           },],
           schedule: tasks
         })
@@ -389,7 +398,7 @@
           endDate: '2022/08/18', // LIN 追加機能 - 終了日
           weekday: ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'], // LIN 追加機能 - DOW表示
           startTime: "07:00",
-          endTime: "18:00",
+          endTime: "19:00",
           widthTimeX: 45,
           widthTime: 60 * 15,
           timeLineY: 132,
