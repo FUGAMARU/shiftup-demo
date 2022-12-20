@@ -1,3 +1,6 @@
+// React
+import { memo } from "react"
+
 // Next.js Components
 import Image from "next/image"
 import Link from "next/link"
@@ -14,7 +17,7 @@ import MenuItem from "./MenuItem"
 
 // Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faChevronCircleRight, faCalendarPlus, faListCheck, faCalendarCheck, faThumbsUp, faUserPlus, faArrowRightFromBracket, faScrewdriverWrench, faUsersGear, faSquarePollHorizontal } from "@fortawesome/free-solid-svg-icons"
+import { faChevronCircleRight, faCalendarPlus, faListCheck, faCalendarCheck, faThumbsUp, faUserPlus, faArrowRightFromBracket, faScrewdriverWrench, faUsersGear, faSquarePollHorizontal, faClock } from "@fortawesome/free-solid-svg-icons"
 
 // Global State Management
 import { useRecoilValue } from "recoil"
@@ -59,6 +62,7 @@ const Header = () => {
                   <MenuItem href="/management/tally-survey" icon={faListCheck} title={"希望日程\nアンケート集計"} onClose={closeMenu} />
                   <MenuItem href="/management/manage-users" icon={faUsersGear} title={"ユーザー管理"} onClose={closeMenu} />
                   <MenuItem href="/management/add-approved-user" icon={faUserPlus} title={"認可ユーザー\n追加"} onClose={closeMenu} />
+                  <MenuItem href="/management/manage-schedule" icon={faClock} title={"スケジュール\n管理"} onClose={closeMenu} />
                 </SimpleGrid>
               </Box>
               : null}
@@ -143,4 +147,4 @@ const Header = () => {
   )
 }
 
-export default Header
+export default memo(Header)

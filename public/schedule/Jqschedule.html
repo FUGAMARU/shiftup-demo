@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>タイムテーブル</title>
+  <link rel="stylesheet" href="style.css">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>jq.Schedule Plus </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript" language="javascript"></script>
+  <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.min.js" type="text/javascript" language="javascript">
+  </script>
+  <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
+  <script type="text/javascript" src="jq.schedule.plus.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css" />
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="screen">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+  <div>
+    <input id="templateName" type="text" placeholder="テンプレート名を入力" />
+    <select name="template" id="templateSelector">
+    </select>
+    <button class="btn2" onClick="save()">テンプレート保存</button>
+    <button class="btn3" onclick="add()">適用</button>
+  </div>
+  <input id="task-name" type="text" value="" placeholder="タスク名を入力" />
+  <input id="user-name" type="text" value="" placeholder="ユーザー名を入力" />
+  <button class="btn1" onClick="handleButtonClick()">ユーザー追加</button>
+  <!--<button onClick="keep()">クラスに保存</button>
+        <button onClick="extractData()">データー抽出</button>
+        <button onclick="restoration()">データー復元</button>-->
+  <div style="display: flex;">
+  </div>
+
+  <div id="schedule-container">
+    <div id="schedule" style="margin: 0 auto;"></div>
+  </div>
+
+  <script src="https://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript" language="javascript"></script>
+  <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.min.js" type="text/javascript"
+    language="javascript"></script>
+  <script src="jq.schedule.plus.js"></script>
+  <script type="text/javascript">
+    $(() => {
+      if (localStorage.getItem("templates")) {
+        $.each(Object.keys(JSON.parse(localStorage.getItem("templates"))), (idx, val) => {
+          $("#templateSelector").append(`<option value=${val}>${val}</option>`)
+        })
+      }
+    })
+
+    const save = () => {
+      if (localStorage.getItem("templates") === null) localStorage.setItem("templates", JSON.stringify({}))
+
+      keep()
+      extractData()
+      restoration()
+
+      const templateName = document.getElementById("templateName").value
+
+      if (templateName === "") {
+        alert("テンプレート名が入力されていません")
+        return
+      }
+
+      let templates = JSON.parse(localStorage.getItem("templates"))
+
+      scheduleHTML.setInnerHTML = $("#schedule").html()
+
+      users = getUserList()
+      tasks = getTaskList()
+
+      userTasks = []
+
+      users.forEach((userName, idx) => {
+        userTasks.push({
+          "name": userName,
+          "tasks": tasks[idx]
+        })
+      })
+      localStorage.setItem("templates", JSON.stringify(userTasks))
+
+      templates[templateName] = scheduleData.getSchedule
+      localStorage.setItem("templates", JSON.stringify(templates))
+    }
+
+    const add = () => {
+      const selectedTemplateName = $("#templateSelector").val()
+      const templates = JSON.parse(localStorage.getItem("templates"))
+
+      let finalData = []
+
+      scheduleData.setSchedule = templates[selectedTemplateName]
+      scheduleData.updateScheduleTable()
+    }
+
+
+    const ScheduleHTML = class {
+      constructor(innerHTML) {
+        this.innerHTML = innerHTML
+      }
+
+      set setInnerHTML(innerHTML) {
+        this.innerHTML = innerHTML
+      }
+
+      get getInnerHTML() {
+        return this.innerHTML
+      }
+    }
+
+    const ScheduleData = class {
+      constructor(data) {
+        this.data = data
+      }
+
+      set setSchedule(arr) {
+        this.data = arr
+      }
+
+      get getSchedule() {
+        return this.data
+      }
+
+      addUser(username) {
+        this.data.push({
+          title: username,
+          impossibleDate: [
+            '2022/08/17'
+          ],
+          businessHours: [{
+            dow: ['0'],
+            start: '08:00',
+            end: '16:00'
+          }, {
+            dow: ['1'],
+            start: '08:00',
+            end: '16:00'
+          }],
+          schedule: []
+        })
+      }
+
+      updateScheduleTable() {
+        const oldSchedule = document.querySelector("#schedule")
+        oldSchedule.innerHTML = ""
+
+        jQuery("#schedule").timeSchedule({
+          today: '2022/08/18', // LIN 追加機能 - 本日
+          nowTime: '00:00', // LIN 追加機能 - 現在時刻
+          startDate: '2022/08/18', // LIN 追加機能 - 開始日
+          endDate: '2022/08/18', // LIN 追加機能 - 終了日
+          weekday: ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'], // LIN 追加機能 - DOW表示
+          startTime: "07:00",
+          endTime: "18:00",
+          widthTimeX: 45,
+          widthTime: 60 * 15,
+          timeLineY: 132,
+          verticalScrollbar: 10,
+          timeLineBorder: 1,
+          dataWidth: 200,
+          nextNo: 1, // LIN 追加機能 - 複数選択初期番号
+          debug: "",
+          multiple: true, // LIN 追加機能-複数選択機能有無
+          rows: this.data,
+          init_data: function (node, data) {
+            $("#logs").append($("<div>").text("init event:" + JSON.stringify(data)));
+          },
+          click: function (node, data) {
+            $("#logs").append($("<div>").text("click event:" + JSON.stringify(data)));
+          },
+          append: function (node, data) {
+            $("#logs").append($("<div>").text("append event:" + JSON.stringify(
+              data)));
+          },
+          timeClick: function (element, data) {
+            // LIN 追加機能-シングルクリックイベント
+            $("#logs").append($("<div>").text("Time click event:" + JSON.stringify(
+              data)));
+          },
+          dateClick: function (date) {
+            // LIN 追加機能-日付クリックイベント
+            $("#logs").append($("<div>").text("Date click event:" + JSON.stringify(
+              date)));
+          },
+          timeDrag: function (data) {
+            // LIN 追加機能-ドラッグイベント
+            $("#logs").append($("<div>").text("Drag event:" + JSON.stringify(data)));
+          },
+          titleClick: function (data) {
+            // LIN 追加機能-行タイトルクリックイベント
+            $("#logs").append($("<div>").text("Title click event:" + JSON.stringify(
+              data)));
+          },
+          change: function (node, data) {
+            $("#logs").append($("<div>").text("Change event:" + JSON.stringify(
+              data)));
+          },
+          delete: function (data) {
+            // LIN 追加機能-削除イベント
+            $("#logs").append($("<div>").text("Delete event:" + JSON.stringify(
+              data)));
+          }
+        })
+
+      }
+    }
+
+    const scheduleHTML = new ScheduleHTML("")
+    const scheduleData = new ScheduleData([
+
+    ])
+
+    const extractData = () => {
+      users = getUserList()
+      tasks = getTaskList()
+
+      userTasks = [] // タスク一覧
+
+      users.forEach((userName, idx) => {
+        userTasks.push({
+          "name": userName,
+          "tasks": tasks[idx]
+        })
+      })
+
+      console.log(userTasks)
+
+      localStorage.setItem("userTasks", JSON.stringify(userTasks))
+    }
+
+
+    const getUserList = () => {
+      const divElement = document.createElement("div")
+      divElement.style.display = "none"
+      divElement.innerHTML = scheduleHTML.getInnerHTML
+
+      const WorkerName = divElement.querySelectorAll(
+        ".sc_wrapper > .sc_data > .sc_data_scroll > .timeline")
+
+      workerList = []
+
+      WorkerName.forEach((node) => {
+        workerList.push(node.textContent)
+      })
+
+      return workerList
+    }
+
+    const getTaskList = () => {
+      const divElement = document.createElement("div")
+      divElement.style.display = "none"
+      divElement.innerHTML = scheduleHTML.getInnerHTML
+
+      const users = divElement.querySelectorAll(
+        ".sc_wrapper > .sc_main_box > .sc_main_scroll > .sc_main > .timeline")
+
+      userTasks = []
+
+      users.forEach((node) => {
+        tmpArr = []
+        const taskArr = node.querySelectorAll(".sc_Bar")
+        taskArr.forEach((taskNode) => {
+
+          startAt = taskNode.querySelector(".startTime").textContent
+          endAt = taskNode.querySelector(".endTime").textContent
+          taskName = taskNode.querySelector(".text").textContent
+
+          tmpArr.push({
+            "startAt": startAt,
+            "endAt": endAt,
+            "taskName": taskName
+          })
+        })
+        userTasks.push(tmpArr)
+      })
+
+      return userTasks
+    }
+
+    function keep() {
+      scheduleHTML.setInnerHTML = $("#schedule").html()
+      console.log("SET完了")
+    }
+
+
+    let sampleRows = []
+
+    const restoration = () => {
+      const userTasks = JSON.parse(localStorage.getItem("userTasks"))
+
+      let finalData = []
+
+      userTasks.forEach((data) => {
+        let tasks = []
+        data.tasks.forEach((task) => {
+          tasks.push({
+            text: task.taskName,
+            start: task.startAt,
+            end: task.endAt,
+            class: "green"
+          })
+        })
+
+        finalData.push({
+          "title": data.name,
+          impossibleDate: [
+            '2022/08/17'
+          ],
+          businessHours: [{
+            dow: ['0'],
+            start: '08:00',
+            end: '16:00'
+          }, {
+            dow: ['1'],
+            start: '08:00',
+            end: '16:00'
+          },],
+          schedule: tasks
+        })
+      })
+
+
+      scheduleData.setSchedule = finalData
+      scheduleData.updateScheduleTable()
+    }
+
+
+    const handleButtonClick = () => {
+      keep()
+      extractData()
+
+      scheduleData.addUser($("#user-name").val())
+      scheduleData.updateScheduleTable()
+
+      restoration()
+
+      scheduleData.addUser($("#user-name").val())
+      scheduleData.updateScheduleTable()
+    }
+
+    const TaskData = class {
+      constructor(TaskData) {
+        this.TaskData = TaskData;
+      }
+    }
+
+
+
+    jQuery(document).ready(function () {
+      sampleRows = [{
+
+      }];
+      sampleRows2 = []
+      // 時間単位種別（6時間、1時間、１５分）
+      var widthTimeTypes = [360, 60, 15];
+      var selectedType = jQuery('input[name="timeType"]:checked').val();
+      jQuery('input[name="timeType"]').change(function () {
+        jQuery('#schedule').empty();
+        if (jQuery('input[name="mutiple"]:checked').val() == '') {
+          scheduleInit(widthTimeTypes[jQuery(this).val()], false);
+        } else {
+          scheduleInit(widthTimeTypes[jQuery(this).val()], true);
+        }
+      });
+
+      jQuery('input[name="mutiple"]').change(function () {
+        jQuery('#schedule').empty();
+        selectedType = jQuery('input[name="timeType"]:checked').val();
+        if (jQuery(this).val() == '0') {
+          scheduleInit(widthTimeTypes[selectedType], false);
+        } else {
+          scheduleInit(widthTimeTypes[selectedType], true);
+        }
+
+      });
+
+      scheduleInit(widthTimeTypes[selectedType], true);
+
+      function scheduleInit(timeType, multiple) {
+        jQuery("#schedule").timeSchedule({
+          today: '2022/08/18', // LIN 追加機能 - 本日
+          nowTime: '00:00', // LIN 追加機能 - 現在時刻
+          startDate: '2022/08/18', // LIN 追加機能 - 開始日
+          endDate: '2022/08/18', // LIN 追加機能 - 終了日
+          weekday: ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'], // LIN 追加機能 - DOW表示
+          startTime: "07:00",
+          endTime: "18:00",
+          widthTimeX: 45,
+          widthTime: 60 * 15,
+          timeLineY: 132,
+          verticalScrollbar: 10,
+          timeLineBorder: 1,
+          dataWidth: 200,
+          nextNo: 1, // LIN 追加機能 - 複数選択初期番号
+          debug: "",
+          multiple: true, // LIN 追加機能-複数選択機能有無
+          rows: sampleRows2,
+          init_data: function (node, data) {
+            $("#logs").append($("<div>").text("init event:" + JSON.stringify(data)));
+          },
+          click: function (node, data) {
+            $("#logs").append($("<div>").text("click event:" + JSON.stringify(data)));
+          },
+          append: function (node, data) {
+            $("#logs").append($("<div>").text("append event:" + JSON.stringify(data)));
+          },
+          timeClick: function (element, data) {
+            // LIN 追加機能-シングルクリックイベント
+            $("#logs").append($("<div>").text("Time click event:" + JSON.stringify(data)));
+          },
+          dateClick: function (date) {
+            // LIN 追加機能-日付クリックイベント
+            $("#logs").append($("<div>").text("Date click event:" + JSON.stringify(date)));
+          },
+          timeDrag: function (data) {
+            // LIN 追加機能-ドラッグイベント
+            $("#logs").append($("<div>").text("Drag event:" + JSON.stringify(data)));
+          },
+          titleClick: function (data) {
+            // LIN 追加機能-行タイトルクリックイベント
+            $("#logs").append($("<div>").text("Title click event:" + JSON.stringify(data)));
+          },
+          change: function (node, data) {
+            $("#logs").append($("<div>").text("Change event:" + JSON.stringify(data)));
+          },
+          delete: function (data) {
+            // LIN 追加機能-削除イベント
+            $("#logs").append($("<div>").text("Delete event:" + JSON.stringify(data)));
+          }
+        });
+      }
+    })
+
+  </script>
+
+
+</body>
+
+</html>

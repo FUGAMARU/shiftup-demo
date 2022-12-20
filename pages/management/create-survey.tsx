@@ -37,12 +37,6 @@ const CreateSurvey: NextPage = () => {
   const [sendButtonState, setSendButtonState] = useState<SendButtonState>("text")
   const { data } = useSWRImmutable(process.env.NEXT_PUBLIC_WORLD_TIME_API_URL, fetcher)
 
-  // 日程リストとドットの高さの同期
-  const scheduleListRef = useRef(null)
-  const [scheduleListHeight, setScheduleListHeight] = useState(0)
-  const { getElementProperty: scheduleListProperty } = useGetElementProperty<HTMLDivElement>(scheduleListRef)
-  useEffect(() => setScheduleListHeight(scheduleListProperty("height")), [scheduleListRef, scheduleListProperty, scheduleListHeight])
-
   // アンケートタイトル入力欄
   const surveyTitleRef = useRef<HTMLInputElement>(null)
   const [surveyTitleErrorMessage, setSurveyTitleErrorMessage] = useState("")
@@ -53,6 +47,12 @@ const CreateSurvey: NextPage = () => {
   const [scheduleList, setScheduleList] = useState<string[]>([])
   const [scheduleListErrorMessage, setScheduleListErrorMessage] = useState("")
   const { isOpen: isScheduleListPopoverOpened, onOpen: openScheduleListPopover, onClose: closeScheduleListPopover } = useDisclosure()
+
+  // 日程リストとドットの高さの同期
+  const scheduleListRef = useRef(null)
+  const [scheduleListHeight, setScheduleListHeight] = useState(0)
+  const { getElementProperty: scheduleListProperty } = useGetElementProperty<HTMLDivElement>(scheduleListRef)
+  useEffect(() => setScheduleListHeight(scheduleListProperty("height")), [scheduleListRef, scheduleListProperty, scheduleListHeight])
 
   const isDateOrderCorrect = (current: Date, target: Date) => new Date(current.toDateString()) <= new Date(target.toDateString())
 
