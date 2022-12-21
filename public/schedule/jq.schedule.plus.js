@@ -214,7 +214,7 @@
                     }
                 });
                 // ブロック内容の追加
-                var $content = jQuery('<span class="head"><span class="startTime time"></span>～<span class="endTime time"></span></span><span class="text"></span>');
+                var $content = jQuery('<span class="all"><span class="head"><span class="startTime time"></span>～<span class="endTime time"></span></span><span class="text"></span><span class="balloon"><span class="head"><span class="startTime time"></span>～<span class="endTime time"></span></span><span class="text"></span>');
                 var $bar = jQuery('<div class="sc_Bar ' + data['class'] + '"></div>').append($deleteBtn).append($content);
                 var stext = startDate + ' ' + element.formatTime(data["start"]);
                 var etext = endDate + ' ' + element.formatTime(data["end"]);
