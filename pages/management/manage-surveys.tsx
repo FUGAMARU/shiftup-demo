@@ -3,7 +3,7 @@ import { NextPage } from "next"
 import Head from "next/head"
 
 // React Hooks
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 
 // Custom Hooks
 import { useResponsive } from "../../hooks/useResponsive"
@@ -95,9 +95,9 @@ const ManageSurveys: NextPage = () => {
     }
   }
 
-  const deleteSurvey = async (target: string) => {
+  const deleteSurvey = useCallback(async (surveyId: string) => {
     try {
-      const res = await axios.delete(`${process.env.NEXT_PUBLIC_SURVEYS_URL}/${target}`)
+      const res = await axios.delete(`${process.env.NEXT_PUBLIC_SURVEYS_URL}/${surveyId}`)
 
       if (res.status === 204) {
         mutate()
@@ -118,7 +118,7 @@ const ManageSurveys: NextPage = () => {
         position: "top-right"
       })
     }
-  }
+  }, [])
 
   return (
     <Box>
