@@ -19,7 +19,7 @@ import { faPen, faCheck, faScrewdriverWrench, faUser } from "@fortawesome/free-s
 import axios, { isAxiosError } from "axios"
 
 // Functions
-import { resp, toHankaku, standBy } from "../../functions"
+import { resp, toHankaku, standBy, getInputType } from "../../functions"
 
 // Filter
 import { withSession } from "../../hoc/withSession"
@@ -47,53 +47,39 @@ export const getStaticProps = async () => {
 }
 
 const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
-  const patternNEEC = useMemo(() => /^G\d{3}[A-Z]\d{4}$/, [])
-  const patternTUT = useMemo(() => /^[\dA-Z]{3}\d{5}$/, [])
-  const [sendButtonState, setSendButtonState] = useState<SendButtonState>("text")
-
   // 学籍番号入力欄
   const [studentIdNumberInput, setStudentIdNumberInput] = useState("")
-  const [isInputTUT, setInputTUT] = useState(false)
   const [studentIdNumberInputErrorMessage, setStudentIdNumberInputErrorMessage] = useState("")
   const { isOpen: isStudentIdNumberInputPopoverOpened, onOpen: openStudentIdNumberInputPopover, onClose: closeStudentIdNumberInputPopover } = useDisclosure()
 
-  // 学部・学科プルダウンメニュー
+  // 学科・学部プルダウンメニュー
   const departmentMenuRef = useRef<HTMLSelectElement>(null)
   const [croppedSymbols, setCroppedSymbols] = useState<Symbols>(symbols)
-  const [isDisabledDepartmentMenu, setDisabledDepartmentMenu] = useState(true)
   const [departmentMenuErrorMessage, setDepartmentMenuErrorMessage] = useState("")
   const { isOpen: isDepartmentMenuPopoverOpened, onOpen: openDepartmentMenuPopover, onClose: closeDepartmentMenuPopover } = useDisclosure()
 
   // 役職選択ラジオボタン
   const [userAttribute, setUserAttribute] = useState<Position>("Cast")
 
-  // 入力されている学籍番号によって選択できる学部・学科を切り替える
+  const [sendButtonState, setSendButtonState] = useState<SendButtonState>("text")
+  const inputType = useMemo(() => getInputType(studentIdNumberInput), [studentIdNumberInput])
+
+  // 入力されている学籍番号によって選択できる学科・学部を切り替える
   useEffect(() => {
     setStudentIdNumberInput((current) => toHankaku(current).toUpperCase())
-    if (patternNEEC.test(studentIdNumberInput)) {
-      setInputTUT(false)
-      setDisabledDepartmentMenu(false)
-
+    if (inputType === "NEEC") {
       const copiedSymbols = Object.assign({}, symbols)
       delete copiedSymbols.東京工科大学
       setCroppedSymbols(copiedSymbols)
-
       return
     }
 
-    if (patternTUT.test(studentIdNumberInput)) {
-      setInputTUT(true)
-      setDisabledDepartmentMenu(false)
-
+    if (inputType === "TUT") {
       const copiedSymbols = Object.assign({}, symbols)
       setCroppedSymbols({ "東京工科大学": copiedSymbols.東京工科大学 })
-
       return
     }
-
-    setInputTUT(false)
-    setDisabledDepartmentMenu(true)
-  }, [studentIdNumberInput, patternNEEC, patternTUT, symbols])
+  }, [studentIdNumberInput, symbols, inputType])
 
   const checkValidation = useCallback(() => {
     if (!!!departmentMenuRef.current) return false
@@ -102,20 +88,20 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
 
     setStudentIdNumberInput((current) => toHankaku(current).toUpperCase())
 
-    if (!!!(patternNEEC.test(studentIdNumberInput) || patternTUT.test(studentIdNumberInput))) {
+    if (!!!inputType) {
       setStudentIdNumberInputErrorMessage("学籍番号が正しく入力されていません")
       openStudentIdNumberInputPopover()
       valid = false
     }
 
     if (!!!departmentMenuRef.current.value) {
-      setDepartmentMenuErrorMessage("学部・学科が選択されていません")
+      setDepartmentMenuErrorMessage("学科・学部が選択されていません")
       openDepartmentMenuPopover()
       valid = false
     }
 
     return valid
-  }, [openDepartmentMenuPopover, openStudentIdNumberInputPopover, patternNEEC, patternTUT, studentIdNumberInput])
+  }, [openDepartmentMenuPopover, openStudentIdNumberInputPopover, studentIdNumberInput])
 
   const handleSendButtonClick = useCallback(async () => {
     if (!!!checkValidation() || !!!departmentMenuRef.current) return
@@ -178,25 +164,28 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
               <FontAwesomeIcon className="secondary-color" icon={faScrewdriverWrench} fontSize={25}></FontAwesomeIcon>
             </Flex>
             <Flex pl={resp(6, 12, 12)} alignItems="center">
-              <Text className="kb" fontSize={resp("1.5rem", "1.8rem", "1.9rem")}>学部・学科を選択</Text>
+              <Text className="kb" fontSize={resp("1.5rem", "1.8rem", "1.9rem")}>学科・学部を選択</Text>
             </Flex>
             <Flex className="flex-center">
               <Box className="secondary-color" h="80px" borderLeft="dotted 4px"></Box>
             </Flex>
             <Flex pl={resp(9, 16, 16)} py={5} alignItems="center">
               <PopOver isOpen={isDepartmentMenuPopoverOpened} onClose={closeDepartmentMenuPopover} errorMessage={departmentMenuErrorMessage}>
-                <Select w={resp(245, 350, 350)} placeholder={`${isInputTUT ? "学部" : "学科"}を選択`} ref={departmentMenuRef} focusBorderColor="#48c3eb" isInvalid={isDepartmentMenuPopoverOpened} isDisabled={isDisabledDepartmentMenu} errorBorderColor="red.200">
-                  {isDisabledDepartmentMenu ? null : Object.keys(croppedSymbols).map((label, idx) => {
-                    return (
-                      <optgroup label={label} key={idx}>
-                        {Object.keys(croppedSymbols[label as College] as Symbols).map((subKey, subIdx) => {
-                          return (
-                            <option value={subKey} key={idx + subIdx}>{String(Object.values(croppedSymbols[label as College] as Symbols)[subIdx])}</option>
-                          )
-                        })}
-                      </optgroup>
-                    )
-                  })}
+                <Select w={resp(245, 350, 350)} placeholder={`${inputType === "NEEC" ? "学科" : inputType === "TUT" ? "学部" : "学科・学部"}を選択`} ref={departmentMenuRef} focusBorderColor="#48c3eb" isInvalid={isDepartmentMenuPopoverOpened} isDisabled={!!!inputType} errorBorderColor="red.200">
+                  {
+                    inputType ? Object.keys(croppedSymbols).map((label, idx) => {
+                      return (
+                        <optgroup label={label} key={idx}>
+                          {Object.keys(croppedSymbols[label as College] as Symbols).map((subKey, subIdx) => {
+                            return (
+                              <option value={subKey} key={idx + subIdx}>{String(Object.values(croppedSymbols[label as College] as Symbols)[subIdx])}</option>
+                            )
+                          })}
+                        </optgroup>
+                      )
+                    }) :
+                      null
+                  }
                 </Select>
               </PopOver>
             </Flex>

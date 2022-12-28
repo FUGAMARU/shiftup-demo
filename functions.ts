@@ -23,6 +23,16 @@ export const standBy = (milliseconds: number) => {
   })
 }
 
+export const getInputType = (input: string) => {
+  const patternNEEC = /^G\d{3}[A-Z]\d{4}$/
+  const patternTUT = /^[\dA-Z]{3}\d{5}$/
+
+  if (patternNEEC.test(input)) return "NEEC"
+  if (patternTUT.test(input)) return "TUT"
+
+  return undefined
+}
+
 export const isDateOrderCorrect = (current: Date, target: Date) => new Date(current.toDateString()) <= new Date(target.toDateString())
 
 export const fetcher = (url: string) => fetch(url).then((res) => res.json())
