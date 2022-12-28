@@ -1,5 +1,11 @@
+// Libraries
 import { format } from "date-fns"
 import { ja } from "date-fns/locale"
+
+// Types
+import { ConstantSymbols } from "./types/Symbols"
+import { College } from "./types/College"
+import { Department, StringDepartment } from "./types/Department"
 
 export const resp = (base: number | string, md: number | string, lg: number | string) => {
   return { base: base, md: md, lg: lg }
@@ -31,6 +37,18 @@ export const getInputType = (input: string) => {
   if (patternTUT.test(input)) return "TUT"
 
   return undefined
+}
+
+export const flattenObject = (obj: ConstantSymbols) => {
+  const result: { [key in Department]?: StringDepartment } = {}
+
+  Object.keys(obj).forEach(college => {
+    Object.keys(obj[college as College]).forEach(department => {
+      result[department as Department] = obj[college as College][department as Department]
+    })
+  })
+
+  return result
 }
 
 export const isDateOrderCorrect = (current: Date, target: Date) => new Date(current.toDateString()) <= new Date(target.toDateString())

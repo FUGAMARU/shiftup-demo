@@ -27,19 +27,18 @@ import { withSession } from "../../hoc/withSession"
 // Types
 import { SendButtonState } from "../../types/SendButtonState"
 import { Position } from "../../types/Position"
-import { Department, StringDepartment } from "../../types/Department"
 import { College } from "../../types/College"
+import { ConstantSymbols, Symbols } from "../../types/Symbols"
 
 // Importing Symbols
 import * as fs from "fs"
 import * as path from "path"
-type Symbols = { [college in College]?: { [department in Department]: StringDepartment } }
 type Props = InferGetStaticPropsType<typeof getStaticProps>
 
 export const getStaticProps = async () => {
   const jsonPath = path.join(process.cwd(), "json", "symbols.json")
   const jsonText = fs.readFileSync(jsonPath, "utf-8")
-  const symbols = JSON.parse(jsonText) as Symbols
+  const symbols = JSON.parse(jsonText) as ConstantSymbols
 
   return {
     props: { symbols: symbols }
@@ -68,7 +67,7 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
   useEffect(() => {
     setStudentIdNumberInput((current) => toHankaku(current).toUpperCase())
     if (inputType === "NEEC") {
-      const copiedSymbols = Object.assign({}, symbols)
+      const copiedSymbols: Symbols = Object.assign({}, symbols)
       delete copiedSymbols.東京工科大学
       setCroppedSymbols(copiedSymbols)
       return
@@ -101,7 +100,7 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
     }
 
     return valid
-  }, [openDepartmentMenuPopover, openStudentIdNumberInputPopover, studentIdNumberInput])
+  }, [openDepartmentMenuPopover, openStudentIdNumberInputPopover, inputType])
 
   const handleSendButtonClick = useCallback(async () => {
     if (!!!checkValidation() || !!!departmentMenuRef.current) return

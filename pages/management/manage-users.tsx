@@ -1,9 +1,9 @@
 // Next.js
-import { NextPage } from "next"
+import { NextPage, InferGetStaticPropsType } from "next"
 import Head from "next/head"
 
 // React Hooks
-import { useState, useCallback } from "react"
+import { useState, useCallback, useMemo } from "react"
 
 // Custom Hooks
 import { useResponsive } from "../../hooks/useResponsive"
@@ -23,18 +23,37 @@ import axios from "axios"
 import useSWR from "swr"
 
 // Functions
-import { resp, fetcher } from "../../functions"
+import { resp, fetcher, flattenObject } from "../../functions"
 
 // Interfaces
 import { User } from "../../interfaces/User"
 
+// Types
+import { ConstantSymbols } from "../../types/Symbols"
+
 // Filter
 import { withSession } from "../../hoc/withSession"
 
-const ManageUsers: NextPage = () => {
+// Importing Symbols
+import * as fs from "fs"
+import * as path from "path"
+type Props = InferGetStaticPropsType<typeof getStaticProps>
+
+export const getStaticProps = async () => {
+  const jsonPath = path.join(process.cwd(), "json", "symbols.json")
+  const jsonText = fs.readFileSync(jsonPath, "utf-8")
+  const symbols = JSON.parse(jsonText) as ConstantSymbols
+
+  return {
+    props: { symbols: symbols }
+  }
+}
+
+const ManageUsers: NextPage<Props> = ({ symbols }) => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
   const { showToast } = useStyledToast()
   const [clickedUserId, setClickedUserId] = useState("")
+  const flattenSymbols = useMemo(() => flattenObject(symbols), [symbols])
   const { isOpen: isModalOpened, onOpen: openModal, onClose: closeModal } = useDisclosure()
   const { data: users, error: fetchError, mutate } = useSWR<User[], Error>(process.env.NEXT_PUBLIC_INVITES_URL, fetcher, { fallback: [] })
 
@@ -80,7 +99,7 @@ const ManageUsers: NextPage = () => {
                         <Text className="kb" mr={2} fontSize={resp("1rem", "1.2rem", "1.2rem")}>{"認可済みユーザー"}</Text>
                       </Tooltip>
                     }
-                    <Text className="kr" ml={2} mr={1} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">{user.department}</Text>
+                    <Text className="kr" ml={2} mr={1} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">{flattenSymbols[user.department]}</Text>
                     {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" ml={1} fontSize="0.75rem" color="#5f5f5f">{user.studentNumber}</Text> : null}
                   </Flex>
                   <Flex alignItems="center">
