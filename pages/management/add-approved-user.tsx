@@ -26,12 +26,14 @@ import { withSession } from "../../hoc/withSession"
 
 // Types
 import { SendButtonState } from "../../types/SendButtonState"
+import { Position } from "../../types/Position"
+import { Department, StringDepartment } from "../../types/Department"
+import { College } from "../../types/College"
 
 // Importing Symbols
 import * as fs from "fs"
 import * as path from "path"
-type Departments = { [department: string]: string }
-type Symbols = { [college: string]: Departments }
+type Symbols = { [college in College]?: { [department in Department]: StringDepartment } }
 type Props = InferGetStaticPropsType<typeof getStaticProps>
 
 export const getStaticProps = async () => {
@@ -57,13 +59,13 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
 
   // 学部・学科プルダウンメニュー
   const departmentMenuRef = useRef<HTMLSelectElement>(null)
-  const [croppedSymbols, setCroppedSymbols] = useState<Symbols | Departments>(symbols)
+  const [croppedSymbols, setCroppedSymbols] = useState<Symbols>(symbols)
   const [isDisabledDepartmentMenu, setDisabledDepartmentMenu] = useState(true)
   const [departmentMenuErrorMessage, setDepartmentMenuErrorMessage] = useState("")
   const { isOpen: isDepartmentMenuPopoverOpened, onOpen: openDepartmentMenuPopover, onClose: closeDepartmentMenuPopover } = useDisclosure()
 
   // 役職選択ラジオボタン
-  const [userAttribute, setUserAttribute] = useState("Cast")
+  const [userAttribute, setUserAttribute] = useState<Position>("Cast")
 
   // 入力されている学籍番号によって選択できる学部・学科を切り替える
   useEffect(() => {
@@ -73,7 +75,7 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
       setDisabledDepartmentMenu(false)
 
       const copiedSymbols = Object.assign({}, symbols)
-      delete copiedSymbols["東京工科大学"]
+      delete copiedSymbols.東京工科大学
       setCroppedSymbols(copiedSymbols)
 
       return
@@ -84,7 +86,7 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
       setDisabledDepartmentMenu(false)
 
       const copiedSymbols = Object.assign({}, symbols)
-      setCroppedSymbols(copiedSymbols["東京工科大学"])
+      setCroppedSymbols({ "東京工科大学": copiedSymbols.東京工科大学 })
 
       return
     }
@@ -184,16 +186,12 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
             <Flex pl={resp(9, 16, 16)} py={5} alignItems="center">
               <PopOver isOpen={isDepartmentMenuPopoverOpened} onClose={closeDepartmentMenuPopover} errorMessage={departmentMenuErrorMessage}>
                 <Select w={resp(245, 350, 350)} placeholder={`${isInputTUT ? "学部" : "学科"}を選択`} ref={departmentMenuRef} focusBorderColor="#48c3eb" isInvalid={isDepartmentMenuPopoverOpened} isDisabled={isDisabledDepartmentMenu} errorBorderColor="red.200">
-                  {isInputTUT ? Object.keys(croppedSymbols).map((key, idx) => {
-                    return (
-                      <option value={key} key={idx}>{Object.values(croppedSymbols[key])}</option>
-                    )
-                  }) : Object.keys(croppedSymbols).map((label, idx) => {
+                  {isDisabledDepartmentMenu ? null : Object.keys(croppedSymbols).map((label, idx) => {
                     return (
                       <optgroup label={label} key={idx}>
-                        {Object.keys(croppedSymbols[label]).map((subKey, subIdx) => {
+                        {Object.keys(croppedSymbols[label as College] as Symbols).map((subKey, subIdx) => {
                           return (
-                            <option value={subKey} key={idx + subIdx}>{Object.values(croppedSymbols[label])[subIdx]}</option>
+                            <option value={subKey} key={idx + subIdx}>{String(Object.values(croppedSymbols[label as College] as Symbols)[subIdx])}</option>
                           )
                         })}
                       </optgroup>
@@ -212,7 +210,7 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
               <Box className="secondary-color" h="64px" borderLeft="dotted 4px"></Box>
             </Flex>
             <Flex pl={resp("2.5rem", "4.2rem", "4.3rem")} py={5} alignItems="center">
-              <RadioGroup onChange={setUserAttribute} value={userAttribute}>
+              <RadioGroup onChange={e => setUserAttribute(e as Position)} value={userAttribute}>
                 <Stack direction="row">
                   <Radio className="kr" value="Cast">キャスト</Radio>
                   <Radio className="kr" value="Manager">運営チーム</Radio>
