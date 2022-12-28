@@ -23,7 +23,7 @@ import axios from "axios"
 import useSWR from "swr"
 
 // Functions
-import { resp, fetcher, flattenObject } from "../../functions"
+import { resp, fetcher, getFlattenObject } from "../../functions"
 
 // Interfaces
 import { User } from "../../interfaces/User"
@@ -53,7 +53,7 @@ const ManageUsers: NextPage<Props> = ({ symbols }) => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
   const { showToast } = useStyledToast()
   const [clickedUserId, setClickedUserId] = useState("")
-  const flattenSymbols = useMemo(() => flattenObject(symbols), [symbols])
+  const flattenSymbols = useMemo(() => getFlattenObject(symbols), [symbols])
   const { isOpen: isModalOpened, onOpen: openModal, onClose: closeModal } = useDisclosure()
   const { data: users, error: fetchError, mutate } = useSWR<User[], Error>(process.env.NEXT_PUBLIC_INVITES_URL, fetcher, { fallback: [] })
 
