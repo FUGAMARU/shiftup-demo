@@ -7,9 +7,10 @@ import { useState, useCallback } from "react"
 
 // Custom Hooks
 import { useResponsive } from "../../hooks/useResponsive"
+import { useStyledToast } from "../../hooks/useStyledToast"
 
 // Chakra UI Components
-import { Box, Flex, Text, VStack, StackDivider, Button, Tooltip, Input, useToast, useDisclosure } from "@chakra-ui/react"
+import { Box, Flex, Text, VStack, StackDivider, Button, Tooltip, Input, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
 import Body from "../../components/Body"
@@ -33,20 +34,12 @@ import { withSession } from "../../hoc/withSession"
 
 const ManageUsers: NextPage = () => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
-  const toast = useToast()
+  const { showToast } = useStyledToast()
   const [clickedUserId, setClickedUserId] = useState("")
   const { isOpen: isModalOpened, onOpen: openModal, onClose: closeModal } = useDisclosure()
   const { data: users, error: fetchError, mutate } = useSWR<User[], Error>(process.env.NEXT_PUBLIC_INVITES_URL, fetcher, { fallback: [] })
 
-  if (fetchError) {
-    toast({
-      title: "エラー",
-      description: "ユーザーの一覧の取得に失敗しました",
-      status: "error",
-      variant: "left-accent",
-      position: "top-right"
-    })
-  }
+  if (fetchError) showToast("エラー", "ユーザーの一覧の取得に失敗しました", "error")
 
   const deleteUser = useCallback(async (userId: string) => {
     try {
@@ -54,22 +47,10 @@ const ManageUsers: NextPage = () => {
 
       if (res.status === 204) {
         mutate()
-        toast({
-          title: "削除完了",
-          description: "ユーザーを削除しました",
-          status: "success",
-          variant: "left-accent",
-          position: "top-right"
-        })
+        showToast("成功", "ユーザーを削除しました", "success")
       }
     } catch (e) {
-      toast({
-        title: "削除失敗",
-        description: "ユーザーを削除できませんでした",
-        status: "error",
-        variant: "left-accent",
-        position: "top-right"
-      })
+      showToast("エラー", "ユーザーを削除できませんでした", "error")
     }
   }, [])
 

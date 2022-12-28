@@ -7,9 +7,10 @@ import { useState, useEffect, useCallback } from "react"
 
 // Custom Hooks
 import { useResponsive } from "../../hooks/useResponsive"
+import { useStyledToast } from "../../hooks/useStyledToast"
 
 // Chakra UI Components
-import { Box, Flex, Text, VStack, StackDivider, Button, Tooltip, Input, useToast, Popover, PopoverTrigger, PopoverContent, PopoverBody, PopoverArrow, useDisclosure } from "@chakra-ui/react"
+import { Box, Flex, Text, VStack, StackDivider, Button, Tooltip, Input, Popover, PopoverTrigger, PopoverContent, PopoverBody, PopoverArrow, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
 import Body from "../../components/Body"
@@ -37,7 +38,7 @@ interface DynamicObject {
 
 const ManageSurveys: NextPage = () => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
-  const toast = useToast()
+  const { showToast } = useStyledToast()
   const [clickedSurveyId, setClickedSurveyId] = useState("")
   const [popoverState, setPopoverState] = useState<DynamicObject>({})
   const { isOpen: isModalOpened, onOpen: openModal, onClose: closeModal } = useDisclosure()
@@ -54,15 +55,7 @@ const ManageSurveys: NextPage = () => {
     setPopoverState(baseObj)
   }, [surveys])
 
-  if (fetchError) {
-    toast({
-      title: "エラー",
-      description: "アンケートの一覧の取得に失敗しました",
-      status: "error",
-      variant: "left-accent",
-      position: "top-right"
-    })
-  }
+  if (fetchError) showToast("エラー", "アンケートの一覧の取得に失敗しました", "error")
 
   const changePopover = (id: string, to: boolean) => {
     const currentObj: DynamicObject = Object.assign({}, popoverState)
@@ -76,22 +69,10 @@ const ManageSurveys: NextPage = () => {
 
       if (res.status === 204) {
         mutate()
-        toast({
-          title: "切替完了",
-          description: "アンケートの受付状態を切り替えました",
-          status: "success",
-          variant: "left-accent",
-          position: "top-right"
-        })
+        showToast("成功", "アンケートの受付状態を切り替えました", "success")
       }
     } catch (e) {
-      toast({
-        title: "切替失敗",
-        description: "アンケートの受付状態を切り替えできませんでした",
-        status: "error",
-        variant: "left-accent",
-        position: "top-right"
-      })
+      showToast("エラー", "アンケートの受付状態を切り替えできませんでした", "error")
     }
   }
 
@@ -101,22 +82,10 @@ const ManageSurveys: NextPage = () => {
 
       if (res.status === 204) {
         mutate()
-        toast({
-          title: "削除完了",
-          description: "アンケートを削除しました",
-          status: "success",
-          variant: "left-accent",
-          position: "top-right"
-        })
+        showToast("成功", "アンケートを削除しました", "success")
       }
     } catch (e) {
-      toast({
-        title: "削除失敗",
-        description: "アンケートを削除できませんでした",
-        status: "error",
-        variant: "left-accent",
-        position: "top-right"
-      })
+      showToast("エラー", "アンケートを削除できませんでした", "error")
     }
   }, [])
 
