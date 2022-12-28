@@ -21,10 +21,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faXmark } from "@fortawesome/free-solid-svg-icons"
 import axios from "axios"
 import useSWR from "swr"
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 // Functions
-import { resp } from "../../functions"
+import { resp, fetcher } from "../../functions"
 
 // Interfaces
 import { User } from "../../interfaces/User"
@@ -52,7 +51,7 @@ const ManageUsers: NextPage = () => {
     } catch (e) {
       showToast("エラー", "ユーザーを削除できませんでした", "error")
     }
-  }, [])
+  }, [mutate, showToast])
 
   return (
     <Box>

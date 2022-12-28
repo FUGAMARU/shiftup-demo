@@ -18,10 +18,9 @@ import PopOver from "../components/PopOver"
 import { toggle } from "slide-element"
 import axios from "axios"
 import useSWR from "swr"
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 // Functions
-import { resp, standBy, formatDateForDisplay } from "../functions"
+import { resp, standBy, formatDateForDisplay, fetcher } from "../functions"
 
 // Filter
 import { withSession } from "../hoc/withSession"

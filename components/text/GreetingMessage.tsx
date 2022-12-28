@@ -6,10 +6,9 @@ import { Text } from "@chakra-ui/react"
 
 // Libraries
 import useSWRImmutable from "swr/immutable"
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 // Functions
-import { resp } from "../../functions"
+import { resp, fetcher } from "../../functions"
 
 interface Props {
   name: string,

@@ -93,7 +93,7 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
     setDisabledDepartmentMenu(true)
   }, [studentIdNumberInput, patternNEEC, patternTUT, symbols])
 
-  const checkValidation = (): boolean => {
+  const checkValidation = useCallback(() => {
     if (!!!departmentMenuRef.current) return false
 
     let valid = true
@@ -113,7 +113,7 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
     }
 
     return valid
-  }
+  }, [openDepartmentMenuPopover, openStudentIdNumberInputPopover, patternNEEC, patternTUT, studentIdNumberInput])
 
   const handleSendButtonClick = useCallback(async () => {
     if (!!!checkValidation() || !!!departmentMenuRef.current) return
@@ -147,7 +147,7 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
         openStudentIdNumberInputPopover()
       }
     }
-  }, [])
+  }, [checkValidation, openStudentIdNumberInputPopover, studentIdNumberInput, userAttribute])
 
   return (
     <Box>

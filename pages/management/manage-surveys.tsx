@@ -21,10 +21,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faXmark } from "@fortawesome/free-solid-svg-icons"
 import axios from "axios"
 import useSWR from "swr"
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 // Functions
-import { resp, formatDateForDisplay } from "../../functions"
+import { resp, formatDateForDisplay, fetcher } from "../../functions"
 
 // Interfaces
 import { Survey } from "../../interfaces/Survey"
@@ -87,7 +86,7 @@ const ManageSurveys: NextPage = () => {
     } catch (e) {
       showToast("エラー", "アンケートを削除できませんでした", "error")
     }
-  }, [])
+  }, [mutate, showToast])
 
   return (
     <Box>

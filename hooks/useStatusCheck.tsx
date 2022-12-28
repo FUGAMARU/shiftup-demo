@@ -7,8 +7,9 @@ import { useEffect } from "react"
 // Libraries
 import useSWR from "swr"
 import useSWRImmutable from "swr/immutable"
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
-const statusCodeFetcher = (url: string) => fetch(url).then((res) => res.status)
+
+// Functions
+import { fetcher, statusCodeFetcher } from "../functions"
 
 // Global State Management
 import { useSetRecoilState } from "recoil"

@@ -19,10 +19,9 @@ import { faPen, faCalendar, faCheck, faCirclePlus, faXmark } from "@fortawesome/
 import { subMonths } from "date-fns"
 import axios from "axios"
 import useSWRImmutable from "swr/immutable"
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 // Functions
-import { resp, formatDateForDisplay, standBy, isDateOrderCorrect } from "../../functions"
+import { resp, formatDateForDisplay, standBy, isDateOrderCorrect, fetcher } from "../../functions"
 
 // Filter
 import { withSession } from "../../hoc/withSession"
@@ -66,7 +65,7 @@ const CreateSurvey: NextPage = () => {
 
   const handleRemoveButtonClick = (target: string) => setScheduleList(scheduleList.filter(val => (val !== target)))
 
-  const checkValidation = () => {
+  const checkValidation = useCallback(() => {
     if (!!!surveyTitleRef.current) return false
 
     let tmpSurveyTitleErrorMessage = ""
@@ -97,7 +96,7 @@ const CreateSurvey: NextPage = () => {
     }
 
     return !!!(tmpSurveyTitleErrorMessage || tmpScheduleListErrorMessage)
-  }
+  }, [data.datetime, openScheduleListPopover, openSurveyTitlePopover, scheduleList])
 
   const handleSendButtonClick = useCallback(async () => {
     if (!!!checkValidation() || !!!surveyTitleRef.current) return
@@ -125,7 +124,7 @@ const CreateSurvey: NextPage = () => {
     } catch (e) {
       setSendButtonState("error")
     }
-  }, [])
+  }, [checkValidation, scheduleList])
 
   return (
     <Box>
