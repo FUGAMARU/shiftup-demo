@@ -3,7 +3,7 @@ import { NextPage } from "next"
 import Head from "next/head"
 
 // React Hooks
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 
 // Custom Hooks
 import { useResponsive } from "../../hooks/useResponsive"
@@ -38,10 +38,21 @@ interface DynamicObject {
 const ManageSurveys: NextPage = () => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
   const { showToast } = useStyledToast()
+  const [surveyNameInput, setSurveyNameInput] = useState("")
   const [clickedSurveyId, setClickedSurveyId] = useState("")
   const [popoverState, setPopoverState] = useState<DynamicObject>({})
   const { isOpen: isModalOpened, onOpen: openModal, onClose: closeModal } = useDisclosure()
   const { data: surveys, error: fetchError, mutate } = useSWR<Survey[], Error>(process.env.NEXT_PUBLIC_SURVEYS_URL, fetcher, { fallback: [] })
+
+  const filteredSurveys = useMemo(() => surveys?.filter(survey => survey.name.match(new RegExp(surveyNameInput))), [surveys, surveyNameInput])
+  const statusMessage = useMemo(() => {
+    if (!!!surveys) return ""
+    if (!!!surveyNameInput) return `${surveys.length}件のアンケートが存在します`
+
+    const matches = filteredSurveys?.length
+    if (!!!matches) return `'${surveyNameInput}'にマッチするアンケートは存在しません`
+    return `'${surveyNameInput}'にマッチするアンケートが${matches}件存在します`
+  }, [surveys, surveyNameInput, filteredSurveys])
 
   useEffect(() => {
     if (!!!surveys) return
@@ -94,10 +105,10 @@ const ManageSurveys: NextPage = () => {
         <title>希望日程アンケート管理 | ShiftUP!</title>
       </Head>
 
-      <Body title="アンケート管理" statusMessage={surveys ? `${surveys.length}件のアンケートが存在します` : ""}>
+      <Body title="アンケート管理" statusMessage={statusMessage}>
         <Box w={resp("100%", "80%", "80%")} mx="auto">
           <Box textAlign="center" mb={8}>
-            <Input w={resp("80%", "60%", "60%")} variant="flushed" placeholder="タイトルを入力してアンケートを検索…" textAlign="center" focusBorderColor="#48c3eb" />
+            <Input w={resp("80%", "60%", "60%")} variant="flushed" placeholder="タイトルを入力してアンケートを検索…" textAlign="center" focusBorderColor="#48c3eb" onChange={e => setSurveyNameInput(e.target.value)} />
           </Box>
 
           <VStack
@@ -105,7 +116,7 @@ const ManageSurveys: NextPage = () => {
             spacing={3}
             align="stretch"
           >
-            {surveys?.map(survey => {
+            {filteredSurveys?.map(survey => {
               return (
                 <Flex key={survey.id} justifyContent="space-between" alignItems="center">
                   <Popover isOpen={popoverState[survey.id]}>

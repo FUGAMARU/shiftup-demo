@@ -52,10 +52,21 @@ export const getStaticProps = async () => {
 const ManageUsers: NextPage<Props> = ({ symbols }) => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
   const { showToast } = useStyledToast()
+  const [usernameInput, setUsernameInput] = useState("")
   const [clickedUserId, setClickedUserId] = useState("")
   const flattenSymbols = useMemo(() => flattenObject(symbols), [symbols])
   const { isOpen: isModalOpened, onOpen: openModal, onClose: closeModal } = useDisclosure()
   const { data: users, error: fetchError, mutate } = useSWR<User[], Error>(process.env.NEXT_PUBLIC_INVITES_URL, fetcher, { fallback: [] })
+
+  const filteredUsers = useMemo(() => usernameInput ? users?.filter(user => user.name?.match(new RegExp(usernameInput))) : users, [users, usernameInput])
+  const statusMessage = useMemo(() => {
+    if (!!!users) return ""
+    if (!!!usernameInput) return `${users.length}名のユーザーが存在します`
+
+    const matches = filteredUsers?.length
+    if (!!!matches) return `'${usernameInput}'にマッチするユーザーは存在しません`
+    return `'${usernameInput}'にマッチするユーザーが${matches}名存在します`
+  }, [users, usernameInput, filteredUsers])
 
   if (fetchError) showToast("エラー", "ユーザーの一覧の取得に失敗しました", "error")
 
@@ -78,10 +89,10 @@ const ManageUsers: NextPage<Props> = ({ symbols }) => {
         <title>ユーザー管理 | ShiftUP!</title>
       </Head>
 
-      <Body title="ユーザー管理" statusMessage={users ? `${users.length}名のユーザーが登録されています` : ""}>
+      <Body title="ユーザー管理" statusMessage={statusMessage}>
         <Box w={resp("100%", "80%", "80%")} mx="auto">
           <Box textAlign="center" mb={8}>
-            <Input w={resp("80%", "60%", "60%")} variant="flushed" placeholder="名前を入力してユーザーを検索…" textAlign="center" focusBorderColor="#48c3eb" />
+            <Input w={resp("80%", "60%", "60%")} variant="flushed" placeholder="名前を入力してユーザーを検索…" textAlign="center" focusBorderColor="#48c3eb" onChange={e => setUsernameInput(e.target.value)} />
           </Box>
 
           <VStack
@@ -89,7 +100,7 @@ const ManageUsers: NextPage<Props> = ({ symbols }) => {
             spacing={3}
             align="stretch"
           >
-            {users?.map(user => {
+            {filteredUsers?.map(user => {
               return (
                 <Flex key={user.id} justifyContent="space-between" alignItems="center">
                   <Flex alignItems="center" px={3}>
