@@ -2,12 +2,6 @@
 import type { NextPage } from "next"
 import Head from "next/head"
 
-// React Hooks
-import { useState, useRef, useEffect } from "react"
-
-// Custom Hooks
-import { useGetElementProperty } from "../../hooks/useGetElementProperty"
-
 // Chakra UI Components
 import { Box, Flex, VStack, StackDivider, Text, Select, Checkbox, Grid } from "@chakra-ui/react"
 
@@ -26,12 +20,6 @@ import { resp } from "../../functions"
 import { withSession } from "../../hoc/withSession"
 
 const TallySurvey: NextPage = () => {
-  // 学生(キャスト)リストとドットの高さの同期
-  const castListRef = useRef(null)
-  const [castListHeight, setCastListHeight] = useState(0)
-  const { getElementProperty: castListProperty } = useGetElementProperty<HTMLDivElement>(castListRef)
-  useEffect(() => setCastListHeight(castListProperty("height")), [castListRef, castListProperty])
-
   return (
     <Box>
       <Head>
@@ -75,9 +63,9 @@ const TallySurvey: NextPage = () => {
               <Text className="kb" fontSize={resp("1.45rem", "1.8rem", "1.9rem")}>出勤依頼する学生を選択</Text>
             </Flex>
             <Flex className="flex-center">
-              <Box className="secondary-color" h={castListHeight} borderLeft="dotted 4px"></Box>
+              <Box className="secondary-color" h="100%" borderLeft="dotted 4px"></Box>
             </Flex>
-            <Flex pl={resp(9, 16, 16)} alignItems="center" ref={castListRef}>
+            <Flex pl={resp(9, 16, 16)} alignItems="center">
               <VStack py={5} divider={<StackDivider borderColor="gray.200" />} spacing={3} align="stretch">
                 <Checkbox>
                   <Flex alignItems="center">
