@@ -103,14 +103,14 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
   }, [openDepartmentMenuPopover, openStudentIdNumberInputPopover, inputType])
 
   const handleSendButtonClick = useCallback(async () => {
-    if (!!!checkValidation() || !!!departmentMenuRef.current) return
+    if (!!!checkValidation()) return
 
     setSendButtonState("spinner")
     await standBy(1000)
 
     const requestBody = {
       studentNumber: studentIdNumberInput,
-      department: departmentMenuRef.current.value,
+      department: departmentMenuRef.current!.value,
       position: userAttribute
     }
 

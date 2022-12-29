@@ -113,8 +113,8 @@ const ManageSurveys: NextPage = () => {
                       <Box className="kb" mr={2} px={3} maxW={resp("20rem", "17rem", "25rem")} fontSize={resp("1rem", "1.2rem", "1.2rem")} cursor="default" onMouseEnter={() => changePopover(survey.id, true)} onMouseLeave={() => changePopover(survey.id, false)}>{survey.name}</Box>
                     </PopoverTrigger>
                     <PopoverContent>
-                      <PopoverArrow />
-                      <PopoverBody px={8} boxShadow="lg">
+                      <PopoverArrow bg="#2d3748" />
+                      <PopoverBody className="kr" px={8} boxShadow="lg" bg="#2d3748" color="#efeff1">
                         <ul>
                           {survey.openCampusSchedule.map(schedule => {
                             return <li key={schedule}>{formatDateForDisplay(schedule)}</li>

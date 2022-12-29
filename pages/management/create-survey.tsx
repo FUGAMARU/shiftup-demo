@@ -96,16 +96,16 @@ const CreateSurvey: NextPage = () => {
     }
 
     return !!!(tmpSurveyTitleErrorMessage || tmpScheduleListErrorMessage)
-  }, [data.datetime, openScheduleListPopover, openSurveyTitlePopover, scheduleList])
+  }, [openScheduleListPopover, openSurveyTitlePopover, scheduleList])
 
   const handleSendButtonClick = useCallback(async () => {
-    if (!!!checkValidation() || !!!surveyTitleRef.current) return
+    if (!!!checkValidation()) return
 
     setSendButtonState("spinner")
     await standBy(1000)
 
     const requestBody = {
-      name: surveyTitleRef.current.value,
+      name: surveyTitleRef.current!.value,
       openCampusSchedule: scheduleList
     }
 
