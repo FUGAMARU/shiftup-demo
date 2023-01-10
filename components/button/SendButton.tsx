@@ -86,9 +86,9 @@ const SendButton = (props: Props) => {
 
   }, [props.state, changeToText, fadeInCheckmark, fadeInError, fadeInSpinner, hideAll])
 
-  const handleButtonClick = () => {
+  const handleButtonClick = useCallback(() => {
     if (props.onClick) props.onClick()
-  }
+  }, [props.onClick])
 
   return (
     <Flex className={styles.sendButton} w="13rem" h="3rem" _hover={{ backgroundColor: showError ? "#ee7578" : "#23c483", boxShadow: showError ? "0px 15px 20px rgba(238, 117, 120, 0.4)" : "0px 15px 20px rgba(46, 229, 157, 0.4)" }} textAlign="center" justifyContent="center" alignItems="center" onClick={handleButtonClick} onMouseEnter={() => setForceWhite(true)} onMouseLeave={() => setForceWhite(false)}>

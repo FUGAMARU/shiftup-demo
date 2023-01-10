@@ -136,7 +136,6 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
           up(document.getElementById("section1") as HTMLElement, { duration: 500, easing: "ease-in-out" })
           up(document.getElementById("section2") as HTMLElement, { duration: 500, easing: "ease-in-out" })
 
-          setSelectedSurvey(undefined)
           setSelectedSurveyTitle("")
         }, 1500)
       }
