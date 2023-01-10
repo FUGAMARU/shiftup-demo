@@ -9,7 +9,7 @@ import { ChangeEvent, useState, useMemo, useCallback } from "react"
 import { useStyledToast } from "../../hooks/useStyledToast"
 
 // Chakra UI Components
-import { Box, Flex, VStack, StackDivider, Text, Select, Checkbox, Grid, useCheckboxGroup, useDisclosure } from "@chakra-ui/react"
+import { Box, Flex, VStack, StackDivider, Text, Select, Checkbox, Grid, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
 import SendButton from "../../components/button/SendButton"
@@ -53,11 +53,14 @@ export const getStaticProps = async () => {
   }
 }
 
+interface DynamicObject {
+  [key: string]: boolean
+}
+
 const TallySurvey: NextPage<Props> = ({ symbols }) => {
   const { showToast } = useStyledToast()
   const flattenSymbols = useMemo(() => toFlattenObject(symbols), [symbols])
   const [sendButtonState, setSendButtonState] = useState<SendButtonState>("text")
-  const { getCheckboxProps, value: checkedItems } = useCheckboxGroup()
   const { data: surveys, error: fetchError } = useSWR<Survey[], Error>(process.env.NEXT_PUBLIC_SURVEYS_URL, fetcher, { fallback: [] })
 
   if (fetchError) showToast("エラー", "アンケートの一覧の取得に失敗しました", "error")
@@ -69,6 +72,7 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
 
   // ユーザーリスト
   const { isOpen: isCandidatesPopoverOpened, onOpen: openCandidatesPopover, onClose: closeCandidatesPopover } = useDisclosure()
+  const [checkedList, setCheckedList] = useState<DynamicObject>({})
 
   const handleSurveySelect = async (e: ChangeEvent<HTMLSelectElement>) => {
     setSelectedSurveyTitle(e.target.value)
@@ -89,19 +93,33 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
       return
     }
 
-    setCandidates(selectedSurvey!.openCampuses.filter(schedule => schedule.date === e.target.value)[0].availableCasts)
+    const availableCasts = selectedSurvey!.openCampuses.filter(schedule => schedule.date === e.target.value)[0].availableCasts
+    const checked: DynamicObject = {}
+    availableCasts.forEach(val => {
+      checked[val.id] = val.attendanceRequested
+    })
+    setCheckedList(checked)
+    setCandidates(availableCasts)
     setSelectedSchedule(e.target.value)
     down(document.getElementById("section2") as HTMLElement, { duration: 500, easing: "ease-in-out" })
   }
 
+  const toggleChecked = useCallback((id: string) => {
+    const copied = Object.assign({}, checkedList)
+    copied[id] = !!!copied[id]
+    setCheckedList(copied)
+  }, [checkedList, setCheckedList])
+
+  const getCheckedUsers = useCallback(() => Object.keys(checkedList).filter(key => checkedList[key]), [checkedList])
+
   const checkValidation = useCallback(() => {
-    if (!!!checkedItems.length) {
+    if (!!!getCheckedUsers().length) {
       openCandidatesPopover()
       return false
     }
 
     return true
-  }, [checkedItems, openCandidatesPopover])
+  }, [getCheckedUsers, openCandidatesPopover])
 
   const handleSendButtonClick = useCallback(async () => {
     if (!!!checkValidation()) return
@@ -110,7 +128,7 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
     await standBy(1000)
 
     try {
-      const res = await axios.put(`${process.env.NEXT_PUBLIC_REQUESTS_URL}/${selectedSchedule}`, checkedItems)
+      const res = await axios.put(`${process.env.NEXT_PUBLIC_REQUESTS_URL}/${selectedSchedule}`, getCheckedUsers())
 
       if (res.status === 204) {
         setSendButtonState("checkmark")
@@ -125,7 +143,7 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
     } catch (e) {
       setSendButtonState("error")
     }
-  }, [setSendButtonState, selectedSchedule, checkedItems, setSelectedSurvey, checkValidation])
+  }, [setSendButtonState, selectedSchedule, getCheckedUsers, setSelectedSurvey, checkValidation])
 
   return (
     <Box>
@@ -188,7 +206,7 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
                     <VStack py={5} divider={<StackDivider borderColor="gray.200" />} spacing={3} align="stretch">
                       {candidates?.map(candidate => {
                         return (
-                          <Checkbox key={candidate.id} defaultChecked={candidate.attendanceRequested} {...getCheckboxProps({ value: candidate.id })}>
+                          <Checkbox key={candidate.id} isChecked={checkedList[candidate.id]} onChange={() => toggleChecked(candidate.id)}>
                             <Flex alignItems="center">
                               <Text className="kr">{candidate.name}</Text>
                               <Text pl={2} fontSize={10} color="#898989">{flattenSymbols[candidate.schoolProfile.department]}</Text>
