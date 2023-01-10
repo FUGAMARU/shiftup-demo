@@ -14,7 +14,7 @@ import { Box, Flex, Text, VStack, StackDivider, Button, Tooltip, Input, useDiscl
 
 // Custom Components
 import Body from "../../components/Body"
-import ConfirmationModal from "../../components/ConfirmationModal"
+import BlurModal from "../../components/BlurModal"
 
 //Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -23,7 +23,7 @@ import axios from "axios"
 import useSWR from "swr"
 
 // Functions
-import { resp, fetcher, getFlattenObject } from "../../functions"
+import { resp, fetcher, toFlattenObject } from "../../functions"
 
 // Interfaces
 import { User } from "../../interfaces/User"
@@ -54,7 +54,7 @@ const ManageUsers: NextPage<Props> = ({ symbols }) => {
   const { showToast } = useStyledToast()
   const [usernameInput, setUsernameInput] = useState("")
   const [clickedUserId, setClickedUserId] = useState("")
-  const flattenSymbols = useMemo(() => getFlattenObject(symbols), [symbols])
+  const flattenSymbols = useMemo(() => toFlattenObject(symbols), [symbols])
   const { isOpen: isModalOpened, onOpen: openModal, onClose: closeModal } = useDisclosure()
   const { data: users, error: fetchError, mutate } = useSWR<User[], Error>(process.env.NEXT_PUBLIC_INVITES_URL, fetcher, { fallback: [] })
 
@@ -128,10 +128,10 @@ const ManageUsers: NextPage<Props> = ({ symbols }) => {
         </Box>
       </Body>
 
-      <ConfirmationModal isOpen={isModalOpened} onClose={closeModal} text="本当にユーザーを削除してもよろしいですか？">
+      <BlurModal isOpen={isModalOpened} onClose={closeModal} title="確認" text="本当にユーザーを削除してもよろしいですか？">
         <Button mr={1} colorScheme="red" onClick={() => { deleteUser(clickedUserId); closeModal() }}>削除する</Button>
         <Button ml={1} colorScheme="gray" variant="outline" onClick={closeModal}>削除しない</Button>
-      </ConfirmationModal>
+      </BlurModal>
     </Box>
   )
 }

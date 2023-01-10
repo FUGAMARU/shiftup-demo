@@ -1,25 +1,132 @@
 // Next.js
-import type { NextPage } from "next"
+import type { NextPage, InferGetStaticPropsType } from "next"
 import Head from "next/head"
 
+// React
+import { ChangeEvent, useState, useMemo, useCallback } from "react"
+
+// Custom Hooks
+import { useStyledToast } from "../../hooks/useStyledToast"
+
 // Chakra UI Components
-import { Box, Flex, VStack, StackDivider, Text, Select, Checkbox, Grid } from "@chakra-ui/react"
+import { Box, Flex, VStack, StackDivider, Text, Select, Checkbox, Grid, useCheckboxGroup, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
-import AnimatedButton from "../../components/button/SendButton"
+import SendButton from "../../components/button/SendButton"
 import Body from "../../components/Body"
+import PopOver from "../../components/PopOver"
 
 //Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faUserGroup, faCalendar, faCheck, faListCheck } from "@fortawesome/free-solid-svg-icons"
+import { up, down } from "slide-element"
+import axios from "axios"
+import useSWR from "swr"
 
 // Functions
-import { resp } from "../../functions"
+import { resp, fetcher, formatDateForDisplay, toFlattenObject, standBy } from "../../functions"
+
+// Interfaces
+import { Survey } from "../../interfaces/Survey"
+import { Candidate } from "../../interfaces/Candidate"
+import { SurveyResult } from "../../interfaces/SurveyResult"
+
+// Types
+import { ConstantSymbols } from "../../types/Symbols"
+import { SendButtonState } from "../../types/SendButtonState"
 
 // Filter
 import { withSession } from "../../hoc/withSession"
 
-const TallySurvey: NextPage = () => {
+// Importing Symbols
+import * as fs from "fs"
+import * as path from "path"
+type Props = InferGetStaticPropsType<typeof getStaticProps>
+
+export const getStaticProps = async () => {
+  const jsonPath = path.join(process.cwd(), "json", "symbols.json")
+  const jsonText = fs.readFileSync(jsonPath, "utf-8")
+  const symbols = JSON.parse(jsonText) as ConstantSymbols
+
+  return {
+    props: { symbols: symbols }
+  }
+}
+
+const TallySurvey: NextPage<Props> = ({ symbols }) => {
+  const { showToast } = useStyledToast()
+  const flattenSymbols = useMemo(() => toFlattenObject(symbols), [symbols])
+  const [sendButtonState, setSendButtonState] = useState<SendButtonState>("text")
+  const { getCheckboxProps, value: checkedItems } = useCheckboxGroup()
+  const { data: surveys, error: fetchError } = useSWR<Survey[], Error>(process.env.NEXT_PUBLIC_SURVEYS_URL, fetcher, { fallback: [] })
+
+  if (fetchError) showToast("エラー", "アンケートの一覧の取得に失敗しました", "error")
+
+  const [selectedSurvey, setSelectedSurvey] = useState<SurveyResult>()
+  const [selectedSurveyTitle, setSelectedSurveyTitle] = useState<string>("")
+  const [candidates, setCandidates] = useState<Candidate[]>()
+  const [selectedSchedule, setSelectedSchedule] = useState("")
+
+  // ユーザーリスト
+  const { isOpen: isCandidatesPopoverOpened, onOpen: openCandidatesPopover, onClose: closeCandidatesPopover } = useDisclosure()
+
+  const handleSurveySelect = async (e: ChangeEvent<HTMLSelectElement>) => {
+    setSelectedSurveyTitle(e.target.value)
+
+    if (!!!e.target.value) {
+      up(document.getElementById("section1") as HTMLElement, { duration: 500, easing: "ease-in-out" })
+      up(document.getElementById("section2") as HTMLElement, { duration: 500, easing: "ease-in-out" })
+      return
+    }
+
+    setSelectedSurvey((await axios.get<SurveyResult>(`${process.env.NEXT_PUBLIC_SURVEYS_URL}/${e.target.value}/result`)).data)
+    down(document.getElementById("section1") as HTMLElement, { duration: 500, easing: "ease-in-out" })
+  }
+
+  const handleScheduleSelect = async (e: ChangeEvent<HTMLSelectElement>) => {
+    if (!!!e.target.value) {
+      up(document.getElementById("section2") as HTMLElement, { duration: 500, easing: "ease-in-out" })
+      return
+    }
+
+    setCandidates(selectedSurvey!.openCampuses.filter(schedule => schedule.date === e.target.value)[0].availableCasts)
+    setSelectedSchedule(e.target.value)
+    down(document.getElementById("section2") as HTMLElement, { duration: 500, easing: "ease-in-out" })
+  }
+
+  const checkValidation = useCallback(() => {
+    if (!!!checkedItems.length) {
+      openCandidatesPopover()
+      return false
+    }
+
+    return true
+  }, [checkedItems, openCandidatesPopover])
+
+  const handleSendButtonClick = useCallback(async () => {
+    if (!!!checkValidation()) return
+
+    setSendButtonState("spinner")
+    await standBy(1000)
+
+    try {
+      const res = await axios.put(`${process.env.NEXT_PUBLIC_REQUESTS_URL}/${selectedSchedule}`, checkedItems)
+
+      if (res.status === 204) {
+        setSendButtonState("checkmark")
+        setTimeout(() => {
+          up(document.getElementById("section1") as HTMLElement, { duration: 500, easing: "ease-in-out" })
+          up(document.getElementById("section2") as HTMLElement, { duration: 500, easing: "ease-in-out" })
+
+          setSelectedSurvey(undefined)
+          setSelectedSurveyTitle("")
+        }, 1500)
+      }
+    } catch (e) {
+      setSendButtonState("error")
+    }
+  }, [setSendButtonState, selectedSchedule, checkedItems, setSelectedSurvey, checkValidation])
+
   return (
     <Box>
       <Head>
@@ -28,93 +135,88 @@ const TallySurvey: NextPage = () => {
 
       <Body title="アンケート集計">
         <Flex justifyContent="center">
-          <Grid gridTemplateColumns="repeat(2, auto)" gridTemplateRows="repeat(6, auto)">
-            <Flex className="flex-center">
-              <FontAwesomeIcon className="secondary-color" icon={faListCheck} fontSize={25}></FontAwesomeIcon>
-            </Flex>
-            <Flex pl={resp(6, 12, 12)} alignItems="center">
-              <Select w={resp(250, 300, 350)} placeholder="集計するアンケートを選択">
-                <option value="11月 シフトアンケート">11月 シフトアンケート</option>
-                <option value="11月授業見学会 シフト募集">11月授業見学会 シフト募集</option>
-              </Select>
-            </Flex>
-            <Flex className="flex-center">
-              <Box className="secondary-color" h={10} borderLeft="dotted 4px"></Box>
-            </Flex>
-            <Box>{/* 消さない！ */}</Box>
-            <Flex className="flex-center">
-              <FontAwesomeIcon className="secondary-color" icon={faCalendar} fontSize={25}></FontAwesomeIcon>
-            </Flex>
-            <Flex pl={resp(6, 12, 12)} alignItems="center">
-              <Select w={resp(250, 300, 350)} placeholder="集計する日にちを選択">
-                <option value="20220814">2022/08/14 (日)</option>
-                <option value="20220821">2022/08/21 (日)</option>
-                <option value="20220828">2022/08/28 (日)</option>
-              </Select>
-            </Flex>
-            <Flex className="flex-center">
-              <Box className="secondary-color" h={10} borderLeft="dotted 4px"></Box>
-            </Flex>
-            <Box>{/* 消さない！ */}</Box>
-            <Flex className="flex-center">
-              <FontAwesomeIcon className="secondary-color" icon={faUserGroup} fontSize={25}></FontAwesomeIcon>
-            </Flex>
-            <Flex pl={resp(6, 12, 12)} alignItems="center">
-              <Text className="kb" fontSize={resp("1.45rem", "1.8rem", "1.9rem")}>出勤依頼する学生を選択</Text>
-            </Flex>
-            <Flex className="flex-center">
-              <Box className="secondary-color" h="100%" borderLeft="dotted 4px"></Box>
-            </Flex>
-            <Flex pl={resp(9, 16, 16)} alignItems="center">
-              <VStack py={5} divider={<StackDivider borderColor="gray.200" />} spacing={3} align="stretch">
-                <Checkbox>
-                  <Flex alignItems="center">
-                    <Text className="kr">可児江西也</Text>
-                    <Text pl={2} fontSize={10} color="#898989">応用生物学部 4年</Text>
-                  </Flex>
-                </Checkbox>
-                <Checkbox>
-                  <Flex alignItems="center">
-                    <Text className="kr">千斗いすず</Text>
-                    <Text pl={2} fontSize={10} color="#898989">応用生物学部 4年</Text>
-                  </Flex>
-                </Checkbox>
-                <Checkbox>
-                  <Flex alignItems="center">
-                    <Text className="kr">長名なじみ</Text>
-                    <Text pl={2} fontSize={10} color="#898989">声優・演劇科 2年</Text>
-                  </Flex>
-                </Checkbox>
-                <Checkbox>
-                  <Flex alignItems="center">
-                    <Text className="kr">古見硝子</Text>
-                    <Text pl={2} fontSize={10} color="#898989">ダンスパフォーマンス科 2年</Text>
-                  </Flex>
-                </Checkbox>
-                <Checkbox>
-                  <Flex alignItems="center">
-                    <Text className="kr">只野仁人</Text>
-                    <Text pl={2} fontSize={10} color="#898989">CG・映像科 2年</Text>
-                  </Flex>
-                </Checkbox>
-              </VStack>
-            </Flex>
-            <Flex className="flex-center">
-              <FontAwesomeIcon className="secondary-color" icon={faCheck} fontSize={25}></FontAwesomeIcon>
-            </Flex>
-            <Flex pl={resp(6, 12, 12)} alignItems="center">
-              <Text className="kb" fontSize={resp("1.5rem", "1.8rem", "1.9rem")}>送信</Text>
-            </Flex>
-            <Flex className="flex-center">
-              <Box className="secondary-color" h="74px" borderLeft="dotted 4px"></Box>
-            </Flex>
-            <Flex className="flex-center" pt="2rem">
-              <AnimatedButton text="確定依頼を送信" state="text"></AnimatedButton>
-            </Flex>
-          </Grid>
+          <Box>
+            <Grid gridTemplateColumns="repeat(2, auto)" gridTemplateRows="repeat(1, auto)">
+              <Flex w="2rem" className="flex-center">
+                <FontAwesomeIcon className="secondary-color" icon={faListCheck} fontSize={25}></FontAwesomeIcon>
+              </Flex>
+              <Flex pl={resp(6, 12, 12)} alignItems="center">
+                <Select w={resp(250, 300, 350)} placeholder="集計するアンケートを選択" value={selectedSurveyTitle} onChange={(e) => handleSurveySelect(e)}>
+                  {surveys?.filter(survey => survey.answerCount !== 0).map(survey => {
+                    return <option key={survey.id} value={survey.id}>{survey.name}</option>
+                  })}
+                </Select>
+              </Flex>
+            </Grid>
+
+            <Box id="section1" display="none">
+              <Grid gridTemplateColumns="repeat(2, auto)" gridTemplateRows="repeat(2, auto)">
+                <Flex w="2rem" className="flex-center">
+                  <Box className="secondary-color" h={10} borderLeft="dotted 4px"></Box>
+                </Flex>
+                <Box>{/* 消さない！ */}</Box>
+                <Flex className="flex-center" w="2rem">
+                  <FontAwesomeIcon className="secondary-color" icon={faCalendar} fontSize={25}></FontAwesomeIcon>
+                </Flex>
+                <Flex pl={resp(6, 12, 12)} alignItems="center">
+                  <Select w={resp(250, 300, 350)} placeholder="集計する日にちを選択" onChange={(e) => handleScheduleSelect(e)}>
+                    {selectedSurvey?.openCampuses.filter(schedule => schedule.availableCasts.length !== 0).map(schedule => {
+                      return <option key={schedule.date} value={schedule.date}>{formatDateForDisplay(schedule.date)}</option>
+                    })}
+                  </Select>
+                </Flex>
+              </Grid>
+            </Box>
+
+            <Box id="section2" display="none">
+              <Grid gridTemplateColumns="repeat(2, auto)" gridTemplateRows="repeat(5, auto)">
+                <Flex className="flex-center" w="2rem">
+                  <Box className="secondary-color" h={10} borderLeft="dotted 4px"></Box>
+                </Flex>
+                <Box>{/* 消さない！ */}</Box>
+                <Flex className="flex-center" w="2rem">
+                  <FontAwesomeIcon className="secondary-color" icon={faUserGroup} fontSize={25}></FontAwesomeIcon>
+                </Flex>
+                <Flex pl={resp(2, 8, 8)} alignItems="center">
+                  <Text className="kb" fontSize={resp("1.45rem", "1.8rem", "1.9rem")}>出勤依頼する学生を選択</Text>
+                </Flex>
+                <Flex className="flex-center" w="2rem">
+                  <Box className="secondary-color" h="100%" borderLeft="dotted 4px"></Box>
+                </Flex>
+                <Flex pl={resp(5, 12, 12)} alignItems="center">
+                  <PopOver isOpen={isCandidatesPopoverOpened} onClose={closeCandidatesPopover} errorMessage="1人もチェックされていません">
+                    <VStack py={5} divider={<StackDivider borderColor="gray.200" />} spacing={3} align="stretch">
+                      {candidates?.map(candidate => {
+                        return (
+                          <Checkbox key={candidate.id} defaultChecked={candidate.attendanceRequested} {...getCheckboxProps({ value: candidate.id })}>
+                            <Flex alignItems="center">
+                              <Text className="kr">{candidate.name}</Text>
+                              <Text pl={2} fontSize={10} color="#898989">{flattenSymbols[candidate.schoolProfile.department]}</Text>
+                            </Flex>
+                          </Checkbox>
+                        )
+                      })}
+                    </VStack>
+                  </PopOver>
+                </Flex>
+                <Flex className="flex-center" w="2rem">
+                  <FontAwesomeIcon className="secondary-color" icon={faCheck} fontSize={25}></FontAwesomeIcon>
+                </Flex>
+                <Flex pl={resp(2, 8, 8)} alignItems="center">
+                  <Text className="kb" fontSize={resp("1.5rem", "1.8rem", "1.9rem")}>送信</Text>
+                </Flex>
+                <Flex className="flex-center" w="2rem">
+                  <Box className="secondary-color" h="74px" borderLeft="dotted 4px"></Box>
+                </Flex>
+                <Flex className="flex-center" pt="2rem">
+                  <SendButton text="確定依頼を送信" state={sendButtonState} onClick={handleSendButtonClick}></SendButton>
+                </Flex>
+              </Grid>
+            </Box>
+          </Box>
         </Flex>
       </Body>
-    </Box>
+    </Box >
   )
 }
 

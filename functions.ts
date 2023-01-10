@@ -34,7 +34,7 @@ export const getInputType = (input: string) => {
   return undefined
 }
 
-export const getFlattenObject = (obj: { [x: string]: { [y: string]: string } }) => {
+export const toFlattenObject = (obj: { [x: string]: { [y: string]: string } }) => {
   const result: { [key: string]: string } = {}
 
   Object.keys(obj).forEach(outside => {

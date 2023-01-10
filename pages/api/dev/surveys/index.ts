@@ -43,6 +43,17 @@ export default function handler(
           "creationDate": "2022-11-30",
           "available": true,
           "answerCount": 0
+        },
+        {
+          "id": "77cabd67-1c6d-4673-b25a-157d199ba2f8",
+          "name": "1月シフト募集",
+          "openCampusSchedule": [
+            "2023-01-22",
+            "2023-01-29"
+          ],
+          "creationDate": "2023-01-10",
+          "available": true,
+          "answerCount": 1
         }
       ])
       break

@@ -2,11 +2,14 @@
 import type { NextPage } from "next"
 import Head from "next/head"
 
-// React Hooks
+// React
 import { ChangeEvent, useState } from "react"
 
+// Custom Hooks
+import { useStyledToast } from "../hooks/useStyledToast"
+
 // Chakra UI Components
-import { Box, Flex, Text, VStack, StackDivider, Checkbox, Select, useToast, useCheckboxGroup, useDisclosure } from "@chakra-ui/react"
+import { Box, Flex, Text, VStack, StackDivider, Checkbox, Select, useCheckboxGroup, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
 import Body from "../components/Body"
@@ -32,20 +35,12 @@ import { SendButtonState } from "../types/SendButtonState"
 import { Survey } from "../interfaces/Survey"
 
 const AnswerSurvey: NextPage = () => {
-  const toast = useToast()
+  const { showToast } = useStyledToast()
   const { value: selectedSchedules, getCheckboxProps } = useCheckboxGroup()
   const [sendButtonState, setSendButtonState] = useState<SendButtonState>("text")
   const { data: surveys, error: fetchError } = useSWR<Survey[], Error>(process.env.NEXT_PUBLIC_SURVEYS_URL, fetcher, { fallback: [] })
 
-  if (fetchError) {
-    toast({
-      title: "エラー",
-      description: "アンケートの一覧の取得に失敗しました",
-      status: "error",
-      variant: "left-accent",
-      position: "top-right"
-    })
-  }
+  if (fetchError) showToast("エラー", "アンケートの一覧の取得に失敗しました", "error")
 
   // チェックボックス
   const [schedulesErrorMessage, setSchedulesErrorMessage] = useState("")

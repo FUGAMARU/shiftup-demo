@@ -14,7 +14,7 @@ import { Box, Flex, Text, VStack, StackDivider, Button, Tooltip, Input, Popover,
 
 // Custom Components
 import Body from "../../components/Body"
-import ConfirmationModal from "../../components/ConfirmationModal"
+import BlurModal from "../../components/BlurModal"
 
 //Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -150,10 +150,10 @@ const ManageSurveys: NextPage = () => {
         </Box>
       </Body>
 
-      <ConfirmationModal isOpen={isModalOpened} onClose={closeModal} text="本当にアンケートを削除してもよろしいですか？">
+      <BlurModal isOpen={isModalOpened} onClose={closeModal} title="確認" text="本当にアンケートを削除してもよろしいですか？">
         <Button mr={1} colorScheme="red" onClick={() => { deleteSurvey(clickedSurveyId); closeModal() }}>削除する</Button>
         <Button ml={1} colorScheme="gray" variant="outline" onClick={closeModal}>削除しない</Button>
-      </ConfirmationModal>
+      </BlurModal>
     </Box>
   )
 }
