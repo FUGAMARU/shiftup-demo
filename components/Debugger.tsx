@@ -1,5 +1,5 @@
 // Custom Hooks
-import { useResponsive } from "../hooks/useResponsive"
+import { useResponsive } from "hooks/useResponsive"
 
 const Debugger = () => {
   const responsiveType = useResponsive()

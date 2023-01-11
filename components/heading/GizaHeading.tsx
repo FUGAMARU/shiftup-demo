@@ -2,10 +2,10 @@
 import { Box } from "@chakra-ui/react"
 
 // Functions
-import { resp } from "../../functions"
+import { resp } from "ts/functions"
 
 // CSS Modules
-import styles from "../../styles/heading/BumpHeading.module.css"
+import styles from "styles/heading/BumpHeading.module.css"
 
 const GizaHeading = () => {
   return (

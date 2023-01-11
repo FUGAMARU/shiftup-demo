@@ -2,10 +2,10 @@
 import { Box } from "@chakra-ui/react"
 
 // Functions
-import { resp } from "../../functions"
+import { resp } from "ts/functions"
 
 // CSS Modules
-import styles from "../../styles/heading/RibbonHeading.module.css"
+import styles from "styles/heading/RibbonHeading.module.css"
 
 const RibbonHeading = (props: { text?: string }) => {
   return (

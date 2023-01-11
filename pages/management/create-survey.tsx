@@ -9,9 +9,9 @@ import { useState, useRef, useCallback } from "react"
 import { Box, Input, Flex, Grid, Tooltip, VStack, StackDivider, Text, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
-import Body from "../../components/Body"
-import SendButton from "../../components/button/SendButton"
-import PopOver from "../../components/PopOver"
+import Body from "components/Body"
+import SendButton from "components/button/SendButton"
+import PopOver from "components/PopOver"
 
 //Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -21,13 +21,13 @@ import axios from "axios"
 import useSWRImmutable from "swr/immutable"
 
 // Functions
-import { resp, formatDateForDisplay, standBy, isDateOrderCorrect, fetcher } from "../../functions"
+import { resp, formatDateForDisplay, standBy, isDateOrderCorrect, fetcher } from "ts/functions"
 
 // Filter
-import { withSession } from "../../hoc/withSession"
+import { withSession } from "hoc/withSession"
 
 // Types
-import { SendButtonState } from "../../types/SendButtonState"
+import { SendButtonState } from "types/SendButtonState"
 
 const CreateSurvey: NextPage = () => {
   const [sendButtonState, setSendButtonState] = useState<SendButtonState>("text")

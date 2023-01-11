@@ -2,12 +2,12 @@
 import { Box, Text } from "@chakra-ui/react"
 
 //Custom Components
-import Header from "./header/Header"
-import RibbonHeading from "./heading/RibbonHeading"
-import Debugger from "./Debugger"
+import Header from "components/header/Header"
+import RibbonHeading from "components/heading/RibbonHeading"
+import Debugger from "components/Debugger"
 
 // Functions
-import { resp } from "../functions"
+import { resp } from "ts/functions"
 
 interface Props {
   title?: string,

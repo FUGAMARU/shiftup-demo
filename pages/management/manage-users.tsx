@@ -6,15 +6,15 @@ import Head from "next/head"
 import { useState, useCallback, useMemo } from "react"
 
 // Custom Hooks
-import { useResponsive } from "../../hooks/useResponsive"
-import { useStyledToast } from "../../hooks/useStyledToast"
+import { useResponsive } from "hooks/useResponsive"
+import { useStyledToast } from "hooks/useStyledToast"
 
 // Chakra UI Components
 import { Box, Flex, Text, VStack, StackDivider, Button, Tooltip, Input, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
-import Body from "../../components/Body"
-import BlurModal from "../../components/BlurModal"
+import Body from "components/Body"
+import BlurModal from "components/BlurModal"
 
 //Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -23,16 +23,16 @@ import axios from "axios"
 import useSWR from "swr"
 
 // Functions
-import { resp, fetcher, toFlattenObject } from "../../functions"
+import { resp, fetcher, toFlattenObject } from "ts/functions"
 
 // Interfaces
-import { User } from "../../interfaces/User"
+import { User } from "interfaces/User"
 
 // Types
-import { ConstantSymbols } from "../../types/Symbols"
+import { ConstantSymbols } from "types/Symbols"
 
 // Filter
-import { withSession } from "../../hoc/withSession"
+import { withSession } from "hoc/withSession"
 
 // Importing Symbols
 import * as fs from "fs"

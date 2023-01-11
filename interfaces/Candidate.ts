@@ -1,6 +1,6 @@
 // Types
-import { Department } from "../types/Department"
-import { Position } from "../types/Position"
+import { Department } from "types/Department"
+import { Position } from "types/Position"
 
 export interface Candidate {
   id: string,

@@ -6,14 +6,14 @@ import Image from "next/image"
 import Link from "next/link"
 
 //Custom Hooks
-import { useResponsive } from "../../hooks/useResponsive"
-import { useStatusCheck } from "../../hooks/useStatusCheck"
+import { useResponsive } from "hooks/useResponsive"
+import { useStatusCheck } from "hooks/useStatusCheck"
 
 // Chakra UI Components
 import { Flex, Text, Box, Drawer, SimpleGrid, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, useDisclosure, Popover, PopoverTrigger, PopoverContent, PopoverBody, PopoverArrow } from "@chakra-ui/react"
 
 // Custom Components
-import MenuItem from "./MenuItem"
+import MenuItem from "components/header/MenuItem"
 
 // Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -21,11 +21,11 @@ import { faChevronCircleRight, faCalendarPlus, faListCheck, faCalendarCheck, faT
 
 // Global State Management
 import { useRecoilValue } from "recoil"
-import { sessionState } from "../../atoms/SessionStateAtom"
-import { isManager } from "../../atoms/RoleAtom"
+import { sessionState } from "atoms/SessionStateAtom"
+import { isManager } from "atoms/RoleAtom"
 
 // Functions
-import { resp } from "../../functions"
+import { resp } from "ts/functions"
 
 const Header = () => {
   useStatusCheck() // ページ遷移の度に呼ばれてかつRecoilが使えるコンポーネント内でこのメソッドを呼ぶ

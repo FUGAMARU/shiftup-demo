@@ -5,9 +5,9 @@ import { useState } from "react"
 import { Box, Flex, SimpleGrid } from "@chakra-ui/react"
 
 // Custom Components
-import Visualizer from "../../components/card/Visualizer"
-import GreetingMessage from "../../components/text/GreetingMessage"
-import SimpleButton from "../../components/button/SimpleButton"
+import Visualizer from "components/card/Visualizer"
+import GreetingMessage from "components/text/GreetingMessage"
+import SimpleButton from "components/button/SimpleButton"
 
 // Libraries
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core"
@@ -15,7 +15,7 @@ import { faUpRightFromSquare, faCalendarCheck, faThumbsUp, faYenSign, faForward 
 import { faDiscord } from "@fortawesome/free-brands-svg-icons"
 
 // Functions
-import { resp } from "../../functions"
+import { resp } from "ts/functions"
 
 const MyPage = () => {
   const [cardAnimationTrigger, setCardAnimationTrigger] = useState(false)

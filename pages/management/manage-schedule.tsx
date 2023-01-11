@@ -6,10 +6,10 @@ import Head from "next/head"
 import { Box } from "@chakra-ui/react"
 
 // Custom Components
-import Header from "../../components/header/Header"
+import Header from "components/header/Header"
 
 // Filter
-import { withSession } from "../../hoc/withSession"
+import { withSession } from "hoc/withSession"
 
 const ManageSchedule: NextPage = () => {
   return (

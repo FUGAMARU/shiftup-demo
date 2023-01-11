@@ -6,15 +6,15 @@ import Head from "next/head"
 import { ChangeEvent, useState, useMemo, useCallback } from "react"
 
 // Custom Hooks
-import { useStyledToast } from "../../hooks/useStyledToast"
+import { useStyledToast } from "hooks/useStyledToast"
 
 // Chakra UI Components
 import { Box, Flex, VStack, StackDivider, Text, Select, Checkbox, Grid, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
-import SendButton from "../../components/button/SendButton"
-import Body from "../../components/Body"
-import PopOver from "../../components/PopOver"
+import SendButton from "components/button/SendButton"
+import Body from "components/Body"
+import PopOver from "components/PopOver"
 
 //Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -24,20 +24,20 @@ import axios, { isAxiosError } from "axios"
 import useSWR from "swr"
 
 // Functions
-import { resp, fetcher, formatDateForDisplay, toFlattenObject, standBy } from "../../functions"
-import { sendRequests } from "../../ts/api-connection"
+import { resp, fetcher, formatDateForDisplay, toFlattenObject, standBy } from "ts/functions"
+import { sendRequests } from "ts/api-connection"
 
 // Interfaces
-import { Survey } from "../../interfaces/Survey"
-import { Candidate } from "../../interfaces/Candidate"
-import { SurveyResult } from "../../interfaces/SurveyResult"
+import { Survey } from "interfaces/Survey"
+import { Candidate } from "interfaces/Candidate"
+import { SurveyResult } from "interfaces/SurveyResult"
 
 // Types
-import { ConstantSymbols } from "../../types/Symbols"
-import { SendButtonState } from "../../types/SendButtonState"
+import { ConstantSymbols } from "types/Symbols"
+import { SendButtonState } from "types/SendButtonState"
 
 // Filter
-import { withSession } from "../../hoc/withSession"
+import { withSession } from "hoc/withSession"
 
 // Importing Symbols
 import * as fs from "fs"
@@ -154,7 +154,7 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
       if (isAxiosError(e)) showToast("エラー", e.message, "error")
       setSendButtonState("error")
     }
-  }, [setSendButtonState, getCheckedUsers, setSelectedSurvey, checkValidation, selectedSchedule])
+  }, [setSendButtonState, getCheckedUsers, setSelectedSurveyTitle, checkValidation, selectedSchedule, showToast])
 
   return (
     <Box>

@@ -6,14 +6,14 @@ import Head from "next/head"
 import { Box, Button, Flex, Text } from "@chakra-ui/react"
 
 // Custom Components
-import Header from "../components/header/Header"
-import MyPage from "../components/toppage-view/MyPage"
-import Login from "../components/toppage-view/Login"
+import Header from "components/header/Header"
+import MyPage from "components/toppage-view/MyPage"
+import Login from "components/toppage-view/Login"
 
 // Global State Management
 import { useRecoilState, useSetRecoilState } from "recoil"
-import { sessionState } from "../atoms/SessionStateAtom"
-import { isManager } from "../atoms/RoleAtom"
+import { sessionState } from "atoms/SessionStateAtom"
+import { isManager } from "atoms/RoleAtom"
 
 const Home: NextPage = () => {
   const [isInSession, setInSession] = useRecoilState(sessionState)

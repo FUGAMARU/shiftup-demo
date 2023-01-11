@@ -8,7 +8,7 @@ import { Text } from "@chakra-ui/react"
 import useSWRImmutable from "swr/immutable"
 
 // Functions
-import { resp, fetcher } from "../../functions"
+import { resp, fetcher } from "ts/functions"
 
 interface Props {
   name: string,

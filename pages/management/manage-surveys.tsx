@@ -6,15 +6,15 @@ import Head from "next/head"
 import { useState, useEffect, useCallback, useMemo } from "react"
 
 // Custom Hooks
-import { useResponsive } from "../../hooks/useResponsive"
-import { useStyledToast } from "../../hooks/useStyledToast"
+import { useResponsive } from "hooks/useResponsive"
+import { useStyledToast } from "hooks/useStyledToast"
 
 // Chakra UI Components
 import { Box, Flex, Text, VStack, StackDivider, Button, Tooltip, Input, Popover, PopoverTrigger, PopoverContent, PopoverBody, PopoverArrow, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
-import Body from "../../components/Body"
-import BlurModal from "../../components/BlurModal"
+import Body from "components/Body"
+import BlurModal from "components/BlurModal"
 
 //Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -23,13 +23,13 @@ import axios from "axios"
 import useSWR from "swr"
 
 // Functions
-import { resp, formatDateForDisplay, fetcher } from "../../functions"
+import { resp, formatDateForDisplay, fetcher } from "ts/functions"
 
 // Interfaces
-import { Survey } from "../../interfaces/Survey"
+import { Survey } from "interfaces/Survey"
 
 // Filter
-import { withSession } from "../../hoc/withSession"
+import { withSession } from "hoc/withSession"
 
 interface DynamicObject {
   [key: string]: boolean

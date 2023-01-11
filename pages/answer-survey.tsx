@@ -6,16 +6,16 @@ import Head from "next/head"
 import { ChangeEvent, useState } from "react"
 
 // Custom Hooks
-import { useStyledToast } from "../hooks/useStyledToast"
+import { useStyledToast } from "hooks/useStyledToast"
 
 // Chakra UI Components
 import { Box, Flex, Text, VStack, StackDivider, Checkbox, Select, useCheckboxGroup, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
-import Body from "../components/Body"
-import GizaHeading from "../components/heading/GizaHeading"
-import SendButton from "../components/button/SendButton"
-import PopOver from "../components/PopOver"
+import Body from "components/Body"
+import GizaHeading from "components/heading/GizaHeading"
+import SendButton from "components/button/SendButton"
+import PopOver from "components/PopOver"
 
 // Libraries
 import { up, down } from "slide-element"
@@ -23,16 +23,16 @@ import axios from "axios"
 import useSWR from "swr"
 
 // Functions
-import { resp, standBy, formatDateForDisplay, fetcher } from "../functions"
+import { resp, standBy, formatDateForDisplay, fetcher } from "ts/functions"
 
 // Filter
-import { withSession } from "../hoc/withSession"
+import { withSession } from "hoc/withSession"
 
 // Types
-import { SendButtonState } from "../types/SendButtonState"
+import { SendButtonState } from "types/SendButtonState"
 
 // Interfaces
-import { AvailableSurvey } from "../interfaces/AvailableSurvey"
+import { AvailableSurvey } from "interfaces/AvailableSurvey"
 
 const AnswerSurvey: NextPage = () => {
   const { showToast } = useStyledToast()

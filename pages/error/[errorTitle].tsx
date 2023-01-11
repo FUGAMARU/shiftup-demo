@@ -7,14 +7,14 @@ import Head from "next/head"
 import { Box, Alert, AlertIcon, AlertTitle, AlertDescription } from "@chakra-ui/react"
 
 // Custom Components
-import Header from "../../components/header/Header"
-import SimpleButton from "../../components/button/SimpleButton"
+import Header from "components/header/Header"
+import SimpleButton from "components/button/SimpleButton"
 
 // Libraries
 import { faRightToBracket } from "@fortawesome/free-solid-svg-icons"
 
 // Functions
-import { resp } from "../../functions"
+import { resp } from "ts/functions"
 
 // Importing Defined Errors
 import * as fs from "fs"

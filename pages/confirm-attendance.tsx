@@ -3,19 +3,19 @@ import type { NextPage } from "next"
 import Head from "next/head"
 
 // Custom Hooks
-import { useResponsive } from "../hooks/useResponsive"
+import { useResponsive } from "hooks/useResponsive"
 
 // Chakra UI Components
 import { Box, Flex, Text, SimpleGrid, StackDivider, VStack, Button } from "@chakra-ui/react"
 
 // Custom Components
-import Body from "../components/Body"
+import Body from "components/Body"
 
 // Functions
-import { resp } from "../functions"
+import { resp } from "ts/functions"
 
 // Filter
-import { withSession } from "../hoc/withSession"
+import { withSession } from "hoc/withSession"
 
 const ConfirmAttendance: NextPage = () => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC

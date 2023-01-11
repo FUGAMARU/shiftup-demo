@@ -1,5 +1,5 @@
 // Interfaces
-import { Candidate } from "./Candidate"
+import { Candidate } from "interfaces/Candidate"
 
 export interface SurveyResult {
   tallied: boolean,

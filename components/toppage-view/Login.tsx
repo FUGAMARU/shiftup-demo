@@ -5,7 +5,7 @@ import Image from "next/image"
 import { Box, Flex, Text } from "@chakra-ui/react"
 
 // Functions
-import { resp } from "../../functions"
+import { resp } from "ts/functions"
 
 const Login = () => {
   return (

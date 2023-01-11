@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { IconProp } from "@fortawesome/fontawesome-svg-core"
 
 // Functions
-import { resp } from "../../functions"
+import { resp } from "ts/functions"
 
 interface Props {
   title: string,

@@ -10,7 +10,7 @@ import { IconProp, IconDefinition } from "@fortawesome/fontawesome-svg-core"
 import { faCircleRight } from "@fortawesome/free-regular-svg-icons"
 
 // CSS Modules
-import styles from "../../styles/card/Visualizer.module.css"
+import styles from "styles/card/Visualizer.module.css"
 
 interface Props {
   color: string,

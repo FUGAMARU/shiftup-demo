@@ -9,9 +9,9 @@ import { useState, useRef, useEffect, useMemo, useCallback } from "react"
 import { Flex, Grid, Text, Box, Input, Select, Radio, RadioGroup, Stack, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
-import Body from "../../components/Body"
-import SendButton from "../../components/button/SendButton"
-import PopOver from "../../components/PopOver"
+import Body from "components/Body"
+import SendButton from "components/button/SendButton"
+import PopOver from "components/PopOver"
 
 // Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -19,16 +19,16 @@ import { faPen, faCheck, faScrewdriverWrench, faUser } from "@fortawesome/free-s
 import axios, { isAxiosError } from "axios"
 
 // Functions
-import { resp, toHankaku, standBy, getInputType } from "../../functions"
+import { resp, toHankaku, standBy, getInputType } from "ts/functions"
 
 // Filter
-import { withSession } from "../../hoc/withSession"
+import { withSession } from "hoc/withSession"
 
 // Types
-import { SendButtonState } from "../../types/SendButtonState"
-import { Position } from "../../types/Position"
-import { College } from "../../types/College"
-import { ConstantSymbols, Symbols } from "../../types/Symbols"
+import { SendButtonState } from "types/SendButtonState"
+import { Position } from "types/Position"
+import { College } from "types/College"
+import { ConstantSymbols, Symbols } from "types/Symbols"
 
 // Importing Symbols
 import * as fs from "fs"
