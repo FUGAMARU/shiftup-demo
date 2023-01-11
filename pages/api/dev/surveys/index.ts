@@ -54,6 +54,18 @@ export default function handler(
           "creationDate": "2023-01-10",
           "available": true,
           "answerCount": 1
+        },
+        {
+          "id": "83e29142-a14d-45bf-9668-bfa62e8a313c",
+          "name": "テスト日程2",
+          "openCampusSchedule": [
+            "2023-01-25",
+            "2023-01-26",
+            "2023-01-27"
+          ],
+          "creationDate": "2023-01-11",
+          "available": true,
+          "answerCount": 1
         }
       ])
       break

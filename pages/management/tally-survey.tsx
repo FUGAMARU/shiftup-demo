@@ -20,11 +20,12 @@ import PopOver from "../../components/PopOver"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faUserGroup, faCalendar, faCheck, faListCheck } from "@fortawesome/free-solid-svg-icons"
 import { up, down } from "slide-element"
-import axios from "axios"
+import axios, { isAxiosError } from "axios"
 import useSWR from "swr"
 
 // Functions
 import { resp, fetcher, formatDateForDisplay, toFlattenObject, standBy } from "../../functions"
+import { sendRequests } from "../../ts/api-connection"
 
 // Interfaces
 import { Survey } from "../../interfaces/Survey"
@@ -65,13 +66,17 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
 
   if (fetchError) showToast("エラー", "アンケートの一覧の取得に失敗しました", "error")
 
+  // アンケート選択欄
   const [selectedSurvey, setSelectedSurvey] = useState<SurveyResult>()
-  const [selectedSurveyTitle, setSelectedSurveyTitle] = useState<string>("")
-  const [candidates, setCandidates] = useState<Candidate[]>()
+  const [selectedSurveyTitle, setSelectedSurveyTitle] = useState("")
+
+  // 日程選択欄
   const [selectedSchedule, setSelectedSchedule] = useState("")
+  const [selectedScheduleText, setSelectedScheduleText] = useState("")
 
   // ユーザーリスト
   const { isOpen: isCandidatesPopoverOpened, onOpen: openCandidatesPopover, onClose: closeCandidatesPopover } = useDisclosure()
+  const [candidates, setCandidates] = useState<Candidate[]>()
   const [checkedList, setCheckedList] = useState<DynamicObject>({})
 
   const handleSurveySelect = async (e: ChangeEvent<HTMLSelectElement>) => {
@@ -83,11 +88,17 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
       return
     }
 
+    if (selectedScheduleText !== "") up(document.getElementById("section2") as HTMLElement, { duration: 500, easing: "ease-in-out" })
+
+    setSelectedScheduleText("")
     setSelectedSurvey((await axios.get<SurveyResult>(`${process.env.NEXT_PUBLIC_SURVEYS_URL}/${e.target.value}/result`)).data)
+
     down(document.getElementById("section1") as HTMLElement, { duration: 500, easing: "ease-in-out" })
   }
 
   const handleScheduleSelect = async (e: ChangeEvent<HTMLSelectElement>) => {
+    setSelectedScheduleText(e.target.value)
+
     if (!!!e.target.value) {
       up(document.getElementById("section2") as HTMLElement, { duration: 500, easing: "ease-in-out" })
       return
@@ -128,21 +139,22 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
     await standBy(1000)
 
     try {
-      const res = await axios.put(`${process.env.NEXT_PUBLIC_REQUESTS_URL}/${selectedSchedule}`, getCheckedUsers())
+      await sendRequests(selectedSchedule, getCheckedUsers())
 
-      if (res.status === 204) {
-        setSendButtonState("checkmark")
-        setTimeout(() => {
-          up(document.getElementById("section1") as HTMLElement, { duration: 500, easing: "ease-in-out" })
-          up(document.getElementById("section2") as HTMLElement, { duration: 500, easing: "ease-in-out" })
+      setSendButtonState("checkmark")
+      setTimeout(() => {
+        up(document.getElementById("section1") as HTMLElement, { duration: 500, easing: "ease-in-out" })
+        up(document.getElementById("section2") as HTMLElement, { duration: 500, easing: "ease-in-out" })
 
-          setSelectedSurveyTitle("")
-        }, 1500)
-      }
+        setSelectedSurveyTitle("")
+        setSelectedScheduleText("")
+      }, 1500)
+
     } catch (e) {
+      if (isAxiosError(e)) showToast("エラー", e.message, "error")
       setSendButtonState("error")
     }
-  }, [setSendButtonState, selectedSchedule, getCheckedUsers, setSelectedSurvey, checkValidation])
+  }, [setSendButtonState, getCheckedUsers, setSelectedSurvey, checkValidation, selectedSchedule])
 
   return (
     <Box>
@@ -176,7 +188,7 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
                   <FontAwesomeIcon className="secondary-color" icon={faCalendar} fontSize={25}></FontAwesomeIcon>
                 </Flex>
                 <Flex pl={resp(6, 12, 12)} alignItems="center">
-                  <Select w={resp(250, 300, 350)} placeholder="集計する日にちを選択" onChange={(e) => handleScheduleSelect(e)}>
+                  <Select w={resp(250, 300, 350)} placeholder="集計する日にちを選択" value={selectedScheduleText} onChange={(e) => handleScheduleSelect(e)}>
                     {selectedSurvey?.openCampuses.filter(schedule => schedule.availableCasts.length !== 0).map(schedule => {
                       return <option key={schedule.date} value={schedule.date}>{formatDateForDisplay(schedule.date)}</option>
                     })}
@@ -229,6 +241,7 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
                   <SendButton text="確定依頼を送信" state={sendButtonState} onClick={handleSendButtonClick}></SendButton>
                 </Flex>
               </Grid>
+              <Box h="1.5rem" /> {/* marginやpaddingで代替しない */}
             </Box>
           </Box>
         </Flex>
