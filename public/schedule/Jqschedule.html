@@ -30,7 +30,7 @@
   <div>
     <input id="templateName" type="text" placeholder="テンプレート名を入力" />
     <select name="template" id="templateSelector"></select>
-    <button class="template_save_btn" onClick="template_save()" >テンプレート保存</button>
+    <button class="template_save_btn" onClick="template_save(); document.getElementById('templateName').value=''" >テンプレート保存</button>
     <button class="template_applying_btn" onclick="template_applying()">適用</button>
   </div>
   <input id="task-name" type="text" value="" placeholder="タスク名を入力" />
@@ -106,6 +106,10 @@ localStorage.setItem("templates", JSON.stringify(userTasks))
 
 templates[templateName] = scheduleData.getSchedule
 localStorage.setItem("templates", JSON.stringify(templates))
+
+$("#templateSelector").append(`<option value=${templateName}>${templateName}</option>`)
+document.getElementById("templateName").value = ""
+
 }
 //テンプレート適用
 const template_applying = () => {
