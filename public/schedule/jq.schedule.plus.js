@@ -511,6 +511,10 @@
                 jQuery('#schedule').mouseup(function (event) {
                     if (isMouseDown) {
                         const taskName = $("#task-name").val();
+                        if(/^\s*$/.test(taskName)){
+                        alert("空白文字は入力できません");
+                        return;
+                        }
                         isMouseDown = false;
                         var startDate = $startElement.data('date');
                         var startTime = $startElement.data('time_start');
