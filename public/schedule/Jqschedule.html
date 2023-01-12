@@ -51,6 +51,19 @@
     language="javascript"></script>
   <script src="jq.schedule.plus.js"></script>
   <script type="text/javascript">
+
+
+//URLのクエリーパラメーターからテンプレートを取得
+const urlParams = new URLSearchParams(window.location.search);
+const date = urlParams.get('date');
+
+//テンプレートが存在する場合、それを適用する
+if (date && localStorage.getItem(date)) {
+  const templates = JSON.parse(localStorage.getItem(date));
+  scheduleData.setSchedule = templates;
+  scheduleData.updateScheduleTable();
+}
+
 //テンプレート
 $(() => {
       if (localStorage.getItem("templates")) {
