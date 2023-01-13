@@ -386,3 +386,62 @@
 	background-color: #62A0E1;
 	transform: translateX(-50%) scaleY(1.3) scaleX(0.8);
 }
+
+.deleteTemplateButton {
+	display: inline-block;
+	margin-bottom:10px;
+	padding: 3px 13px;
+	border: 1px solid pink;
+	border-radius: 4px;
+	transition: all 0.2s ease-in;
+	position: relative;
+	overflow: hidden;
+	font-size: 19px;
+	color: black;
+	background: fixed;
+	z-index: 1;
+}
+
+.deleteTemplateButton:before {
+	content: "";
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%) scaleY(1) scaleX(1.25);
+	top: 100%;
+	width: 140%;
+	height: 150%;
+	background-color: rgba(0, 0, 0, 0.05);
+	border-radius: 50%;
+	display: block;
+	transition: all 0.5s 0.1s cubic-bezier(0.55, 0, 0.1, 1);
+	z-index: -1;
+}
+
+.deleteTemplateButton:after {
+	content: "";
+	position: absolute;
+	left: 55%;
+	transform: translateX(-50%) scaleY(1) scaleX(1.45);
+	top: 180%;
+	width: 160%;
+	height: 190%;
+	background-color: rgba(227, 43, 113, 0.885);
+	border-radius: 50%;
+	display: block;
+	transition: all 0.5s 0.1s cubic-bezier(0.55, 0, 0.1, 1);
+	z-index: -1;
+}
+.deleteTemplateButton:hover {
+	color: #ffffff;
+	border: 1px solid rgba(227, 43, 113, 0.885);
+}
+.deleteTemplateButton:hover:before {
+	top: -25%;
+	background-color: rgba(227, 43, 113, 0.885);
+	transform: translateX(-50%) scaleY(1.3) scaleX(0.8);
+}
+.deleteTemplateButton:hover:after {
+	top: -45%;
+	background-color: rgba(227, 43, 113, 0.885);
+	transform: translateX(-50%) scaleY(1.3) scaleX(0.8);
+}
