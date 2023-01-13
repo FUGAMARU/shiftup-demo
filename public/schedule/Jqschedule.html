@@ -35,7 +35,7 @@
   </div>
   <input id="task-name" type="text" value="" placeholder="タスク名を入力" />
   <input id="user-name" type="text" value="" placeholder="ユーザー名を入力" />
-  <button class="add_user_btn" onClick="handleButtonClick()">ユーザー追加</button>
+  <button class="add_user_btn" onClick="handleButtonClick(); document.getElementById('user-name').value=''">ユーザー追加</button>
         <!--<button onClick="schedule_save()">クラスに保存</button>
               <button onClick="extractData()">データー抽出</button>
               <button onclick="schedule_data_recovery()">データー復元</button>-->
@@ -54,18 +54,19 @@
 
 
 //URLのクエリーパラメーターからテンプレートを取得
-const urlParams = new URLSearchParams(window.location.search);
-const date = urlParams.get('date');
+  const urlParams = new URLSearchParams(window.location.search);
+  const templateName = urlParams.get('templateName'); 
+
 
 //テンプレートが存在する場合、それを適用する
-if (date && localStorage.getItem(date)) {
-  const templates = JSON.parse(localStorage.getItem(date));
-  scheduleData.setSchedule = templates;
-  scheduleData.updateScheduleTable();
-}
+if (templateName && localStorage.getItem(templateName)) { 
+    template_applying(templateName); // 変更点
+  }
+
+
 
 //テンプレート
-$(() => {
+    $(() => {
       if (localStorage.getItem("templates")) {
         $.each(Object.keys(JSON.parse(localStorage.getItem("templates"))), (idx, val) => {
           $("#templateSelector").append(`<option value=${val}>${val}</option>`)
@@ -74,51 +75,41 @@ $(() => {
     })
 //テンプレート保存
 const template_save = () => {
-if (localStorage.getItem("templates") === null) localStorage.setItem("templates", JSON.stringify({}))
-
-schedule_save()
-extractData()
-schedule_data_recovery()
-
-const templateName = document.getElementById("templateName").value
-
-if (!/\S/.test(templateName)) {
-alert("テンプレート名が入力されていません")
-return
-}
-
-let templates = JSON.parse(localStorage.getItem("templates"))
-
-scheduleHTML.setInnerHTML = $("#schedule").html()
-
-users = getUserList()
-tasks = getTaskList()
-
-userTasks = []
-
-users.forEach((userName, idx) => {
-userTasks.push({
-"name": userName,
-"tasks": tasks[idx]
-})
-})
-localStorage.setItem("templates", JSON.stringify(userTasks))
-
-templates[templateName] = scheduleData.getSchedule
-localStorage.setItem("templates", JSON.stringify(templates))
-
-$("#templateSelector").append(`<option value=${templateName}>${templateName}</option>`)
-document.getElementById("templateName").value = ""
-
+  if (localStorage.getItem("templates") === null) localStorage.setItem("templates", JSON.stringify({}))
+  schedule_save()
+  extractData()
+  schedule_data_recovery()
+  const templateName = document.getElementById("templateName").value
+  if (!/\S/.test(templateName)) {
+    alert("テンプレート名が入力されていません")
+    return
+  }
+  let templates = JSON.parse(localStorage.getItem("templates"))
+  scheduleHTML.setInnerHTML = $("#schedule").html()
+  users = getUserList()
+  tasks = getTaskList()
+  userTasks = []
+  users.forEach((userName, idx) => {
+    userTasks.push({
+      "name": userName,
+      "tasks": tasks[idx]
+    })
+  })
+  localStorage.setItem("templates", JSON.stringify(userTasks))
+  templates[templateName] = scheduleData.getSchedule
+  localStorage.setItem("templates", JSON.stringify(templates))
+  $("#templateSelector").append(`<option value=${templateName}>${templateName}</option>`)
+  document.getElementById("templateName").value = ""
 }
 //テンプレート適用
 const template_applying = () => {
-  const selectedTemplateName = $("#templateSelector").val()
+  let templateName = $("#templateSelector").val() || templateName; 
+  if (localStorage.getItem("templates") === null) localStorage.setItem("templates", JSON.stringify({}))
   const templates = JSON.parse(localStorage.getItem("templates"))
-
-  scheduleData.setSchedule = templates[selectedTemplateName]
+  scheduleData.setSchedule = templates[templateName]
   scheduleData.updateScheduleTable()
 }
+
 
 const ScheduleHTML = class {
   constructor(innerHTML) {

@@ -515,6 +515,7 @@
                         alert("空白文字は入力できません");
                         return;
                         }
+                        $("#task-name").val(""); // テキストエリアをリセット}
                         isMouseDown = false;
                         var startDate = $startElement.data('date');
                         var startTime = $startElement.data('time_start');
