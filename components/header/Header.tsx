@@ -127,7 +127,7 @@ const Header = () => {
                       <Text>ユーザー情報編集</Text>
                     </Box>
 
-                    <a href={process.env.NEXT_PUBLIC_SIGNOUT_URL}>
+                    <a href={`${process.env.NEXT_PUBLIC_API_BASE_URL}/logout`}>
                       <Box className="ksb" w="8rem" p={2} fontSize="0.8rem" textAlign="center" cursor="pointer" borderRadius={15} color="white" bgGradient="linear(to-br, #a39af9, #469fff)" _hover={{ transform: "scale(1.05)" }} transition="all 0.3s 0s ease">
                         <FontAwesomeIcon icon={faArrowRightFromBracket} fontSize="1.3rem" />
                         <Text>サインアウト</Text>

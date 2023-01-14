@@ -7,6 +7,7 @@ import { ChangeEvent, useState, useMemo, useCallback } from "react"
 
 // Custom Hooks
 import { useStyledToast } from "hooks/useStyledToast"
+import { useApiConnection } from "hooks/useApiConnection"
 
 // Chakra UI Components
 import { Box, Flex, VStack, StackDivider, Text, Select, Checkbox, Grid, useDisclosure } from "@chakra-ui/react"
@@ -20,15 +21,11 @@ import PopOver from "components/PopOver"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faUserGroup, faCalendar, faCheck, faListCheck } from "@fortawesome/free-solid-svg-icons"
 import { up, down } from "slide-element"
-import axios, { isAxiosError } from "axios"
-import useSWR from "swr"
 
 // Functions
-import { resp, fetcher, formatDateForDisplay, toFlattenObject, standBy } from "ts/functions"
-import { sendRequests } from "ts/api-connection"
+import { resp, formatDateForDisplay, toFlattenObject, standBy } from "ts/functions"
 
 // Interfaces
-import { Survey } from "interfaces/Survey"
 import { Candidate } from "interfaces/Candidate"
 import { SurveyResult } from "interfaces/SurveyResult"
 
@@ -62,9 +59,10 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
   const { showToast } = useStyledToast()
   const flattenSymbols = useMemo(() => toFlattenObject(symbols), [symbols])
   const [sendButtonState, setSendButtonState] = useState<SendButtonState>("text")
-  const { data: surveys, error: fetchError } = useSWR<Survey[], Error>(process.env.NEXT_PUBLIC_SURVEYS_URL, fetcher, { fallback: [] })
+  const { getAllSurveys, getSurveyResult, sendRequests } = useApiConnection()
 
-  if (fetchError) showToast("エラー", "アンケートの一覧の取得に失敗しました", "error")
+  const { data: surveys, fetchErrorMessage } = getAllSurveys()
+  if (fetchErrorMessage) showToast("エラー", fetchErrorMessage, "error")
 
   // アンケート選択欄
   const [selectedSurvey, setSelectedSurvey] = useState<SurveyResult>()
@@ -91,7 +89,12 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
     if (selectedScheduleText !== "") up(document.getElementById("section2") as HTMLElement, { duration: 500, easing: "ease-in-out" })
 
     setSelectedScheduleText("")
-    setSelectedSurvey((await axios.get<SurveyResult>(`${process.env.NEXT_PUBLIC_SURVEYS_URL}/${e.target.value}/result`)).data)
+
+    try {
+      setSelectedSurvey(await getSurveyResult(e.target.value))
+    } catch (e) {
+      if (e instanceof Error) showToast("エラー", e.message, "error")
+    }
 
     down(document.getElementById("section1") as HTMLElement, { duration: 500, easing: "ease-in-out" })
   }
@@ -150,11 +153,10 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
         setSelectedScheduleText("")
       }, 1500)
 
-    } catch (e) {
-      if (isAxiosError(e)) showToast("エラー", e.message, "error")
+    } catch {
       setSendButtonState("error")
     }
-  }, [setSendButtonState, getCheckedUsers, setSelectedSurveyTitle, checkValidation, selectedSchedule, showToast])
+  }, [setSendButtonState, getCheckedUsers, setSelectedSurveyTitle, checkValidation, selectedSchedule, sendRequests])
 
   return (
     <Box>

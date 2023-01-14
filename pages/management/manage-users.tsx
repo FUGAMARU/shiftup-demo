@@ -8,6 +8,7 @@ import { useState, useCallback, useMemo } from "react"
 // Custom Hooks
 import { useResponsive } from "hooks/useResponsive"
 import { useStyledToast } from "hooks/useStyledToast"
+import { useApiConnection } from "hooks/useApiConnection"
 
 // Chakra UI Components
 import { Box, Flex, Text, VStack, StackDivider, Button, Tooltip, Input, useDisclosure } from "@chakra-ui/react"
@@ -19,14 +20,9 @@ import BlurModal from "components/BlurModal"
 //Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faXmark } from "@fortawesome/free-solid-svg-icons"
-import axios from "axios"
-import useSWR from "swr"
 
 // Functions
-import { resp, fetcher, toFlattenObject } from "ts/functions"
-
-// Interfaces
-import { User } from "interfaces/User"
+import { resp, toFlattenObject } from "ts/functions"
 
 // Types
 import { ConstantSymbols } from "types/Symbols"
@@ -56,7 +52,10 @@ const ManageUsers: NextPage<Props> = ({ symbols }) => {
   const [clickedUserId, setClickedUserId] = useState("")
   const flattenSymbols = useMemo(() => toFlattenObject(symbols), [symbols])
   const { isOpen: isModalOpened, onOpen: openModal, onClose: closeModal } = useDisclosure()
-  const { data: users, error: fetchError, mutate } = useSWR<User[], Error>(process.env.NEXT_PUBLIC_INVITES_URL, fetcher, { fallback: [] })
+  const { getAllUsers, deleteUser } = useApiConnection()
+
+  const { data: users, fetchErrorMessage, mutate } = getAllUsers()
+  if (fetchErrorMessage) showToast("エラー", fetchErrorMessage, "error")
 
   const filteredUsers = useMemo(() => usernameInput ? users?.filter(user => user.name?.match(new RegExp(usernameInput))) : users, [users, usernameInput])
   const statusMessage = useMemo(() => {
@@ -68,20 +67,15 @@ const ManageUsers: NextPage<Props> = ({ symbols }) => {
     return `'${usernameInput}'にマッチするユーザーが${matches}名存在します`
   }, [users, usernameInput, filteredUsers])
 
-  if (fetchError) showToast("エラー", "ユーザーの一覧の取得に失敗しました", "error")
-
-  const deleteUser = useCallback(async (userId: string) => {
+  const handleDeleteUser = useCallback(async (userId: string) => {
     try {
-      const res = await axios.delete(`${process.env.NEXT_PUBLIC_SURVEYS_URL}/${userId}`)
-
-      if (res.status === 204) {
-        mutate()
-        showToast("成功", "ユーザーを削除しました", "success")
-      }
+      await deleteUser(userId)
+      mutate()
+      showToast("成功", "ユーザーを削除しました", "success")
     } catch (e) {
-      showToast("エラー", "ユーザーを削除できませんでした", "error")
+      if (e instanceof Error) showToast("エラー", e.message, "error")
     }
-  }, [mutate, showToast])
+  }, [mutate, showToast, deleteUser])
 
   return (
     <Box>
@@ -129,7 +123,7 @@ const ManageUsers: NextPage<Props> = ({ symbols }) => {
       </Body>
 
       <BlurModal isOpen={isModalOpened} onClose={closeModal} title="確認" text="本当にユーザーを削除してもよろしいですか？">
-        <Button mr={1} colorScheme="red" onClick={() => { deleteUser(clickedUserId); closeModal() }}>削除する</Button>
+        <Button mr={1} colorScheme="red" onClick={() => { handleDeleteUser(clickedUserId); closeModal() }}>削除する</Button>
         <Button ml={1} colorScheme="gray" variant="outline" onClick={closeModal}>削除しない</Button>
       </BlurModal>
     </Box>

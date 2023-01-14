@@ -4,12 +4,8 @@ import Router from "next/router"
 // React Hooks
 import { useEffect } from "react"
 
-// Libraries
-import useSWR from "swr"
-import useSWRImmutable from "swr/immutable"
-
-// Functions
-import { fetcher, statusCodeFetcher } from "ts/functions"
+// Custom Hooks
+import { useApiConnection } from "hooks/useApiConnection"
 
 // Global State Management
 import { useSetRecoilState } from "recoil"
@@ -17,8 +13,10 @@ import { sessionState } from "atoms/SessionStateAtom"
 import { isManager } from "atoms/RoleAtom"
 
 export const useStatusCheck = () => {
-  const { data: statusCode, error: sessionCheckError } = useSWR(process.env.NEXT_PUBLIC_CHECK_SESSION_AVAILABLE_URL, statusCodeFetcher)
-  const { data: role, error: roleCheckError } = useSWRImmutable(process.env.NEXT_PUBLIC_CHECK_ROLE_URL, fetcher)
+  const { getSession, getRole } = useApiConnection()
+
+  const { statusCode, error: sessionCheckError } = getSession()
+  const { data: role, error: roleCheckError } = getRole()
 
   const setSessionState = useSetRecoilState(sessionState)
   const setManager = useSetRecoilState(isManager)

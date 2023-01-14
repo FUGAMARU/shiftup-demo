@@ -8,6 +8,7 @@ import { useState, useEffect, useCallback, useMemo } from "react"
 // Custom Hooks
 import { useResponsive } from "hooks/useResponsive"
 import { useStyledToast } from "hooks/useStyledToast"
+import { useApiConnection } from "hooks/useApiConnection"
 
 // Chakra UI Components
 import { Box, Flex, Text, VStack, StackDivider, Button, Tooltip, Input, Popover, PopoverTrigger, PopoverContent, PopoverBody, PopoverArrow, useDisclosure } from "@chakra-ui/react"
@@ -19,14 +20,9 @@ import BlurModal from "components/BlurModal"
 //Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faXmark } from "@fortawesome/free-solid-svg-icons"
-import axios from "axios"
-import useSWR from "swr"
 
 // Functions
-import { resp, formatDateForDisplay, fetcher } from "ts/functions"
-
-// Interfaces
-import { Survey } from "interfaces/Survey"
+import { resp, formatDateForDisplay } from "ts/functions"
 
 // Filter
 import { withSession } from "hoc/withSession"
@@ -42,7 +38,10 @@ const ManageSurveys: NextPage = () => {
   const [clickedSurveyId, setClickedSurveyId] = useState("")
   const [popoverState, setPopoverState] = useState<DynamicObject>({})
   const { isOpen: isModalOpened, onOpen: openModal, onClose: closeModal } = useDisclosure()
-  const { data: surveys, error: fetchError, mutate } = useSWR<Survey[], Error>(process.env.NEXT_PUBLIC_SURVEYS_URL, fetcher, { fallback: [] })
+  const { getAllSurveys, switchSurveyAvailability, deleteSurvey } = useApiConnection()
+
+  const { data: surveys, fetchErrorMessage, mutate } = getAllSurveys()
+  if (fetchErrorMessage) showToast("エラー", fetchErrorMessage, "error")
 
   const filteredSurveys = useMemo(() => surveys?.filter(survey => survey.name.match(new RegExp(surveyNameInput))), [surveys, surveyNameInput])
   const statusMessage = useMemo(() => {
@@ -65,39 +64,32 @@ const ManageSurveys: NextPage = () => {
     setPopoverState(baseObj)
   }, [surveys])
 
-  if (fetchError) showToast("エラー", "アンケートの一覧の取得に失敗しました", "error")
-
   const changePopover = (id: string, to: boolean) => {
     const currentObj: DynamicObject = Object.assign({}, popoverState)
     currentObj[id] = to
     setPopoverState(currentObj)
   }
 
-  const toggleAvailable = async (target: string, to: boolean) => {
+  const toggleAvailable = useCallback(async (target: string, to: boolean) => {
     try {
-      const res = await axios.put(`${process.env.NEXT_PUBLIC_SURVEYS_URL}/${target}/available`, to.toString())
+      await switchSurveyAvailability(target, to)
 
-      if (res.status === 204) {
-        mutate()
-        showToast("成功", "アンケートの受付状態を切り替えました", "success")
-      }
+      mutate()
+      showToast("成功", "アンケートの受付状態を切り替えました", "success")
     } catch (e) {
-      showToast("エラー", "アンケートの受付状態を切り替えできませんでした", "error")
+      if (e instanceof Error) showToast("エラー", e.message, "error")
     }
-  }
+  }, [showToast, switchSurveyAvailability, mutate])
 
-  const deleteSurvey = useCallback(async (surveyId: string) => {
+  const handleDeleteSurvey = useCallback(async (surveyId: string) => {
     try {
-      const res = await axios.delete(`${process.env.NEXT_PUBLIC_SURVEYS_URL}/${surveyId}`)
-
-      if (res.status === 204) {
-        mutate()
-        showToast("成功", "アンケートを削除しました", "success")
-      }
+      await deleteSurvey(surveyId)
+      mutate()
+      showToast("成功", "アンケートを削除しました", "success")
     } catch (e) {
-      showToast("エラー", "アンケートを削除できませんでした", "error")
+      if (e instanceof Error) showToast("エラー", e.message, "error")
     }
-  }, [mutate, showToast])
+  }, [mutate, showToast, deleteSurvey])
 
   return (
     <Box>
@@ -151,7 +143,7 @@ const ManageSurveys: NextPage = () => {
       </Body>
 
       <BlurModal isOpen={isModalOpened} onClose={closeModal} title="確認" text="本当にアンケートを削除してもよろしいですか？">
-        <Button mr={1} colorScheme="red" onClick={() => { deleteSurvey(clickedSurveyId); closeModal() }}>削除する</Button>
+        <Button mr={1} colorScheme="red" onClick={() => { handleDeleteSurvey(clickedSurveyId); closeModal() }}>削除する</Button>
         <Button ml={1} colorScheme="gray" variant="outline" onClick={closeModal}>削除しない</Button>
       </BlurModal>
     </Box>

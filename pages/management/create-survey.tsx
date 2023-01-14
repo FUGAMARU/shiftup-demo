@@ -3,7 +3,10 @@ import type { NextPage } from "next"
 import Head from "next/head"
 
 // React Hooks
-import { useState, useRef, useCallback } from "react"
+import { useState, useRef, useCallback, useMemo } from "react"
+
+// Custom Hooks
+import { useApiConnection } from "hooks/useApiConnection"
 
 // Chakra UI Components
 import { Box, Input, Flex, Grid, Tooltip, VStack, StackDivider, Text, useDisclosure } from "@chakra-ui/react"
@@ -17,11 +20,9 @@ import PopOver from "components/PopOver"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faPen, faCalendar, faCheck, faCirclePlus, faXmark } from "@fortawesome/free-solid-svg-icons"
 import { subMonths } from "date-fns"
-import axios from "axios"
-import useSWRImmutable from "swr/immutable"
 
 // Functions
-import { resp, formatDateForDisplay, standBy, isDateOrderCorrect, fetcher } from "ts/functions"
+import { resp, formatDateForDisplay, standBy, isDateOrderCorrect } from "ts/functions"
 
 // Filter
 import { withSession } from "hoc/withSession"
@@ -31,7 +32,8 @@ import { SendButtonState } from "types/SendButtonState"
 
 const CreateSurvey: NextPage = () => {
   const [sendButtonState, setSendButtonState] = useState<SendButtonState>("text")
-  const { data } = useSWRImmutable(process.env.NEXT_PUBLIC_WORLD_TIME_API_URL, fetcher)
+  const { getCurrentTime, createSurvey } = useApiConnection()
+  const { time } = getCurrentTime()
 
   // アンケートタイトル入力欄
   const surveyTitleRef = useRef<HTMLInputElement>(null)
@@ -52,7 +54,7 @@ const CreateSurvey: NextPage = () => {
 
     if (!!!datePattern.test(dateInputRef.current.value)) errorMessage = "日付が正しく指定されていません"
     if (scheduleList.includes(dateInputRef.current.value)) errorMessage = "既に追加されている日付です"
-    if (!!!isDateOrderCorrect(new Date(data.datetime), new Date(dateInputRef.current.value))) errorMessage = "現在より過去の日付が指定されています"
+    if (!!!isDateOrderCorrect(time, new Date(dateInputRef.current.value))) errorMessage = "現在より過去の日付が指定されています"
 
     if (errorMessage) {
       setScheduleListErrorMessage(errorMessage)
@@ -74,7 +76,7 @@ const CreateSurvey: NextPage = () => {
     const surveyTitlePattern = /^[ 　\r\n\t]*$/
     if (surveyTitlePattern.test(surveyTitleRef.current.value)) tmpSurveyTitleErrorMessage = "タイトルが入力されていません"
 
-    const isValidSchedules = scheduleList.every((schedule) => isDateOrderCorrect(new Date(data.datetime), new Date(schedule)))
+    const isValidSchedules = scheduleList.every((schedule) => isDateOrderCorrect(time, new Date(schedule)))
     if (!isValidSchedules) tmpScheduleListErrorMessage = "現在より過去の日付が指定されています"
 
     if (!!!scheduleList.length) tmpScheduleListErrorMessage = "日程が追加されていません"
@@ -96,7 +98,7 @@ const CreateSurvey: NextPage = () => {
     }
 
     return !!!(tmpSurveyTitleErrorMessage || tmpScheduleListErrorMessage)
-  }, [openScheduleListPopover, openSurveyTitlePopover, scheduleList])
+  }, [openScheduleListPopover, openSurveyTitlePopover, scheduleList, time])
 
   const handleSendButtonClick = useCallback(async () => {
     if (!!!checkValidation()) return
@@ -104,27 +106,25 @@ const CreateSurvey: NextPage = () => {
     setSendButtonState("spinner")
     await standBy(1000)
 
-    const requestBody = {
-      name: surveyTitleRef.current!.value,
-      openCampusSchedule: scheduleList
-    }
-
     try {
-      const res = await axios.post(process.env.NEXT_PUBLIC_SURVEYS_URL as string, requestBody)
+      await createSurvey({
+        name: surveyTitleRef.current!.value,
+        openCampusSchedule: scheduleList
+      })
 
-      if (res.status === 201) {
-        setSendButtonState("checkmark")
-        setTimeout(() => {
-          if (!!!surveyTitleRef.current || !!!dateInputRef.current) return
-          surveyTitleRef.current.value = ""
-          dateInputRef.current.value = ""
-          setScheduleList([])
-        }, 1000)
-      }
-    } catch (e) {
+      setSendButtonState("checkmark")
+
+      setTimeout(() => {
+        if (!!!surveyTitleRef.current || !!!dateInputRef.current) return
+        surveyTitleRef.current.value = ""
+        dateInputRef.current.value = ""
+        setScheduleList([])
+      }, 1000)
+
+    } catch {
       setSendButtonState("error")
     }
-  }, [checkValidation, scheduleList])
+  }, [checkValidation, scheduleList, createSurvey])
 
   return (
     <Box>

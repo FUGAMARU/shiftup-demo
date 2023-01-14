@@ -5,6 +5,9 @@ import Head from "next/head"
 // React Hooks
 import { useState, useRef, useEffect, useMemo, useCallback } from "react"
 
+// Custom Hooks
+import { useApiConnection } from "hooks/useApiConnection"
+
 // Chakra UI Components
 import { Flex, Grid, Text, Box, Input, Select, Radio, RadioGroup, Stack, useDisclosure } from "@chakra-ui/react"
 
@@ -16,7 +19,6 @@ import PopOver from "components/PopOver"
 // Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faPen, faCheck, faScrewdriverWrench, faUser } from "@fortawesome/free-solid-svg-icons"
-import axios, { isAxiosError } from "axios"
 
 // Functions
 import { resp, toHankaku, standBy, getInputType } from "ts/functions"
@@ -29,6 +31,9 @@ import { SendButtonState } from "types/SendButtonState"
 import { Position } from "types/Position"
 import { College } from "types/College"
 import { ConstantSymbols, Symbols } from "types/Symbols"
+
+// Error Classes
+import AlreadyAddedError from "classes/AlreadyAddedError"
 
 // Importing Symbols
 import * as fs from "fs"
@@ -62,6 +67,8 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
 
   const [sendButtonState, setSendButtonState] = useState<SendButtonState>("text")
   const inputType = useMemo(() => getInputType(studentIdNumberInput), [studentIdNumberInput])
+
+  const { addApprovedUser } = useApiConnection()
 
   // 入力されている学籍番号によって選択できる学科・学部を切り替える
   useEffect(() => {
@@ -108,33 +115,30 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
     setSendButtonState("spinner")
     await standBy(1000)
 
-    const requestBody = {
-      studentNumber: studentIdNumberInput,
-      department: departmentMenuRef.current!.value,
-      position: userAttribute
-    }
-
     try {
-      const res = await axios.post(process.env.NEXT_PUBLIC_INVITES_URL as string, requestBody)
+      await addApprovedUser({
+        studentNumber: studentIdNumberInput,
+        department: departmentMenuRef.current!.value,
+        position: userAttribute
+      })
 
-      if (res.status === 201) {
-        setSendButtonState("checkmark")
-        setTimeout(() => {
-          if (!!!departmentMenuRef.current) return
-          setStudentIdNumberInput("")
-          departmentMenuRef.current.value = ""
-          setUserAttribute("Cast")
-        }, 1000)
-      }
+      setSendButtonState("checkmark")
+      setTimeout(() => {
+        if (!!!departmentMenuRef.current) return
+        setStudentIdNumberInput("")
+        departmentMenuRef.current.value = ""
+        setUserAttribute("Cast")
+      }, 1000)
+
     } catch (e) {
       setSendButtonState("error")
 
-      if (isAxiosError(e) && e.response?.status === 405) {
-        setStudentIdNumberInputErrorMessage("入力された学籍番号は既に認可ユーザーとして追加済みです")
+      if (e instanceof AlreadyAddedError) {
+        setStudentIdNumberInputErrorMessage(e.message)
         openStudentIdNumberInputPopover()
       }
     }
-  }, [checkValidation, openStudentIdNumberInputPopover, studentIdNumberInput, userAttribute])
+  }, [checkValidation, openStudentIdNumberInputPopover, studentIdNumberInput, userAttribute, addApprovedUser])
 
   return (
     <Box>

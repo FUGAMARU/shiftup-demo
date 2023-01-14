@@ -7,6 +7,7 @@ import { ChangeEvent, useState } from "react"
 
 // Custom Hooks
 import { useStyledToast } from "hooks/useStyledToast"
+import { useApiConnection } from "hooks/useApiConnection"
 
 // Chakra UI Components
 import { Box, Flex, Text, VStack, StackDivider, Checkbox, Select, useCheckboxGroup, useDisclosure } from "@chakra-ui/react"
@@ -19,11 +20,9 @@ import PopOver from "components/PopOver"
 
 // Libraries
 import { up, down } from "slide-element"
-import axios from "axios"
-import useSWR from "swr"
 
 // Functions
-import { resp, standBy, formatDateForDisplay, fetcher } from "ts/functions"
+import { resp, standBy, formatDateForDisplay } from "ts/functions"
 
 // Filter
 import { withSession } from "hoc/withSession"
@@ -39,9 +38,10 @@ const AnswerSurvey: NextPage = () => {
   const { value: selectedSchedules, getCheckboxProps } = useCheckboxGroup()
   const [selectedSurveyTitle, setSelectedSurveyTitle] = useState("")
   const [sendButtonState, setSendButtonState] = useState<SendButtonState>("text")
-  const { data: surveys, error: fetchError } = useSWR<AvailableSurvey[], Error>(process.env.NEXT_PUBLIC_SURVEYS_ME_URL, fetcher, { fallback: [] })
+  const { getAnswerableSurveys, answerSurvey } = useApiConnection()
 
-  if (fetchError) showToast("エラー", "アンケートの一覧の取得に失敗しました", "error")
+  const { data: surveys, fetchErrorMessage } = getAnswerableSurveys()
+  if (fetchErrorMessage) showToast("エラー", fetchErrorMessage, "error")
 
   // チェックボックス
   const [schedulesErrorMessage, setSchedulesErrorMessage] = useState("")
@@ -78,17 +78,15 @@ const AnswerSurvey: NextPage = () => {
     await standBy(1000)
 
     try {
-      const res = await axios.put(`${process.env.NEXT_PUBLIC_SURVEYS_URL}/${selectedSurvey!.id}/answers`, selectedSchedules)
+      await answerSurvey(selectedSurvey!.id, selectedSchedules)
 
-      if (res.status === 204) {
-        setSendButtonState("checkmark")
-        setTimeout(() => {
-          up(document.getElementById("selector") as HTMLElement, { duration: 500, easing: "ease-in-out" })
+      setSendButtonState("checkmark")
+      setTimeout(() => {
+        up(document.getElementById("selector") as HTMLElement, { duration: 500, easing: "ease-in-out" })
 
-          setSelectedSurveyTitle("")
-        }, 1500)
-      }
-    } catch (e) {
+        setSelectedSurveyTitle("")
+      }, 1500)
+    } catch {
       setSendButtonState("error")
     }
   }

@@ -47,6 +47,3 @@ export const toFlattenObject = (obj: { [x: string]: { [y: string]: string } }) =
 }
 
 export const isDateOrderCorrect = (current: Date, target: Date) => new Date(current.toDateString()) <= new Date(target.toDateString())
-
-export const fetcher = (url: string) => fetch(url).then((res) => res.json())
-export const statusCodeFetcher = (url: string) => fetch(url).then((res) => res.status)
