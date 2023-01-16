@@ -3,10 +3,11 @@ import type { NextPage } from "next"
 import Head from "next/head"
 
 // React Hooks
-import { useState, useRef, useCallback, useMemo } from "react"
+import { useState, useRef, useCallback } from "react"
 
 // Custom Hooks
 import { useApiConnection } from "hooks/useApiConnection"
+import { useStyledToast } from "hooks/useStyledToast"
 
 // Chakra UI Components
 import { Box, Input, Flex, Grid, Tooltip, VStack, StackDivider, Text, useDisclosure } from "@chakra-ui/react"
@@ -31,9 +32,12 @@ import { withSession } from "hoc/withSession"
 import { SendButtonState } from "types/SendButtonState"
 
 const CreateSurvey: NextPage = () => {
+  const { showToast } = useStyledToast()
   const [sendButtonState, setSendButtonState] = useState<SendButtonState>("text")
-  const { getCurrentTime, createSurvey } = useApiConnection()
+  const { getCurrentTime, createSurvey, getAllSchedules } = useApiConnection()
   const { time } = getCurrentTime()
+  const { allSchedules, fetchErrorMessage } = getAllSchedules()
+  if (fetchErrorMessage) showToast("エラー", fetchErrorMessage, "error")
 
   // アンケートタイトル入力欄
   const surveyTitleRef = useRef<HTMLInputElement>(null)
@@ -54,6 +58,7 @@ const CreateSurvey: NextPage = () => {
 
     if (!!!datePattern.test(dateInputRef.current.value)) errorMessage = "日付が正しく指定されていません"
     if (scheduleList.includes(dateInputRef.current.value)) errorMessage = "既に追加されている日付です"
+    if (allSchedules?.includes(dateInputRef.current.value)) errorMessage = "既に他のアンケートで使用されている日付です"
     if (!!!isDateOrderCorrect(time, new Date(dateInputRef.current.value))) errorMessage = "現在より過去の日付が指定されています"
 
     if (errorMessage) {

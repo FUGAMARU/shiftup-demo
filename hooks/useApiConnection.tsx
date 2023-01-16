@@ -55,6 +55,13 @@ export const useApiConnection = () => {
     return { data, fetchErrorMessage, mutate }
   }, [isProdEnv])
 
+  const getAllSchedules = useCallback(() => {
+    const { data, fetchErrorMessage: errorMsg } = getAllSurveys()
+    const allSchedules = data?.flatMap(survey => survey.openCampusSchedule)
+    const fetchErrorMessage = errorMsg ? "アンケートの日程一覧の取得に失敗しました" : ""
+    return { allSchedules, fetchErrorMessage }
+  }, [isProdEnv])
+
   // 受付状態のアンケートのみ取得
   const getAnswerableSurveys = useCallback(() => {
     const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me/attendance/surveys` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/surveys/me`
@@ -145,5 +152,5 @@ export const useApiConnection = () => {
     }
   }, [isProdEnv])
 
-  return { getSession, getRole, getCurrentTime, getAllSurveys, getAnswerableSurveys, getSurveyResult, getAllUsers, sendRequests, createSurvey, answerSurvey, switchSurveyAvailability, deleteSurvey, addApprovedUser, deleteUser }
+  return { getSession, getRole, getCurrentTime, getAllSurveys, getAllSchedules, getAnswerableSurveys, getSurveyResult, getAllUsers, sendRequests, createSurvey, answerSurvey, switchSurveyAvailability, deleteSurvey, addApprovedUser, deleteUser }
 }
