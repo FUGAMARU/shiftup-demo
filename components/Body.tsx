@@ -1,9 +1,13 @@
+// React
+import { memo } from "react"
+
 // Chakra UI Components
-import { Box, Text } from "@chakra-ui/react"
+import { Box } from "@chakra-ui/react"
 
 //Custom Components
 import Header from "components/header/Header"
 import RibbonHeading from "components/heading/RibbonHeading"
+import StatusText from "components/text/StatusText"
 import Debugger from "components/Debugger"
 
 // Functions
@@ -24,7 +28,7 @@ const Body = (props: Props) => {
           <Box pt={6} pb={3}>
             <RibbonHeading text={props.title} />
           </Box>
-          {props.statusMessage ? <Text className="ksb" py={3} fontSize="0.85rem" textAlign="center">{props.statusMessage}</Text> : null}
+          {props.statusMessage ? <StatusText text={props.statusMessage} /> : null}
           {props.children}
         </Box>
       </Box>
@@ -33,4 +37,4 @@ const Body = (props: Props) => {
   )
 }
 
-export default Body
+export default memo(Body)

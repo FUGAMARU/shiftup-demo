@@ -14,9 +14,11 @@ import { SurveyResult } from "interfaces/SurveyResult"
 import { User } from "interfaces/User"
 import { CreateSurvey } from "interfaces/request/CreateSurvey"
 import { AddApprovedUser } from "interfaces/request/AddApprovedUser"
+import { Request } from "interfaces/Request"
 
-// Type Alias
+// Types
 import { UseCheckboxGroupReturn } from "@chakra-ui/react"
+import { RequestState } from "types/RequestState"
 
 // Error Classes
 import AlreadyAddedError from "classes/AlreadyAddedError"
@@ -87,6 +89,13 @@ export const useApiConnection = () => {
     return { data, fetchErrorMessage, mutate }
   }, [isProdEnv])
 
+  const getAllRequests = useCallback(() => {
+    const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me/attendance/requests` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/requests`
+    const { data, error, mutate } = useSWR<Request[], Error>(url, fetcher, { fallback: [] })
+    const fetchErrorMessage = error ? "出勤依頼一覧の取得に失敗しました" : ""
+    return { data, fetchErrorMessage, mutate }
+  }, [isProdEnv])
+
   /* Request Functions */
   const sendRequests = useCallback(async (date: string, users: string[]) => {
     try {
@@ -152,5 +161,14 @@ export const useApiConnection = () => {
     }
   }, [isProdEnv])
 
-  return { getSession, getRole, getCurrentTime, getAllSurveys, getAllSchedules, getAnswerableSurveys, getSurveyResult, getAllUsers, sendRequests, createSurvey, answerSurvey, switchSurveyAvailability, deleteSurvey, addApprovedUser, deleteUser }
+  const confirmAttendance = useCallback(async (schedule: string, action: Exclude<RequestState, "Blank">) => {
+    try {
+      const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me/attendance/requests/${schedule}/state` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/requests`
+      await axios.post(url, action)
+    } catch {
+      throw new Error(`出勤${action === "Accepted" ? "確定" : "辞退"}に失敗しました`)
+    }
+  }, [isProdEnv])
+
+  return { getSession, getRole, getCurrentTime, getAllSurveys, getAllSchedules, getAnswerableSurveys, getSurveyResult, getAllUsers, getAllRequests, sendRequests, createSurvey, answerSurvey, switchSurveyAvailability, deleteSurvey, addApprovedUser, deleteUser, confirmAttendance }
 }

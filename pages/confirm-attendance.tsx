@@ -2,23 +2,55 @@
 import type { NextPage } from "next"
 import Head from "next/head"
 
+// React Hooks
+import { useCallback, useState } from "react"
+
 // Custom Hooks
 import { useResponsive } from "hooks/useResponsive"
+import { useApiConnection } from "hooks/useApiConnection"
+import { useStyledToast } from "hooks/useStyledToast"
 
 // Chakra UI Components
-import { Box, Flex, Text, SimpleGrid, StackDivider, VStack, Button } from "@chakra-ui/react"
+import { Box, Flex, Text, SimpleGrid, StackDivider, VStack, Button, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
 import Body from "components/Body"
+import StatusText from "components/text/StatusText"
+import BlurModal from "components/BlurModal"
 
 // Functions
-import { resp } from "ts/functions"
+import { resp, formatDateForDisplay } from "ts/functions"
+
+// Types
+import { RequestState } from "types/RequestState"
 
 // Filter
 import { withSession } from "hoc/withSession"
 
+interface ClickedScheduleState {
+  schedule: string,
+  action: Exclude<RequestState, "Blank">
+}
+
 const ConfirmAttendance: NextPage = () => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
+  const { showToast } = useStyledToast()
+  const { isOpen: isModalOpened, onOpen: openModal, onClose: closeModal } = useDisclosure()
+  const { getAllRequests, confirmAttendance } = useApiConnection()
+  const { data, fetchErrorMessage, mutate } = getAllRequests()
+  if (fetchErrorMessage) showToast("エラー", fetchErrorMessage, "error")
+
+  const [clickedSchedule, setClickedSchedule] = useState<ClickedScheduleState>()
+
+  const handleButtonClick = useCallback(async () => {
+    try {
+      await confirmAttendance(clickedSchedule!.schedule, clickedSchedule!.action)
+      mutate()
+      showToast("成功", `出勤を${clickedSchedule!.action === "Accepted" ? "確定" : "辞退"}しました`, "success")
+    } catch (e) {
+      if (e instanceof Error) showToast("エラー", e.message, "error")
+    }
+  }, [confirmAttendance, showToast, clickedSchedule, mutate])
 
   return (
     <Box>
@@ -33,35 +65,45 @@ const ConfirmAttendance: NextPage = () => {
             spacing={3}
             align="stretch"
           >
-            <SimpleGrid columns={{ sm: 1, md: 3, lg: 3 }} gridTemplateColumns={{ sm: "", md: "3.5fr 3.5fr 3fr", lg: "2.5fr 4.5fr 3fr" }} alignItems="center">
-              <Text className="kb" mx={resp("auto", 0, 0)} fontSize={resp("1rem", "1.2rem", "1.2rem")} textAlign="right">2022/12/11 (日)</Text>
-              <Text className="kr" mx={resp("auto", 0, 0)} px={resp("auto", 3, 3)} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} textAlign={responsiveType === "SmartPhone" ? "center" : "left"} color="#5f5f5f">12月シフト募集</Text>
-              <Flex w="100%" mt={resp("0.5rem", 0, 0)} justifyContent={responsiveType === "SmartPhone" ? "center" : "end"} alignItems="center">
-                <Button mr={resp(2, 3, 3)} size="sm" colorScheme="whatsapp" variant="outline">確定する</Button>
-                <Button ml={resp(2, 3, 3)} size="sm" colorScheme="red" variant="outline">辞退する</Button>
-              </Flex>
-            </SimpleGrid>
+            {data?.filter(request => request.state === "Blank").map(request => {
+              return (
+                <SimpleGrid key={request.openCampusDate} columns={{ sm: 1, md: 3, lg: 3 }} gridTemplateColumns={{ sm: "", md: "3.5fr 3.5fr 3fr", lg: "2.5fr 4.5fr 3fr" }} alignItems="center">
+                  <Text className="kb" mx={resp("auto", 0, 0)} fontSize={resp("1rem", "1.2rem", "1.2rem")} textAlign="right">{formatDateForDisplay(request.openCampusDate)}</Text>
+                  <Text className="kr" mx={resp("auto", 0, 0)} px={resp("auto", 3, 3)} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} textAlign={responsiveType === "SmartPhone" ? "center" : "left"} color="#5f5f5f">アンケートタイトル(API追加予定)</Text>
+                  <Flex w="100%" mt={resp("0.5rem", 0, 0)} justifyContent={responsiveType === "SmartPhone" ? "center" : "end"} alignItems="center">
+                    <Button mr={resp(2, 3, 3)} size="sm" colorScheme="whatsapp" variant="outline" onClick={() => { setClickedSchedule({ schedule: request.openCampusDate, action: "Accepted" }); openModal() }}>確定する</Button>
+                    <Button ml={resp(2, 3, 3)} size="sm" colorScheme="red" variant="outline" onClick={() => { setClickedSchedule({ schedule: request.openCampusDate, action: "Declined" }); openModal() }}>辞退する</Button>
+                  </Flex>
+                </SimpleGrid>
+              )
+            })}
+          </VStack>
+        </Box>
 
-            <SimpleGrid columns={{ sm: 1, md: 3, lg: 3 }} gridTemplateColumns={{ sm: "", md: "3.5fr 3.5fr 3fr", lg: "2.5fr 4.5fr 3fr" }} alignItems="center">
-              <Text className="kb" mx={resp("auto", 0, 0)} fontSize={resp("1rem", "1.2rem", "1.2rem")} textAlign="right">2022/12/04 (日)</Text>
-              <Text className="kr" mx={resp("auto", 0, 0)} px={resp("auto", 3, 3)} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} textAlign={responsiveType === "SmartPhone" ? "center" : "left"} color="#5f5f5f">大学OC(プレ入試)スタッフ募集</Text>
-              <Flex w="100%" mt={resp("0.5rem", 0, 0)} justifyContent={responsiveType === "SmartPhone" ? "center" : "end"} alignItems="center">
-                <Button mr={resp(2, 3, 3)} size="sm" colorScheme="whatsapp" variant="outline">確定する</Button>
-                <Button ml={resp(2, 3, 3)} size="sm" colorScheme="red" variant="outline">辞退する</Button>
-              </Flex>
-            </SimpleGrid>
-
-            <SimpleGrid columns={{ sm: 1, md: 3, lg: 3 }} gridTemplateColumns={{ sm: "", md: "3.5fr 3.5fr 3fr", lg: "2.5fr 4.5fr 3fr" }} alignItems="center">
-              <Text className="kb" mx={resp("auto", 0, 0)} fontSize={resp("1rem", "1.2rem", "1.2rem")} textAlign="right">2022/12/31 (土)</Text>
-              <Text className="kr" mx={resp("auto", 0, 0)} px={resp("auto", 3, 3)} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} textAlign={responsiveType === "SmartPhone" ? "center" : "left"} color="#5f5f5f">妙に文字数が多くて今にも見切れそうなアンケートタイトル</Text>
-              <Flex w="100%" mt={resp("0.5rem", 0, 0)} justifyContent={responsiveType === "SmartPhone" ? "center" : "end"} alignItems="center">
-                <Button mr={resp(2, 3, 3)} size="sm" colorScheme="whatsapp" variant="outline">確定する</Button>
-                <Button ml={resp(2, 3, 3)} size="sm" colorScheme="red" variant="outline">辞退する</Button>
-              </Flex>
-            </SimpleGrid>
+        <Box mt={5}><StatusText text="確定済みのアンケート" /></Box>
+        <Box w={resp("100%", "80%", "80%")} mx="auto">
+          <VStack
+            divider={<StackDivider borderColor="gray.200" />}
+            spacing={3}
+            align="stretch"
+          >
+            {data?.filter(request => request.state !== "Blank").map(request => {
+              return (
+                <SimpleGrid key={request.openCampusDate} columns={{ sm: 1, md: 3, lg: 3 }} gridTemplateColumns={{ sm: "", md: "3.5fr 3.5fr 3fr", lg: "2.5fr 4.5fr 3fr" }} alignItems="center">
+                  <Text className="kb" mx={resp("auto", 0, 0)} fontSize={resp("1rem", "1.2rem", "1.2rem")} textAlign="right">{formatDateForDisplay(request.openCampusDate)}</Text>
+                  <Text className="kr" mx={resp("auto", 0, 0)} px={resp("auto", 3, 3)} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} textAlign={responsiveType === "SmartPhone" ? "center" : "left"} color="#5f5f5f">アンケートタイトル(API追加予定)</Text>
+                  <Text className="kb" textAlign="center" color={request.state === "Accepted" ? "#159848" : "#c43030"}>{request.state === "Accepted" ? "確定済み" : "辞退済み"}</Text>
+                </SimpleGrid>
+              )
+            })}
           </VStack>
         </Box>
       </Body>
+
+      <BlurModal isOpen={isModalOpened} onClose={closeModal} title="確認" text={`本当に出勤を${clickedSchedule?.action === "Accepted" ? "確定" : "辞退"}してもよろしいですか？`}>
+        <Button mr={1} colorScheme={clickedSchedule?.action === "Accepted" ? "whatsapp" : "red"} onClick={() => { handleButtonClick(); closeModal() }}>{clickedSchedule?.action === "Accepted" ? "確定" : "辞退"}する</Button>
+        <Button ml={1} colorScheme="gray" variant="outline" onClick={closeModal}>{clickedSchedule?.action === "Accepted" ? "確定" : "辞退"}しない</Button>
+      </BlurModal>
     </Box>
   )
 }
