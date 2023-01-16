@@ -67,9 +67,9 @@ export const useApiConnection = () => {
   // 受付状態のアンケートのみ取得
   const getAnswerableSurveys = useCallback(() => {
     const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me/attendance/surveys` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/surveys/me`
-    const { data, error } = useSWR<AvailableSurvey[], Error>(url, fetcher, { fallback: [] })
+    const { data, error, mutate } = useSWR<AvailableSurvey[], Error>(url, fetcher, { fallback: [] })
     const fetchErrorMessage = error ? "アンケート一覧の取得に失敗しました" : ""
-    return { data, fetchErrorMessage }
+    return { data, fetchErrorMessage, mutate }
   }, [isProdEnv])
 
   // 日程選択する度に取得する & 取得したデーターはそのブロックでしか使わない(stateなどでグローバルにする必要がない)のでSWRではなくAxiosを使用
