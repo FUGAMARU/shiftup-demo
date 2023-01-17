@@ -2,14 +2,18 @@
 import { NextPage } from "next"
 import Head from "next/head"
 
+// React Hooks
+import { useState } from "react"
+
 // Custom Hooks
 import { useResponsive } from "hooks/useResponsive"
 
 // Chakra UI Components
-import { Box, Select, VStack, StackDivider, Flex, Text, Tooltip, Button, } from "@chakra-ui/react"
+import { Box, VStack, StackDivider, Flex, Text, Tooltip, Button } from "@chakra-ui/react"
 
 // Custom Components
 import Body from "components/Body"
+import ScheduleSelector from "components/select/ScheduleSelector"
 
 // Functions
 import { resp } from "ts/functions"
@@ -19,6 +23,7 @@ import { withSession } from "hoc/withSession"
 
 const ViewConfirmedAttendances: NextPage = () => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
+  const [selectedSchedule, setSelectedSchedule] = useState("")
 
   return (
     <Box>
@@ -28,20 +33,7 @@ const ViewConfirmedAttendances: NextPage = () => {
 
       <Body title="出勤確定リスト確認" statusMessage="2人のユーザーが出勤確定 / 1人のユーザーが出勤辞退しました">
         <Box w={resp("100%", "80%", "80%")} mx="auto">
-          {/* valueはstateで管理する */}
-          <Select w={resp("90%", 270, 320)} mx="auto" placeholder="日程を選択…" value="">
-            <optgroup label="アンケート1">
-              <option value="2023-01-01">2023/01/01 (日)</option>
-              <option value="2023-01-01">2023/01/02 (月)</option>
-              <option value="2023-01-01">2023/01/03 (火)</option>
-            </optgroup>
-
-            <optgroup label="アンケート2">
-              <option value="2023-01-01">2023/01/04 (水)</option>
-              <option value="2023-01-01">2023/01/05 (木)</option>
-              <option value="2023-01-01">2023/01/06 (金)</option>
-            </optgroup>
-          </Select>
+          <ScheduleSelector value={selectedSchedule} dispatch={setSelectedSchedule}></ScheduleSelector>
 
           <VStack mt={5} divider={<StackDivider borderColor="gray.200" />} spacing={3} align="stretch">
             <Flex justifyContent="space-between" alignItems="center">
