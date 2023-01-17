@@ -18,6 +18,7 @@ import MenuItem from "components/header/MenuItem"
 // Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faChevronCircleRight, faCalendarPlus, faListCheck, faCalendarCheck, faThumbsUp, faUserPlus, faArrowRightFromBracket, faScrewdriverWrench, faUsersGear, faSquarePollHorizontal, faClock } from "@fortawesome/free-solid-svg-icons"
+import { faCheckCircle } from "@fortawesome/free-regular-svg-icons"
 
 // Global State Management
 import { useRecoilValue } from "recoil"
@@ -60,6 +61,7 @@ const Header = () => {
                   <MenuItem href="/management/manage-surveys" icon={faSquarePollHorizontal} title={"希望日程\nアンケート管理"} onClose={closeMenu} />
                   <MenuItem href="/management/create-survey" icon={faCalendarPlus} title={"希望日程\nアンケート作成"} onClose={closeMenu} />
                   <MenuItem href="/management/tally-survey" icon={faListCheck} title={"希望日程\nアンケート集計"} onClose={closeMenu} />
+                  <MenuItem href="/management/view-confirmed-attendances" icon={faCheckCircle} title={"出勤確定リスト\n確認"} onClose={closeMenu} />
                   <MenuItem href="/management/manage-users" icon={faUsersGear} title={"ユーザー管理"} onClose={closeMenu} />
                   <MenuItem href="/management/add-approved-user" icon={faUserPlus} title={"認可ユーザー\n追加"} onClose={closeMenu} />
                   <MenuItem href="/management/manage-schedule" icon={faClock} title={"スケジュール\n管理"} onClose={closeMenu} />
@@ -75,7 +77,7 @@ const Header = () => {
 
           </DrawerBody>
           <DrawerFooter>
-            <Text fontSize={12}>© 2022 TrinityTrick team</Text>
+            <Text fontSize={12}>© 2022-2023 TrinityTrick team</Text>
           </DrawerFooter>
         </DrawerContent>
       </Drawer>

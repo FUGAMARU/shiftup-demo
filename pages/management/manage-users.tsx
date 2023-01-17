@@ -101,7 +101,7 @@ const ManageUsers: NextPage<Props> = ({ symbols }) => {
                     {user.name ?
                       <Text className="kb" mr={2} fontSize={resp("1rem", "1.2rem", "1.2rem")}>{user.name}</Text> :
                       <Tooltip label="このユーザーは未ログインのため名前を取得できませんでした">
-                        <Text className="kb" mr={2} fontSize={resp("1rem", "1.2rem", "1.2rem")}>{"認可済みユーザー"}</Text>
+                        <Text className="kb" mr={2} fontSize={resp("1rem", "1.2rem", "1.2rem")} cursor="default">{"認可済みユーザー"}</Text>
                       </Tooltip>
                     }
                     <Text className="kr" ml={2} mr={1} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">{flattenSymbols[user.department]}</Text>
