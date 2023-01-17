@@ -33,7 +33,7 @@ const ViewConfirmedAttendances: NextPage = () => {
 
       <Body title="出勤確定リスト確認" statusMessage="2人のユーザーが出勤確定 / 1人のユーザーが出勤辞退しました">
         <Box w={resp("100%", "80%", "80%")} mx="auto">
-          <ScheduleSelector value={selectedSchedule} dispatch={setSelectedSchedule}></ScheduleSelector>
+          <ScheduleSelector value={selectedSchedule} dispatch={setSelectedSchedule} requireCandidates={false}></ScheduleSelector>
 
           <VStack mt={5} divider={<StackDivider borderColor="gray.200" />} spacing={3} align="stretch">
             <Flex justifyContent="space-between" alignItems="center">

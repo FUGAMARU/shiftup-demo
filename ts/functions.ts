@@ -7,7 +7,7 @@ export const resp = (base: number | string, md: number | string, lg: number | st
 }
 
 export const formatDateForDisplay = (str: string) => {
-  return format(new Date(str), "yyyy/MM/dd (E)", { locale: ja })
+  if (str) return format(new Date(str), "yyyy/MM/dd (E)", { locale: ja })
 }
 
 export const toHankaku = (str: string) => {
