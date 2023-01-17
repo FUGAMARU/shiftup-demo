@@ -3,7 +3,7 @@ import type { NextPage } from "next"
 import Head from "next/head"
 
 // React Hooks
-import { useCallback, useState } from "react"
+import { useCallback, useState, useMemo } from "react"
 
 // Custom Hooks
 import { useResponsive } from "hooks/useResponsive"
@@ -40,6 +40,8 @@ const ConfirmAttendance: NextPage = () => {
   const { data, fetchErrorMessage, mutate } = getAllRequests()
   if (fetchErrorMessage) showToast("エラー", fetchErrorMessage, "error")
 
+  const blankRequests = useMemo(() => data?.filter(request => request.state === "Blank"), [data])
+
   const [clickedSchedule, setClickedSchedule] = useState<ClickedScheduleState>()
 
   const handleButtonClick = useCallback(async () => {
@@ -58,14 +60,14 @@ const ConfirmAttendance: NextPage = () => {
         <title>出勤確定処理 | ShiftUP!</title>
       </Head>
 
-      <Body title="出勤確定処理" statusMessage="出勤確定待ちの日程が3件あります">
+      <Body title="出勤確定処理" statusMessage={`出勤確定待ちの日程が${blankRequests ? blankRequests.length : ""}件あります`}>
         <Box w={resp("100%", "80%", "80%")} mx="auto">
           <VStack
             divider={<StackDivider borderColor="gray.200" />}
             spacing={3}
             align="stretch"
           >
-            {data?.filter(request => request.state === "Blank").map(request => {
+            {blankRequests?.map(request => {
               return (
                 <SimpleGrid key={request.openCampusDate} columns={{ sm: 1, md: 3, lg: 3 }} gridTemplateColumns={{ sm: "", md: "3.5fr 3.5fr 3fr", lg: "2.5fr 4.5fr 3fr" }} alignItems="center">
                   <Text className="kb" mx={resp("auto", 0, 0)} fontSize={resp("1rem", "1.2rem", "1.2rem")} textAlign="right">{formatDateForDisplay(request.openCampusDate)}</Text>
