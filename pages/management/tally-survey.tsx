@@ -123,11 +123,7 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
 
       setSendButtonState("checkmark")
 
-      setTimeout(() => {
-        up(document.getElementById("section1") as HTMLElement, { duration: 500, easing: "ease-in-out" })
-        up(document.getElementById("section") as HTMLElement, { duration: 500, easing: "ease-in-out" })
-      }, 1500)
-
+      setTimeout(() => setSelectedSchedule(""), 1500)
     } catch {
       setSendButtonState("error")
     }
