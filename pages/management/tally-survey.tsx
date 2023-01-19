@@ -8,6 +8,7 @@ import { useState, useMemo, useCallback, useEffect } from "react"
 // Custom Hooks
 import { useStyledToast } from "hooks/useStyledToast"
 import { useApiConnection } from "hooks/useApiConnection"
+import { useCheckbox } from "hooks/useCheckbox"
 
 // Chakra UI Components
 import { Box, Flex, VStack, StackDivider, Text, Checkbox, Grid, useDisclosure } from "@chakra-ui/react"
@@ -68,9 +69,10 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
 
   // ユーザーリスト
   const { isOpen: isCandidatesPopoverOpened, onOpen: openCandidatesPopover, onClose: closeCandidatesPopover } = useDisclosure()
+  const { checkboxItems, setCheckbox, checkedItems, toggleItemState } = useCheckbox()
   const [candidates, setCandidates] = useState<Candidate[]>()
-  const [checkedList, setCheckedList] = useState<DynamicObject>({})
 
+  // 日程選択時
   useEffect(() => {
     (async () => {
       if (!!!selectedSchedule) {
@@ -82,35 +84,27 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
         const surveyResult = await getSurveyResult(selectedSurveyId)
 
         const availableCasts = surveyResult.openCampuses.filter(schedule => schedule.date === selectedScheduleValue)[0].availableCasts
-        const checked: DynamicObject = {}
-        availableCasts.forEach(val => {
-          checked[val.id] = val.attendanceRequested
-        })
-        setCheckedList(checked)
+
+        const initObj: DynamicObject = {}
+        availableCasts.forEach(val => initObj[val.id] = val.attendanceRequested)
+        setCheckbox(initObj)
+
         setCandidates(availableCasts)
         down(document.getElementById("section") as HTMLElement, { duration: 500, easing: "ease-in-out" })
       } catch (e) {
         if (e instanceof Error) showToast("エラー", e.message, "error")
       }
     })()
-  }, [selectedSchedule, getSurveyResult, showToast, selectedScheduleValue, selectedSurveyId])
-
-  const toggleChecked = useCallback((id: string) => {
-    const copied = Object.assign({}, checkedList)
-    copied[id] = !!!copied[id]
-    setCheckedList(copied)
-  }, [checkedList, setCheckedList])
-
-  const getCheckedUsers = useCallback(() => Object.keys(checkedList).filter(key => checkedList[key]), [checkedList])
+  }, [selectedSchedule, getSurveyResult, showToast, selectedScheduleValue, selectedSurveyId, setCheckbox])
 
   const checkValidation = useCallback(() => {
-    if (!!!getCheckedUsers().length) {
+    if (!!!checkedItems.length) {
       openCandidatesPopover()
       return false
     }
 
     return true
-  }, [getCheckedUsers, openCandidatesPopover])
+  }, [openCandidatesPopover, checkedItems])
 
   const handleSendButtonClick = useCallback(async () => {
     if (!!!checkValidation()) return
@@ -119,7 +113,7 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
     await standBy(1000)
 
     try {
-      await sendRequests(selectedScheduleValue, getCheckedUsers())
+      await sendRequests(selectedScheduleValue, checkedItems)
 
       setSendButtonState("checkmark")
 
@@ -127,7 +121,7 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
     } catch {
       setSendButtonState("error")
     }
-  }, [setSendButtonState, getCheckedUsers, checkValidation, sendRequests, selectedScheduleValue])
+  }, [setSendButtonState, checkValidation, sendRequests, selectedScheduleValue, checkedItems])
 
   return (
     <Box>
@@ -169,7 +163,7 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
                     <VStack py={5} divider={<StackDivider borderColor="gray.200" />} spacing={3} align="stretch">
                       {candidates?.map((candidate, idx) => {
                         return (
-                          <Checkbox key={idx} isChecked={checkedList[candidate.id]} onChange={() => toggleChecked(candidate.id)}>
+                          <Checkbox key={idx} isChecked={checkboxItems[candidate.id]} onChange={() => toggleItemState(candidate.id)}>
                             <Flex alignItems="center">
                               <Text className="kr">{candidate.name}</Text>
                               <Text pl={2} fontSize={10} color="#898989">{flattenSymbols[candidate.schoolProfile.department]}</Text>
