@@ -82,12 +82,6 @@ export const useApiConnection = () => {
     }
   }, [isProdEnv])
 
-  /*const getAllAvailableForTabulationSurveys = useCallback(() => {
-    const { data: surveys, fetchErrorMessage } = getAllSurveys()
-    const hoge = surveys?.filter(survey => survey.answerCount !== 0).map(survey => survey.id)
-    console.log(hoge)
-  }, [])*/
-
   const getAllUsers = useCallback(() => {
     const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/invites` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/invites`
     const { data, error, mutate } = useSWR<User[], Error>(url, fetcher, { fallback: [] })
@@ -96,8 +90,8 @@ export const useApiConnection = () => {
   }, [isProdEnv])
 
   const getAllRequests = useCallback(() => {
-    const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me/attendance/requests` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/requests`
-    const { data, error, mutate } = useSWR<Request[], Error>(url, fetcher, { fallback: [] })
+    const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me/attendance/requests/divided` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/requests`
+    const { data, error, mutate } = useSWR<Request, Error>(url, fetcher, { fallback: [] })
     const fetchErrorMessage = error ? "出勤依頼一覧の取得に失敗しました" : ""
     return { data, fetchErrorMessage, mutate }
   }, [isProdEnv])
