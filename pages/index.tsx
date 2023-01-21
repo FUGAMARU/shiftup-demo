@@ -28,19 +28,21 @@ const Home: NextPage = () => {
 
       {isInSession === null ? null : isInSession === true ? <MyPage /> : <Login />}
 
-      <Box w="7rem" mt={5} py={2} position="fixed" right={0} bottom={10} bg="#dbebff" borderTopLeftRadius={15} borderBottomLeftRadius={15}>
-        <Text className="ksb" textAlign="center">Recoil管理</Text>
-        <Text my={1} textAlign="center" fontSize="0.7rem">セッション</Text>
-        <Flex justifyContent="space-around" alignItems="center">
-          <Button size="xs" colorScheme="whatsapp" onClick={() => setInSession(true)}>登録</Button>
-          <Button size="xs" colorScheme="red" onClick={() => setInSession(false)}>解除</Button>
-        </Flex>
-        <Text my={1} textAlign="center" fontSize="0.7rem">運営チーム</Text>
-        <Flex justifyContent="space-around" alignItems="center">
-          <Button size="xs" colorScheme="whatsapp" onClick={() => setIamManager(true)}>登録</Button>
-          <Button size="xs" colorScheme="red" onClick={() => setIamManager(false)}>解除</Button>
-        </Flex>
-      </Box>
+      {process.env.NODE_ENV !== "production" ?
+        <Box w="7rem" mt={5} py={2} position="fixed" right={0} bottom={10} bg="#dbebff" borderTopLeftRadius={15} borderBottomLeftRadius={15}>
+          <Text className="ksb" textAlign="center">Recoil管理</Text>
+          <Text my={1} textAlign="center" fontSize="0.7rem">セッション</Text>
+          <Flex justifyContent="space-around" alignItems="center">
+            <Button size="xs" colorScheme="whatsapp" onClick={() => setInSession(true)}>登録</Button>
+            <Button size="xs" colorScheme="red" onClick={() => setInSession(false)}>解除</Button>
+          </Flex>
+          <Text my={1} textAlign="center" fontSize="0.7rem">運営チーム</Text>
+          <Flex justifyContent="space-around" alignItems="center">
+            <Button size="xs" colorScheme="whatsapp" onClick={() => setIamManager(true)}>登録</Button>
+            <Button size="xs" colorScheme="red" onClick={() => setIamManager(false)}>解除</Button>
+          </Flex>
+        </Box>
+        : null}
     </Box>
   )
 }

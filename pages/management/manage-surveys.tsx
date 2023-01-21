@@ -73,7 +73,6 @@ const ManageSurveys: NextPage = () => {
   const toggleAvailable = useCallback(async (target: string, to: boolean) => {
     try {
       await switchSurveyAvailability(target, to)
-
       mutate()
       showToast("成功", "アンケートの受付状態を切り替えました", "success")
     } catch (e) {

@@ -11,7 +11,7 @@ import axios, { isAxiosError } from "axios"
 import { Survey } from "interfaces/Survey"
 import { AvailableSurvey } from "interfaces/AvailableSurvey"
 import { SurveyResult } from "interfaces/SurveyResult"
-import { User } from "interfaces/User"
+import { User, UserNew } from "interfaces/User"
 import { CreateSurvey } from "interfaces/request/CreateSurvey"
 import { AddApprovedUser } from "interfaces/request/AddApprovedUser"
 import { Request } from "interfaces/Request"
@@ -96,6 +96,18 @@ export const useApiConnection = () => {
     return { data, fetchErrorMessage, mutate }
   }, [isProdEnv])
 
+  // リクエストを2回送る関係でuseSWRではなくAxiosを使用
+  const getConfirmedUsers = useCallback(async (date: string) => {
+    try {
+      const baseUrl = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/attendance/requests/${date}/casts?state=` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/requests/${date}?state=`
+      const acceptedUsers = date ? (await axios.get<UserNew[]>(baseUrl + "Accepted")).data : undefined
+      const declinedUsers = date ? (await axios.get<UserNew[]>(baseUrl + "Declined")).data : undefined
+      return { acceptedUsers, declinedUsers }
+    } catch {
+      throw new Error("出勤確定/辞退一覧の取得に失敗しました")
+    }
+  }, [isProdEnv])
+
   /* Request Functions */
   const sendRequests = useCallback(async (date: string, users: string[]) => {
     try {
@@ -170,5 +182,14 @@ export const useApiConnection = () => {
     }
   }, [isProdEnv])
 
-  return { getSession, getRole, getCurrentTime, getAllSurveys, getAllSchedules, getAnswerableSurveys, getSurveyResult, getAllUsers, getAllRequests, sendRequests, createSurvey, answerSurvey, switchSurveyAvailability, deleteSurvey, addApprovedUser, deleteUser, confirmAttendance }
+  const changeRequestState = useCallback(async (date: string, userId: string, state: RequestState) => {
+    try {
+      const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me/attendance/requests/${date}/${userId}/state` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/requests/${date}`
+      await axios.put(url, state)
+    } catch {
+      throw new Error("出勤依頼の確定状態の変更に失敗しました")
+    }
+  }, [isProdEnv])
+
+  return { getSession, getRole, getCurrentTime, getAllSurveys, getAllSchedules, getAnswerableSurveys, getSurveyResult, getAllUsers, getAllRequests, getConfirmedUsers, sendRequests, createSurvey, answerSurvey, switchSurveyAvailability, deleteSurvey, addApprovedUser, deleteUser, confirmAttendance, changeRequestState }
 }

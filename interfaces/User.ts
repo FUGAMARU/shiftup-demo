@@ -9,3 +9,14 @@ export interface User {
   department: Department,
   position: Position
 }
+
+export interface UserNew {
+  id: string,
+  studentNumber: string,
+  name: string,
+  position: Position,
+  schoolProfile: {
+    email: string,
+    department: Department
+  }
+}
