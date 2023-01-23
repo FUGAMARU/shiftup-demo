@@ -23,7 +23,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faXmark } from "@fortawesome/free-solid-svg-icons"
 
 // Functions
-import { resp, toFlattenObject } from "ts/functions"
+import { resp, toFlattenObject, formatDateForDisplay } from "ts/functions"
 
 // Types
 import { ConstantSymbols } from "types/Symbols"
@@ -55,10 +55,11 @@ const ViewConfirmedAttendances: NextPage<Props> = ({ symbols }) => {
   const { showToast } = useStyledToast()
   const flattenSymbols = useMemo(() => toFlattenObject(symbols), [symbols])
   const { getConfirmedUsers, changeRequestState } = useApiConnection()
+  const [selectedUser, setSelectedUser] = useState("")
   const [surveyIdAndSchedule, setSelectedSchedule] = useState("")
   const selectedSchedule = useMemo(() => surveyIdAndSchedule.split("|")[1], [surveyIdAndSchedule])
-  const [selectedUser, setSelectedUser] = useState("")
-  const { isOpen: isModalOpened, onOpen: openModal, onClose: closeModal } = useDisclosure()
+  const { isOpen: isModalOpened1, onOpen: openModal1, onClose: closeModal1 } = useDisclosure()
+  const { isOpen: isModalOpened2, onOpen: openModal2, onClose: closeModal2 } = useDisclosure()
 
   const [acceptedUsers, setAcceptedUsers] = useState<UserNew[] | undefined>()
   const [declinedUsers, setDeclinedUsers] = useState<UserNew[] | undefined>()
@@ -74,6 +75,14 @@ const ViewConfirmedAttendances: NextPage<Props> = ({ symbols }) => {
     })()
   }, [selectedSchedule, getConfirmedUsers, setAcceptedUsers, setDeclinedUsers, showToast])
   useEffect(() => mutate(), [mutate])
+
+  useEffect(() => {
+    if (!!!selectedSchedule) return
+
+    if (acceptedUsers?.length === 0 && declinedUsers?.length === 0) {
+      openModal2()
+    }
+  }, [selectedSchedule, acceptedUsers, declinedUsers])
 
   const handleButtonClick = useCallback(async (userId: string, state: RequestState) => {
     try {
@@ -109,7 +118,7 @@ const ViewConfirmedAttendances: NextPage<Props> = ({ symbols }) => {
                       <Button mr={resp(3, 5, 5)} size="xs" colorScheme="whatsapp" variant="outline" onClick={() => handleButtonClick(user.id, "Declined")}>出勤確定済み</Button>
                     </Tooltip>
                     <Tooltip label="出勤確定状態を取り消す">
-                      <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color="#159848" cursor="pointer" onClick={() => { openModal(); setSelectedUser(user.id) }} />
+                      <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color="#159848" cursor="pointer" onClick={() => { openModal1(); setSelectedUser(user.id) }} />
                     </Tooltip>
                   </Flex>
                 </Flex>
@@ -129,7 +138,7 @@ const ViewConfirmedAttendances: NextPage<Props> = ({ symbols }) => {
                       <Button mr={resp(3, 5, 5)} size="xs" colorScheme="red" variant="outline" onClick={() => handleButtonClick(user.id, "Accepted")}>出勤辞退済み</Button>
                     </Tooltip>
                     <Tooltip label="出勤辞退状態を取り消す">
-                      <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color="#c43030" cursor="pointer" onClick={() => { openModal(); setSelectedUser(user.id) }} />
+                      <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color="#c43030" cursor="pointer" onClick={() => { openModal1(); setSelectedUser(user.id) }} />
                     </Tooltip>
                   </Flex>
                 </Flex>
@@ -139,9 +148,13 @@ const ViewConfirmedAttendances: NextPage<Props> = ({ symbols }) => {
         </Box>
       </Body>
 
-      <BlurModal isOpen={isModalOpened} onClose={closeModal} title="確認" text="本当に出勤確定/辞退を取り消してもよろしいですか？">
-        <Button mr={1} colorScheme="red" onClick={() => { handleButtonClick(selectedUser, "Blank"); closeModal() }}>削除する</Button>
-        <Button ml={1} colorScheme="gray" variant="outline" onClick={closeModal}>削除しない</Button>
+      <BlurModal isOpen={isModalOpened1} onClose={closeModal1} title="確認" text="本当に出勤確定/辞退を取り消してもよろしいですか？">
+        <Button mr={1} colorScheme="red" onClick={() => { handleButtonClick(selectedUser, "Blank"); closeModal1() }}>削除する</Button>
+        <Button ml={1} colorScheme="gray" variant="outline" onClick={closeModal1}>削除しない</Button>
+      </BlurModal>
+
+      <BlurModal isOpen={isModalOpened2} onClose={closeModal2} title="エラー" text={`${formatDateForDisplay(selectedSchedule)} の出勤を確定/辞退しているユーザーは1人もいません`}>
+        <Button ml={1} colorScheme="gray" variant="outline" onClick={() => { closeModal2(); setSelectedSchedule("") }}>閉じる</Button>
       </BlurModal>
     </Box>
   )
