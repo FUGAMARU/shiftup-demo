@@ -24,6 +24,7 @@ import { faCheckCircle } from "@fortawesome/free-regular-svg-icons"
 import { useRecoilValue } from "recoil"
 import { sessionState } from "atoms/SessionStateAtom"
 import { isManager } from "atoms/RoleAtom"
+import { name } from "atoms/NameAtom"
 
 // Functions
 import { resp } from "ts/functions"
@@ -33,6 +34,7 @@ const Header = () => {
 
   const isInSession = useRecoilValue(sessionState)
   const amIManager = useRecoilValue(isManager)
+  const myName = useRecoilValue(name)
 
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
   const { isOpen: isMenuOpened, onOpen: openMenu, onClose: closeMenu } = useDisclosure()
@@ -116,7 +118,7 @@ const Header = () => {
             >
               <PopoverTrigger>
                 <Flex className="flex-center" w={resp(90, 150, 150)} h={50} textAlign="center" cursor="pointer" borderRadius={15} _hover={{ background: "rgba(255, 255, 255, 0.2)" }} transition=".2s cubic-bezier(0.250, 0.250, 0.750, 0.750)">
-                  <Text className="ksb" display="inline" fontSize={resp(13, 15, 17)} color="white">柏崎星奈</Text>
+                  <Text className="ksb" display="inline" fontSize={resp(13, 15, 17)} color="white">{myName}</Text>
                   {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" display="inline" fontSize={resp(10, 10, 12)} ml={1} color="white">さん</Text> : null}
                 </Flex>
               </PopoverTrigger>

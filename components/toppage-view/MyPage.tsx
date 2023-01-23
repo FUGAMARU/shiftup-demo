@@ -1,5 +1,5 @@
-// React Hooks
-import { useState } from "react"
+// React
+import { useState, memo } from "react"
 
 // Chakra UI Components
 import { Box, Flex, SimpleGrid } from "@chakra-ui/react"
@@ -13,12 +13,17 @@ import SimpleButton from "components/button/SimpleButton"
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core"
 import { faUpRightFromSquare, faCalendarCheck, faThumbsUp, faYenSign, faForward } from "@fortawesome/free-solid-svg-icons"
 import { faDiscord } from "@fortawesome/free-brands-svg-icons"
+import { useRecoilValue } from "recoil"
+
+// Global State Management
+import { name } from "atoms/NameAtom"
 
 // Functions
 import { resp } from "ts/functions"
 
 const MyPage = () => {
   const [cardAnimationTrigger, setCardAnimationTrigger] = useState(false)
+  const myName = useRecoilValue(name)
 
   const viewTodaySchedule = () => {
     // 「今日のタイムテーブルを見る」 ボタンをクリックした時の処理をそのうち書く
@@ -30,7 +35,7 @@ const MyPage = () => {
 
       <Flex minH="65vh" maxW={resp("100%", "100%", "85%")} mx="auto" justifyContent="center" alignItems="center">
         <Box>{/* 消さない！ */}
-          <GreetingMessage name="柏崎星奈" fireCardAnimationTrigger={() => { setCardAnimationTrigger(true) }} />
+          <GreetingMessage name={myName} fireCardAnimationTrigger={() => { setCardAnimationTrigger(true) }} />
 
           <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={5} justifyItems="center" alignItems="center">
             <Box className={cardAnimationTrigger ? "animate__animated card-in card1" : "hidden"}>
@@ -58,4 +63,4 @@ const MyPage = () => {
   )
 }
 
-export default MyPage
+export default memo(MyPage)

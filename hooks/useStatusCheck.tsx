@@ -11,15 +11,18 @@ import { useApiConnection } from "hooks/useApiConnection"
 import { useSetRecoilState } from "recoil"
 import { sessionState } from "atoms/SessionStateAtom"
 import { isManager } from "atoms/RoleAtom"
+import { name } from "atoms/NameAtom"
 
 export const useStatusCheck = () => {
-  const { getSession, getRole } = useApiConnection()
+  const { getSession, getRole, getMyName } = useApiConnection()
 
   const { statusCode, error: sessionCheckError } = getSession()
   const { data: role, error: roleCheckError } = getRole()
+  const { data: myName, error: nameGetError } = getMyName()
 
   const setSessionState = useSetRecoilState(sessionState)
   const setManager = useSetRecoilState(isManager)
+  const setName = useSetRecoilState(name)
 
   // ログイン状態チェック
   useEffect(() => {
@@ -54,4 +57,16 @@ export const useStatusCheck = () => {
 
     setManager(true)
   }, [role, roleCheckError])
+
+  // 名前取得
+  useEffect(() => {
+    if (!!!myName) return
+
+    if (nameGetError) {
+      Router.push("/error/unknown-error")
+      return
+    }
+
+    setName(myName)
+  }, [myName, nameGetError])
 }

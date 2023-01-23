@@ -33,8 +33,14 @@ export const useApiConnection = () => {
   /* Fetch Functions */
   const getSession = useCallback(() => {
     const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/session-available` : "http://httpbin.org/status/200"
-    const { data: statusCode, error } = useSWR(url, statusCodeFetcher, { fallback: [] })
+    const { data: statusCode, error } = useSWR(url, statusCodeFetcher)
     return { statusCode, error }
+  }, [isProdEnv])
+
+  const getMyName = useCallback(() => {
+    const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me/name` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/name`
+    const { data, error } = useSWR(url, fetcher)
+    return { data, error }
   }, [isProdEnv])
 
   const getRole = useCallback(() => {
@@ -191,5 +197,5 @@ export const useApiConnection = () => {
     }
   }, [isProdEnv])
 
-  return { getSession, getRole, getCurrentTime, getAllSurveys, getAllSchedules, getAnswerableSurveys, getSurveyResult, getAllUsers, getAllRequests, getConfirmedUsers, sendRequests, createSurvey, answerSurvey, switchSurveyAvailability, deleteSurvey, addApprovedUser, deleteUser, confirmAttendance, changeRequestState }
+  return { getSession, getMyName, getRole, getCurrentTime, getAllSurveys, getAllSchedules, getAnswerableSurveys, getSurveyResult, getAllUsers, getAllRequests, getConfirmedUsers, sendRequests, createSurvey, answerSurvey, switchSurveyAvailability, deleteSurvey, addApprovedUser, deleteUser, confirmAttendance, changeRequestState }
 }
