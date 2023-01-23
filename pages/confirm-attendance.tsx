@@ -80,24 +80,28 @@ const ConfirmAttendance: NextPage = () => {
           </VStack>
         </Box>
 
-        <Box mt={5}><StatusText text={data ? `出勤確定/辞退済みの日程が${data.respondedRequests.length}件存在します` : ""} /></Box>
-        <Box w={resp("100%", "80%", "80%")} mx="auto">
-          <VStack
-            divider={<StackDivider borderColor="gray.200" />}
-            spacing={3}
-            align="stretch"
-          >
-            {data?.respondedRequests.map(request => {
-              return (
-                <SimpleGrid key={request.openCampusDate} columns={{ sm: 1, md: 3, lg: 3 }} gridTemplateColumns={{ sm: "", md: "3.5fr 3.5fr 3fr", lg: "2.5fr 4.5fr 3fr" }} alignItems="center">
-                  <Text className="kb" mx={resp("auto", 0, 0)} fontSize={resp("1rem", "1.2rem", "1.2rem")} textAlign="right">{formatDateForDisplay(request.openCampusDate)}</Text>
-                  <Text className="kr" mx={resp("auto", 0, 0)} px={resp("auto", 3, 3)} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} textAlign={responsiveType === "SmartPhone" ? "center" : "left"} color="#5f5f5f">{request.surveyName}</Text>
-                  <Text className="kb" textAlign="center" color={request.state === "Accepted" ? "#159848" : "#c43030"}>{request.state === "Accepted" ? "確定済み" : "辞退済み"}</Text>
-                </SimpleGrid>
-              )
-            })}
-          </VStack>
-        </Box>
+        {data?.respondedRequests.length !== 0 ?
+          <Box>
+            <Box mt={5}><StatusText text={data ? `出勤確定/辞退済みの日程が${data.respondedRequests.length}件存在します` : ""} /></Box>
+            <Box w={resp("100%", "80%", "80%")} mx="auto">
+              <VStack
+                divider={<StackDivider borderColor="gray.200" />}
+                spacing={3}
+                align="stretch"
+              >
+                {data?.respondedRequests.sort((a, b) => new Date(b.openCampusDate).getTime() - new Date(a.openCampusDate).getTime()).map(request => {
+                  return (
+                    <SimpleGrid key={request.openCampusDate} columns={{ sm: 1, md: 3, lg: 3 }} gridTemplateColumns={{ sm: "", md: "3.5fr 3.5fr 3fr", lg: "2.5fr 4.5fr 3fr" }} alignItems="center">
+                      <Text className="kb" mx={resp("auto", 0, 0)} fontSize={resp("1rem", "1.2rem", "1.2rem")} textAlign="right">{formatDateForDisplay(request.openCampusDate)}</Text>
+                      <Text className="kr" mx={resp("auto", 0, 0)} px={resp("auto", 3, 3)} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} textAlign={responsiveType === "SmartPhone" ? "center" : "left"} color="#5f5f5f">{request.surveyName}</Text>
+                      <Text className="kb" textAlign="center" color={request.state === "Accepted" ? "#159848" : "#c43030"}>{request.state === "Accepted" ? "確定済み" : "辞退済み"}</Text>
+                    </SimpleGrid>
+                  )
+                })}
+              </VStack>
+            </Box>
+          </Box>
+          : null}
       </Body>
 
       <BlurModal isOpen={isModalOpened} onClose={closeModal} title="確認" text={`本当に出勤を${clickedSchedule?.action === "Accepted" ? "確定" : "辞退"}してもよろしいですか？`}>

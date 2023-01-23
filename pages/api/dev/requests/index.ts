@@ -9,22 +9,22 @@ export default function handler(
       res.status(200).json({
         "canRespondRequests": [
           {
-            "openCampusDate": "2022-12-31",
+            "openCampusDate": "2022-12-11",
             "surveyName": "12月シフト募集"
           },
           {
-            "openCampusDate": "2022-12-11",
+            "openCampusDate": "2022-12-31",
             "surveyName": "12月シフト募集"
           }
         ],
         "respondedRequests": [
           {
-            "openCampusDate": "2022-12-05",
+            "openCampusDate": "2022-12-03",
             "state": "Accepted",
             "surveyName": "大学オープンキャンパス"
           },
           {
-            "openCampusDate": "2022-12-03",
+            "openCampusDate": "2022-12-05",
             "state": "Declined",
             "surveyName": "大学オープンキャンパス"
           }
