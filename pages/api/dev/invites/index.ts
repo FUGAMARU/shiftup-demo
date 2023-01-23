@@ -15,6 +15,13 @@ export default function handler(
           "position": "Manager"
         },
         {
+          "id": "G021C1249",
+          "studentNumber": "G021C1249",
+          "name": "可児江西也",
+          "department": "C2",
+          "position": "Manager"
+        },
+        {
           "id": "G021C1298",
           "studentNumber": "G021C1298",
           "name": "佐藤啓介",
@@ -37,7 +44,6 @@ export default function handler(
         }
       ])
       break
-
     case "POST":
       res.status(201).send("")
       break

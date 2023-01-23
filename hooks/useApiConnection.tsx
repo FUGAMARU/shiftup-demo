@@ -19,6 +19,7 @@ import { Request } from "interfaces/Request"
 // Types
 import { UseCheckboxGroupReturn } from "@chakra-ui/react"
 import { RequestState } from "types/RequestState"
+import { Position } from "types/Position"
 
 // Error Classes
 import AlreadyAddedError from "classes/AlreadyAddedError"
@@ -170,6 +171,15 @@ export const useApiConnection = () => {
     }
   }, [isProdEnv])
 
+  const switchUserPosition = useCallback(async (userId: string, to: Position) => {
+    try {
+      const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/${userId}/position` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/invites/${userId}`
+      await axios.put(url, to)
+    } catch {
+      throw new Error("ユーザーの役職の切り替えに失敗しました")
+    }
+  }, [isProdEnv])
+
   const deleteUser = useCallback(async (userId: string) => {
     try {
       const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/invites/${userId}` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/invites/${userId}`
@@ -197,5 +207,5 @@ export const useApiConnection = () => {
     }
   }, [isProdEnv])
 
-  return { getSession, getMyName, getRole, getCurrentTime, getAllSurveys, getAllSchedules, getAnswerableSurveys, getSurveyResult, getAllUsers, getAllRequests, getConfirmedUsers, sendRequests, createSurvey, answerSurvey, switchSurveyAvailability, deleteSurvey, addApprovedUser, deleteUser, confirmAttendance, changeRequestState }
+  return { getSession, getMyName, getRole, getCurrentTime, getAllSurveys, getAllSchedules, getAnswerableSurveys, getSurveyResult, getAllUsers, getAllRequests, getConfirmedUsers, sendRequests, createSurvey, answerSurvey, switchSurveyAvailability, switchUserPosition, deleteSurvey, addApprovedUser, deleteUser, confirmAttendance, changeRequestState }
 }

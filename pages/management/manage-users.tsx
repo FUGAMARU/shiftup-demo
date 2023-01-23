@@ -26,6 +26,11 @@ import { resp, toFlattenObject } from "ts/functions"
 
 // Types
 import { ConstantSymbols } from "types/Symbols"
+import { Position } from "types/Position"
+
+// Global State Management
+import { useRecoilValue } from "recoil"
+import { name } from "atoms/NameAtom"
 
 // Filter
 import { withSession } from "hoc/withSession"
@@ -52,7 +57,8 @@ const ManageUsers: NextPage<Props> = ({ symbols }) => {
   const [clickedUserId, setClickedUserId] = useState("")
   const flattenSymbols = useMemo(() => toFlattenObject(symbols), [symbols])
   const { isOpen: isModalOpened, onOpen: openModal, onClose: closeModal } = useDisclosure()
-  const { getAllUsers, deleteUser } = useApiConnection()
+  const { getAllUsers, switchUserPosition, deleteUser } = useApiConnection()
+  const myName = useRecoilValue(name)
 
   const { data: users, fetchErrorMessage, mutate } = getAllUsers()
   if (fetchErrorMessage) showToast("エラー", fetchErrorMessage, "error")
@@ -66,6 +72,16 @@ const ManageUsers: NextPage<Props> = ({ symbols }) => {
     if (!!!matches) return `'${usernameInput}'にマッチするユーザーは存在しません`
     return `'${usernameInput}'にマッチするユーザーが${matches}名存在します`
   }, [users, usernameInput, filteredUsers])
+
+  const handleSwitchUserPosition = useCallback(async (userId: string, to: Position) => {
+    try {
+      await switchUserPosition(userId, to)
+      mutate()
+      showToast("成功", `ユーザーの役職を${to === "Manager" ? "運営チーム" : "キャスト"}に切り替えました`, "success")
+    } catch (e) {
+      if (e instanceof Error) showToast("エラー", e.message, "error")
+    }
+  }, [mutate, showToast, switchUserPosition])
 
   const handleDeleteUser = useCallback(async (userId: string) => {
     try {
@@ -109,14 +125,16 @@ const ManageUsers: NextPage<Props> = ({ symbols }) => {
                     <Text className="kr" ml={2} mr={1} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">{flattenSymbols[user.department]}</Text>
                     {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" ml={1} fontSize="0.75rem" color="#5f5f5f">{user.studentNumber}</Text> : null}
                   </Flex>
-                  <Flex alignItems="center">
-                    <Tooltip label={user.position === "Manager" ? "キャストに役職を切り替える" : "運営メンバーに役職を切り替える"}>
-                      <Button mr={resp(3, 5, 5)} size="xs" colorScheme={user.position === "Manager" ? "orange" : "cyan"} variant="outline">{user.position === "Manager" ? "運営メンバー" : "キャスト"}</Button>
-                    </Tooltip>
-                    <Tooltip label="ユーザーを削除する">
-                      <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color={user.position === "Manager" ? "#c15520" : "#00a4c4"} cursor="pointer" onClick={() => { openModal(); setClickedUserId(user.id) }} />
-                    </Tooltip>
-                  </Flex>
+                  {user.name !== myName ?
+                    <Flex alignItems="center">
+                      <Tooltip label={user.position === "Manager" ? "キャストに役職を切り替える" : "運営チームに役職を切り替える"}>
+                        <Button mr={resp(3, 5, 5)} size="xs" colorScheme={user.position === "Manager" ? "orange" : "cyan"} variant="outline" onClick={() => handleSwitchUserPosition(user.id, user.position === "Manager" ? "Cast" : "Manager")}>{user.position === "Manager" ? "運営チーム" : "キャスト"}</Button>
+                      </Tooltip>
+                      <Tooltip label="ユーザーを削除する">
+                        <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color={user.position === "Manager" ? "#c15520" : "#00a4c4"} cursor="pointer" onClick={() => { openModal(); setClickedUserId(user.id) }} />
+                      </Tooltip>
+                    </Flex>
+                    : null}
                 </Flex>
               )
             })}

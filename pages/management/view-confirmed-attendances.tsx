@@ -82,7 +82,7 @@ const ViewConfirmedAttendances: NextPage<Props> = ({ symbols }) => {
     if (acceptedUsers?.length === 0 && declinedUsers?.length === 0) {
       openModal2()
     }
-  }, [selectedSchedule, acceptedUsers, declinedUsers])
+  }, [selectedSchedule, acceptedUsers, declinedUsers, openModal2])
 
   const handleButtonClick = useCallback(async (userId: string, state: RequestState) => {
     try {
