@@ -98,9 +98,11 @@ const ManageSurveys: NextPage = () => {
 
       <Body title="アンケート管理" statusMessage={statusMessage}>
         <Box w={resp("100%", "80%", "80%")} mx="auto">
-          <Box textAlign="center" mb={8}>
-            <Input w={resp("80%", "60%", "60%")} variant="flushed" placeholder="タイトルを入力してアンケートを検索…" textAlign="center" focusBorderColor="#48c3eb" onChange={e => setSurveyNameInput(e.target.value)} />
-          </Box>
+          {filteredSurveys?.length ?
+            <Box textAlign="center" mb={8}>
+              <Input w={resp("80%", "60%", "60%")} variant="flushed" placeholder="タイトルを入力してアンケートを検索…" textAlign="center" focusBorderColor="#48c3eb" onChange={e => setSurveyNameInput(e.target.value)} />
+            </Box>
+            : null}
 
           <VStack
             divider={<StackDivider borderColor="gray.200" />}
@@ -139,13 +141,13 @@ const ManageSurveys: NextPage = () => {
             })}
           </VStack>
         </Box>
-      </Body>
+      </Body >
 
       <BlurModal isOpen={isModalOpened} onClose={closeModal} title="確認" text="本当にアンケートを削除してもよろしいですか？">
         <Button mr={1} colorScheme="red" onClick={() => { handleDeleteSurvey(clickedSurveyId); closeModal() }}>削除する</Button>
         <Button ml={1} colorScheme="gray" variant="outline" onClick={closeModal}>削除しない</Button>
       </BlurModal>
-    </Box>
+    </Box >
   )
 }
 

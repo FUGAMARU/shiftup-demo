@@ -85,9 +85,11 @@ const ManageUsers: NextPage<Props> = ({ symbols }) => {
 
       <Body title="ユーザー管理" statusMessage={statusMessage}>
         <Box w={resp("100%", "80%", "80%")} mx="auto">
-          <Box textAlign="center" mb={8}>
-            <Input w={resp("80%", "60%", "60%")} variant="flushed" placeholder="名前を入力してユーザーを検索…" textAlign="center" focusBorderColor="#48c3eb" onChange={e => setUsernameInput(e.target.value)} />
-          </Box>
+          {filteredUsers?.length ?
+            <Box textAlign="center" mb={8}>
+              <Input w={resp("80%", "60%", "60%")} variant="flushed" placeholder="名前を入力してユーザーを検索…" textAlign="center" focusBorderColor="#48c3eb" onChange={e => setUsernameInput(e.target.value)} />
+            </Box>
+            : null}
 
           <VStack
             divider={<StackDivider borderColor="gray.200" />}
