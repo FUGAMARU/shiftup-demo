@@ -16,7 +16,7 @@ import { Box, Flex, Text, VStack, StackDivider, Checkbox, Select, useCheckboxGro
 import Body from "components/Body"
 import GizaHeading from "components/heading/GizaHeading"
 import SendButton from "components/button/SendButton"
-import BlurModal from "components/BlurModal"
+import ButtonModal from "components/modal/ButtonModal"
 
 // Libraries
 import { up, down } from "slide-element"
@@ -118,10 +118,10 @@ const AnswerSurvey: NextPage = () => {
         </Box>
       </Body>
 
-      <BlurModal isOpen={isModalOpened} onClose={closeModal} title="確認" text="日程が1つも選択されていませんが送信してもよろしいですか？">
+      <ButtonModal isOpen={isModalOpened} onClose={closeModal} title="確認" text="日程が1つも選択されていませんが送信してもよろしいですか？">
         <Button mr={1} colorScheme="orange" onClick={() => { handleSendButtonClick(true); closeModal() }}>送信する</Button>
         <Button ml={1} colorScheme="gray" variant="outline" onClick={closeModal}>送信しない</Button>
-      </BlurModal>
+      </ButtonModal>
     </Box>
   )
 }

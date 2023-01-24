@@ -15,7 +15,7 @@ import { Box, Flex, Text, VStack, StackDivider, Button, Tooltip, Input, useDiscl
 
 // Custom Components
 import Body from "components/Body"
-import BlurModal from "components/BlurModal"
+import ButtonModal from "components/modal/ButtonModal"
 
 //Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -142,10 +142,10 @@ const ManageUsers: NextPage<Props> = ({ symbols }) => {
         </Box>
       </Body>
 
-      <BlurModal isOpen={isModalOpened} onClose={closeModal} title="確認" text="本当にユーザーを削除してもよろしいですか？">
+      <ButtonModal isOpen={isModalOpened} onClose={closeModal} title="確認" text="本当にユーザーを削除してもよろしいですか？">
         <Button mr={1} colorScheme="red" onClick={() => { handleDeleteUser(clickedUserId); closeModal() }}>削除する</Button>
         <Button ml={1} colorScheme="gray" variant="outline" onClick={closeModal}>削除しない</Button>
-      </BlurModal>
+      </ButtonModal>
     </Box>
   )
 }

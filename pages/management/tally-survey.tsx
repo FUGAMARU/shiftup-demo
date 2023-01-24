@@ -31,7 +31,7 @@ import { resp, toFlattenObject, standBy } from "ts/functions"
 import { Candidate } from "interfaces/Candidate"
 
 // Types
-import { ConstantSymbols } from "types/Symbols"
+import { Symbols } from "types/Symbols"
 import { SendButtonState } from "types/SendButtonState"
 
 // Filter
@@ -45,7 +45,7 @@ type Props = InferGetStaticPropsType<typeof getStaticProps>
 export const getStaticProps = async () => {
   const jsonPath = path.join(process.cwd(), "json", "symbols.json")
   const jsonText = fs.readFileSync(jsonPath, "utf-8")
-  const symbols = JSON.parse(jsonText) as ConstantSymbols
+  const symbols = JSON.parse(jsonText) as Symbols
 
   return {
     props: { symbols: symbols }
@@ -138,7 +138,9 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
                   <FontAwesomeIcon className="secondary-color" icon={faCalendar} fontSize={25}></FontAwesomeIcon>
                 </Flex>
                 <Flex pl={resp(6, 12, 12)} alignItems="center">
-                  <ScheduleSelector value={selectedSchedule} dispatch={setSelectedSchedule} requireCandidates={true} />
+                  <Box w={resp("90%", 270, 320)}>
+                    <ScheduleSelector value={selectedSchedule} dispatch={setSelectedSchedule} requireCandidates={true} />
+                  </Box>
                 </Flex>
               </Grid>
             </Box>

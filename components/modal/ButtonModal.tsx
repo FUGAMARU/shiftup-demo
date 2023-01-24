@@ -12,7 +12,7 @@ interface Props {
   children: React.ReactNode
 }
 
-const BlurModal = (props: Props) => {
+const ButtonModal = (props: Props) => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
 
   return (
@@ -32,4 +32,4 @@ const BlurModal = (props: Props) => {
   )
 }
 
-export default BlurModal
+export default ButtonModal

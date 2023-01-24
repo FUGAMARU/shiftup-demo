@@ -16,7 +16,7 @@ import { Box, VStack, StackDivider, Flex, Text, Tooltip, Button, useDisclosure }
 // Custom Components
 import Body from "components/Body"
 import ScheduleSelector from "components/select/ScheduleSelector"
-import BlurModal from "components/BlurModal"
+import ButtonModal from "components/modal/ButtonModal"
 
 //Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -26,7 +26,7 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons"
 import { resp, toFlattenObject, formatDateForDisplay } from "ts/functions"
 
 // Types
-import { ConstantSymbols } from "types/Symbols"
+import { Symbols } from "types/Symbols"
 import { RequestState } from "types/RequestState"
 
 // Interfaces
@@ -43,7 +43,7 @@ type Props = InferGetStaticPropsType<typeof getStaticProps>
 export const getStaticProps = async () => {
   const jsonPath = path.join(process.cwd(), "json", "symbols.json")
   const jsonText = fs.readFileSync(jsonPath, "utf-8")
-  const symbols = JSON.parse(jsonText) as ConstantSymbols
+  const symbols = JSON.parse(jsonText) as Symbols
 
   return {
     props: { symbols: symbols }
@@ -102,7 +102,9 @@ const ViewConfirmedAttendances: NextPage<Props> = ({ symbols }) => {
 
       <Body title="出勤確定リスト確認" statusMessage={acceptedUsers && declinedUsers ? `${acceptedUsers.length}人のユーザーが出勤確定 / ${declinedUsers.length}人のユーザーが出勤辞退しました` : ""}>
         <Box w={resp("100%", "80%", "80%")} mx="auto">
-          <ScheduleSelector value={surveyIdAndSchedule} dispatch={setSelectedSchedule} requireCandidates={false}></ScheduleSelector>
+          <Box w={resp("90%", 270, 320)} mx="auto">
+            <ScheduleSelector value={surveyIdAndSchedule} dispatch={setSelectedSchedule} requireCandidates={false} />
+          </Box>
 
           <VStack id="list" mt={5} divider={<StackDivider borderColor="gray.200" />} spacing={3} align="stretch">
             {acceptedUsers?.map(user => {
@@ -148,14 +150,14 @@ const ViewConfirmedAttendances: NextPage<Props> = ({ symbols }) => {
         </Box>
       </Body>
 
-      <BlurModal isOpen={isModalOpened1} onClose={closeModal1} title="確認" text="本当に出勤確定/辞退を取り消してもよろしいですか？">
+      <ButtonModal isOpen={isModalOpened1} onClose={closeModal1} title="確認" text="本当に出勤確定/辞退を取り消してもよろしいですか？">
         <Button mr={1} colorScheme="red" onClick={() => { handleButtonClick(selectedUser, "Blank"); closeModal1() }}>削除する</Button>
         <Button ml={1} colorScheme="gray" variant="outline" onClick={closeModal1}>削除しない</Button>
-      </BlurModal>
+      </ButtonModal>
 
-      <BlurModal isOpen={isModalOpened2} onClose={closeModal2} title="エラー" text={`${formatDateForDisplay(selectedSchedule)} の出勤を確定/辞退しているユーザーは1人もいません`}>
+      <ButtonModal isOpen={isModalOpened2} onClose={closeModal2} title="エラー" text={`${formatDateForDisplay(selectedSchedule)} の出勤を確定/辞退しているユーザーは1人もいません`}>
         <Button ml={1} colorScheme="gray" variant="outline" onClick={() => { closeModal2(); setSelectedSchedule("") }}>閉じる</Button>
-      </BlurModal>
+      </ButtonModal>
     </Box>
   )
 }

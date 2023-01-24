@@ -14,6 +14,7 @@ import { Flex, Text, Box, Drawer, SimpleGrid, DrawerBody, DrawerFooter, DrawerHe
 
 // Custom Components
 import MenuItem from "components/header/MenuItem"
+import ProfileEditModal from "components/modal/ProfileEditModal"
 
 // Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -39,6 +40,7 @@ const Header = () => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
   const { isOpen: isMenuOpened, onOpen: openMenu, onClose: closeMenu } = useDisclosure()
   const { isOpen: isUserMenuOpened, onOpen: openUserMenu, onClose: closeUserMenu } = useDisclosure()
+  const { isOpen: isProfileEditModalOpened, onOpen: openProfileEditModal, onClose: closeProfileEditModal } = useDisclosure()
 
   return (
     <Box>
@@ -126,7 +128,7 @@ const Header = () => {
                 <PopoverArrow bg="rgba(98, 168, 228, 0.2)" backdropFilter="blur(5px)" />
                 <PopoverBody borderRadius={20} boxShadow="xl">
                   <Flex alignItems="center" justifyContent="space-around">
-                    <Box className="ksb" w="8rem" p={2} fontSize="0.8rem" textAlign="center" cursor="pointer" borderRadius={15} color="white" bgGradient="linear(to-br, #a39af9, #469fff)" _hover={{ transform: "scale(1.05)" }} transition="all 0.3s 0s ease">
+                    <Box className="ksb" w="8rem" p={2} fontSize="0.8rem" textAlign="center" cursor="pointer" borderRadius={15} color="white" bgGradient="linear(to-br, #a39af9, #469fff)" _hover={{ transform: "scale(1.05)" }} transition="all 0.3s 0s ease" onClick={openProfileEditModal}>
                       <FontAwesomeIcon icon={faScrewdriverWrench} fontSize="1.3rem" />
                       <Text>ユーザー情報編集</Text>
                     </Box>
@@ -147,6 +149,8 @@ const Header = () => {
 
         </Flex>
       </Box>
+
+      <ProfileEditModal isOpen={isProfileEditModalOpened} onClose={closeProfileEditModal} />
     </Box>
   )
 }

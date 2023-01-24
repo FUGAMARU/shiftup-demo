@@ -24,7 +24,7 @@ export const standBy = (milliseconds: number) => {
   })
 }
 
-export const getInputType = (input: string) => {
+export const getSchoolType = (input: string) => {
   const patternNEEC = /^G\d{3}[A-Z]\d{4}$/
   const patternTUT = /^[\dA-Z]{3}\d{5}$/
 

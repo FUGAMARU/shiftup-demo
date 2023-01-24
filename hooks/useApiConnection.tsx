@@ -20,6 +20,7 @@ import { Request } from "interfaces/Request"
 import { UseCheckboxGroupReturn } from "@chakra-ui/react"
 import { RequestState } from "types/RequestState"
 import { Position } from "types/Position"
+import { Department } from "types/Department"
 
 // Error Classes
 import AlreadyAddedError from "classes/AlreadyAddedError"
@@ -207,5 +208,15 @@ export const useApiConnection = () => {
     }
   }, [isProdEnv])
 
-  return { getSession, getMyName, getRole, getCurrentTime, getAllSurveys, getAllSchedules, getAnswerableSurveys, getSurveyResult, getAllUsers, getAllRequests, getConfirmedUsers, sendRequests, createSurvey, answerSurvey, switchSurveyAvailability, switchUserPosition, deleteSurvey, addApprovedUser, deleteUser, confirmAttendance, changeRequestState }
+  const updateProfile = useCallback(async (newName: string, newDept: Department) => {
+    try {
+      const nameUpdateUrl = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me/name` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/name`
+      const deptUpdateUrl = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me/department` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/name`
+      await axios.put(nameUpdateUrl, newName)
+      await axios.put(deptUpdateUrl, newDept)
+    } catch {
+      throw new Error("プロフィールの更新に失敗しました")
+    }
+  }, [isProdEnv])
+  return { getSession, getMyName, getRole, getCurrentTime, getAllSurveys, getAllSchedules, getAnswerableSurveys, getSurveyResult, getAllUsers, getAllRequests, getConfirmedUsers, sendRequests, createSurvey, answerSurvey, switchSurveyAvailability, switchUserPosition, deleteSurvey, addApprovedUser, deleteUser, confirmAttendance, changeRequestState, updateProfile }
 }

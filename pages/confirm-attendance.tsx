@@ -16,7 +16,7 @@ import { Box, Flex, Text, SimpleGrid, StackDivider, VStack, Button, useDisclosur
 // Custom Components
 import Body from "components/Body"
 import StatusText from "components/text/StatusText"
-import BlurModal from "components/BlurModal"
+import ButtonModal from "components/modal/ButtonModal"
 
 // Functions
 import { resp, formatDateForDisplay } from "ts/functions"
@@ -104,10 +104,10 @@ const ConfirmAttendance: NextPage = () => {
           : null}
       </Body>
 
-      <BlurModal isOpen={isModalOpened} onClose={closeModal} title="確認" text={`本当に出勤を${clickedSchedule?.action === "Accepted" ? "確定" : "辞退"}してもよろしいですか？`}>
+      <ButtonModal isOpen={isModalOpened} onClose={closeModal} title="確認" text={`本当に出勤を${clickedSchedule?.action === "Accepted" ? "確定" : "辞退"}してもよろしいですか？`}>
         <Button mr={1} colorScheme={clickedSchedule?.action === "Accepted" ? "whatsapp" : "red"} onClick={() => { handleButtonClick(); closeModal() }}>{clickedSchedule?.action === "Accepted" ? "確定" : "辞退"}する</Button>
         <Button ml={1} colorScheme="gray" variant="outline" onClick={closeModal}>{clickedSchedule?.action === "Accepted" ? "確定" : "辞退"}しない</Button>
-      </BlurModal>
+      </ButtonModal>
     </Box>
   )
 }

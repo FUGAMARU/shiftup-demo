@@ -9,10 +9,10 @@ import { useApiConnection } from "hooks/useApiConnection"
 import { Box, Select, Button, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
-import BlurModal from "components/BlurModal"
+import ButtonModal from "components/modal/ButtonModal"
 
 // Functions
-import { resp, formatDateForDisplay } from "ts/functions"
+import { formatDateForDisplay } from "ts/functions"
 
 interface Props {
   value: string,
@@ -55,7 +55,7 @@ const ScheduleSelector = ({ value, dispatch, requireCandidates }: Props) => {
 
   return (
     <Box>
-      <Select w={resp("90%", 270, 320)} mx="auto" placeholder="日程を選択…" value={value} onChange={(e) => checkAvailableCasts(e)}>
+      <Select placeholder="日程を選択…" value={value} onChange={(e) => checkAvailableCasts(e)}>
         {items?.map(survey => {
           return (
             <optgroup key={survey.id} label={survey.name}>
@@ -65,9 +65,9 @@ const ScheduleSelector = ({ value, dispatch, requireCandidates }: Props) => {
         })}
       </Select>
 
-      <BlurModal isOpen={isModalOpened} onClose={closeModal} title="エラー" text={`${formatDateForDisplay(selectedSchedule)} に出勤可能と回答しているユーザーは1人もいません`}>
+      <ButtonModal isOpen={isModalOpened} onClose={closeModal} title="エラー" text={`${formatDateForDisplay(selectedSchedule)} に出勤可能と回答しているユーザーは1人もいません`}>
         <Button ml={1} colorScheme="gray" variant="outline" onClick={closeModal}>閉じる</Button>
-      </BlurModal>
+      </ButtonModal>
     </Box>
   )
 }

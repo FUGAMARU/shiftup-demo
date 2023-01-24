@@ -4,5 +4,12 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  res.status(200).json("可児江西也")
+  switch (req.method) {
+    case "GET":
+      res.status(200).json("可児江西也")
+      break
+    case "PUT":
+      res.status(204).send("")
+      break
+  }
 }

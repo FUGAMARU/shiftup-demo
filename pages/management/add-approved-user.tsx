@@ -3,25 +3,26 @@ import { NextPage, InferGetStaticPropsType } from "next"
 import Head from "next/head"
 
 // React Hooks
-import { useState, useRef, useEffect, useMemo, useCallback } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 
 // Custom Hooks
 import { useApiConnection } from "hooks/useApiConnection"
 
 // Chakra UI Components
-import { Flex, Grid, Text, Box, Input, Select, Radio, RadioGroup, Stack, useDisclosure } from "@chakra-ui/react"
+import { Flex, Grid, Text, Box, Input, Radio, RadioGroup, Stack, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
 import Body from "components/Body"
 import SendButton from "components/button/SendButton"
 import PopOver from "components/PopOver"
+import SymbolSelector from "components/select/SymbolSelector"
 
 // Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faPen, faCheck, faScrewdriverWrench, faUser } from "@fortawesome/free-solid-svg-icons"
 
 // Functions
-import { resp, toHankaku, standBy, getInputType } from "ts/functions"
+import { resp, toHankaku, standBy, getSchoolType } from "ts/functions"
 
 // Filter
 import { withSession } from "hoc/withSession"
@@ -29,8 +30,7 @@ import { withSession } from "hoc/withSession"
 // Types
 import { SendButtonState } from "types/SendButtonState"
 import { Position } from "types/Position"
-import { College } from "types/College"
-import { ConstantSymbols, Symbols } from "types/Symbols"
+import { Symbols } from "types/Symbols"
 
 // Error Classes
 import AlreadyAddedError from "classes/AlreadyAddedError"
@@ -38,12 +38,13 @@ import AlreadyAddedError from "classes/AlreadyAddedError"
 // Importing Symbols
 import * as fs from "fs"
 import * as path from "path"
+import { Department } from "types/Department"
 type Props = InferGetStaticPropsType<typeof getStaticProps>
 
 export const getStaticProps = async () => {
   const jsonPath = path.join(process.cwd(), "json", "symbols.json")
   const jsonText = fs.readFileSync(jsonPath, "utf-8")
-  const symbols = JSON.parse(jsonText) as ConstantSymbols
+  const symbols = JSON.parse(jsonText) as Symbols
 
   return {
     props: { symbols: symbols }
@@ -57,8 +58,7 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
   const { isOpen: isStudentIdNumberInputPopoverOpened, onOpen: openStudentIdNumberInputPopover, onClose: closeStudentIdNumberInputPopover } = useDisclosure()
 
   // 学科・学部プルダウンメニュー
-  const departmentMenuRef = useRef<HTMLSelectElement>(null)
-  const [croppedSymbols, setCroppedSymbols] = useState<Symbols>(symbols)
+  const [selectedDept, setDept] = useState<Department | "">("")
   const [departmentMenuErrorMessage, setDepartmentMenuErrorMessage] = useState("")
   const { isOpen: isDepartmentMenuPopoverOpened, onOpen: openDepartmentMenuPopover, onClose: closeDepartmentMenuPopover } = useDisclosure()
 
@@ -66,30 +66,14 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
   const [userAttribute, setUserAttribute] = useState<Position>("Cast")
 
   const [sendButtonState, setSendButtonState] = useState<SendButtonState>("text")
-  const inputType = useMemo(() => getInputType(studentIdNumberInput), [studentIdNumberInput])
+  const inputType = useMemo(() => getSchoolType(studentIdNumberInput), [studentIdNumberInput])
 
   const { addApprovedUser } = useApiConnection()
 
   // 入力されている学籍番号によって選択できる学科・学部を切り替える
-  useEffect(() => {
-    setStudentIdNumberInput((current) => toHankaku(current).toUpperCase())
-    if (inputType === "NEEC") {
-      const copiedSymbols: Symbols = Object.assign({}, symbols)
-      delete copiedSymbols.東京工科大学
-      setCroppedSymbols(copiedSymbols)
-      return
-    }
-
-    if (inputType === "TUT") {
-      const copiedSymbols = Object.assign({}, symbols)
-      setCroppedSymbols({ "東京工科大学": copiedSymbols.東京工科大学 })
-      return
-    }
-  }, [studentIdNumberInput, symbols, inputType])
+  useEffect(() => setStudentIdNumberInput(current => toHankaku(current).toUpperCase()), [studentIdNumberInput])
 
   const checkValidation = useCallback(() => {
-    if (!!!departmentMenuRef.current) return false
-
     let valid = true
 
     setStudentIdNumberInput((current) => toHankaku(current).toUpperCase())
@@ -100,14 +84,14 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
       valid = false
     }
 
-    if (!!!departmentMenuRef.current.value) {
+    if (!!!selectedDept) {
       setDepartmentMenuErrorMessage("学科・学部が選択されていません")
       openDepartmentMenuPopover()
       valid = false
     }
 
     return valid
-  }, [openDepartmentMenuPopover, openStudentIdNumberInputPopover, inputType])
+  }, [openDepartmentMenuPopover, openStudentIdNumberInputPopover, inputType, selectedDept])
 
   const handleSendButtonClick = useCallback(async () => {
     if (!!!checkValidation()) return
@@ -118,15 +102,14 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
     try {
       await addApprovedUser({
         studentNumber: studentIdNumberInput,
-        department: departmentMenuRef.current!.value,
+        department: selectedDept,
         position: userAttribute
       })
 
       setSendButtonState("checkmark")
       setTimeout(() => {
-        if (!!!departmentMenuRef.current) return
         setStudentIdNumberInput("")
-        departmentMenuRef.current.value = ""
+        setDept("")
         setUserAttribute("Cast")
       }, 1000)
 
@@ -138,7 +121,7 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
         openStudentIdNumberInputPopover()
       }
     }
-  }, [checkValidation, openStudentIdNumberInputPopover, studentIdNumberInput, userAttribute, addApprovedUser])
+  }, [checkValidation, openStudentIdNumberInputPopover, studentIdNumberInput, userAttribute, addApprovedUser, selectedDept])
 
   return (
     <Box>
@@ -160,7 +143,7 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
             </Flex>
             <Flex pl={resp(8, 16, 16)} py={5} alignItems="center">
               <PopOver isOpen={isStudentIdNumberInputPopoverOpened} onClose={closeStudentIdNumberInputPopover} errorMessage={studentIdNumberInputErrorMessage}>
-                <Input className="ksb" w={resp(250, 350, 350)} placeholder="(入力例) G021C1234" bg="white" focusBorderColor="#48c3eb" isInvalid={isStudentIdNumberInputPopoverOpened} errorBorderColor="red.200" value={studentIdNumberInput} onChange={(e) => setStudentIdNumberInput(e.target.value)}></Input>
+                <Input className="ksb" w={resp(250, 350, 350)} placeholder="(入力例) G021C1234" bg="white" focusBorderColor="#48c3eb" isInvalid={isStudentIdNumberInputPopoverOpened} errorBorderColor="red.200" value={studentIdNumberInput} onChange={e => setStudentIdNumberInput(e.target.value)}></Input>
               </PopOver>
             </Flex>
             <Flex className="flex-center">
@@ -174,22 +157,9 @@ const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
             </Flex>
             <Flex pl={resp(9, 16, 16)} py={5} alignItems="center">
               <PopOver isOpen={isDepartmentMenuPopoverOpened} onClose={closeDepartmentMenuPopover} errorMessage={departmentMenuErrorMessage}>
-                <Select w={resp(245, 350, 350)} placeholder={`${inputType === "NEEC" ? "学科" : inputType === "TUT" ? "学部" : "学科・学部"}を選択`} ref={departmentMenuRef} focusBorderColor="#48c3eb" isInvalid={isDepartmentMenuPopoverOpened} isDisabled={!!!inputType} errorBorderColor="red.200">
-                  {
-                    inputType ? Object.keys(croppedSymbols).map((label, idx) => {
-                      return (
-                        <optgroup label={label} key={idx}>
-                          {Object.keys(croppedSymbols[label as College] as Symbols).map((subKey, subIdx) => {
-                            return (
-                              <option value={subKey} key={idx + subIdx}>{String(Object.values(croppedSymbols[label as College] as Symbols)[subIdx])}</option>
-                            )
-                          })}
-                        </optgroup>
-                      )
-                    }) :
-                      null
-                  }
-                </Select>
+                <Box w={resp(245, 350, 350)} >
+                  <SymbolSelector filtering={inputType} isInvalid={isDepartmentMenuPopoverOpened} isDisabled={!!!inputType} dispatch={setDept}></SymbolSelector>
+                </Box>
               </PopOver>
             </Flex>
             <Flex className="flex-center">
