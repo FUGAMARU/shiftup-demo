@@ -1,4 +1,8 @@
+// Types
 import { Symbols, OptionalSymbols } from "types/Symbols"
+
+// Functions
+import { toFlattenObject } from "ts/functions"
 
 class Symbol {
   private static symbols: Symbols = {
@@ -71,7 +75,8 @@ class Symbol {
   }
 
   public static toStringSymbol(symbol: string) {
-
+    const flatObj = toFlattenObject(this.symbols)
+    return flatObj[symbol]
   }
 }
 

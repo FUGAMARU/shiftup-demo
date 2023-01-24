@@ -1,5 +1,5 @@
 // Next.js
-import { NextPage, InferGetStaticPropsType } from "next"
+import { NextPage } from "next"
 import Head from "next/head"
 
 // React Hooks
@@ -23,11 +23,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faXmark } from "@fortawesome/free-solid-svg-icons"
 
 // Functions
-import { resp, toFlattenObject, formatDateForDisplay } from "ts/functions"
+import { resp, formatDateForDisplay } from "ts/functions"
 
 // Types
-import { Symbols } from "types/Symbols"
 import { RequestState } from "types/RequestState"
+
+// Classes
+import Symbol from "classes/Symbol"
 
 // Interfaces
 import { UserNew } from "interfaces/User"
@@ -35,25 +37,9 @@ import { UserNew } from "interfaces/User"
 // Filter
 import { withSession } from "hoc/withSession"
 
-// Importing Symbols
-import * as fs from "fs"
-import * as path from "path"
-type Props = InferGetStaticPropsType<typeof getStaticProps>
-
-export const getStaticProps = async () => {
-  const jsonPath = path.join(process.cwd(), "json", "symbols.json")
-  const jsonText = fs.readFileSync(jsonPath, "utf-8")
-  const symbols = JSON.parse(jsonText) as Symbols
-
-  return {
-    props: { symbols: symbols }
-  }
-}
-
-const ViewConfirmedAttendances: NextPage<Props> = ({ symbols }) => {
+const ViewConfirmedAttendances: NextPage = () => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
   const { showToast } = useStyledToast()
-  const flattenSymbols = useMemo(() => toFlattenObject(symbols), [symbols])
   const { getConfirmedUsers, changeRequestState } = useApiConnection()
   const [selectedUser, setSelectedUser] = useState("")
   const [surveyIdAndSchedule, setSelectedSchedule] = useState("")
@@ -112,7 +98,7 @@ const ViewConfirmedAttendances: NextPage<Props> = ({ symbols }) => {
                 <Flex key={user.id} justifyContent="space-between" alignItems="center">
                   <Flex alignItems="center" px={3}>
                     <Text className="kb" mr={2} fontSize={resp("1rem", "1.2rem", "1.2rem")}>{user.name}</Text>
-                    <Text className="kr" ml={2} mr={1} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">{flattenSymbols[user.schoolProfile.department]}</Text>
+                    <Text className="kr" ml={2} mr={1} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">{Symbol.toStringSymbol(user.schoolProfile.department)}</Text>
                     {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" ml={1} fontSize="0.75rem" color="#5f5f5f">{user.studentNumber}</Text> : null}
                   </Flex>
                   <Flex alignItems="center">
@@ -132,7 +118,7 @@ const ViewConfirmedAttendances: NextPage<Props> = ({ symbols }) => {
                 <Flex key={user.id} justifyContent="space-between" alignItems="center">
                   <Flex alignItems="center" px={3}>
                     <Text className="kb" mr={2} fontSize={resp("1rem", "1.2rem", "1.2rem")}>{user.name}</Text>
-                    <Text className="kr" ml={2} mr={1} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">{flattenSymbols[user.schoolProfile.department]}</Text>
+                    <Text className="kr" ml={2} mr={1} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">{Symbol.toStringSymbol(user.schoolProfile.department)}</Text>
                     {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" ml={1} fontSize="0.75rem" color="#5f5f5f">{user.studentNumber}</Text> : null}
                   </Flex>
                   <Flex alignItems="center">

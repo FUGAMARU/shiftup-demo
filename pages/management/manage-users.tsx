@@ -1,5 +1,5 @@
 // Next.js
-import { NextPage, InferGetStaticPropsType } from "next"
+import { NextPage } from "next"
 import Head from "next/head"
 
 // React Hooks
@@ -22,11 +22,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faXmark } from "@fortawesome/free-solid-svg-icons"
 
 // Functions
-import { resp, toFlattenObject } from "ts/functions"
+import { resp } from "ts/functions"
 
 // Types
-import { ConstantSymbols } from "types/Symbols"
 import { Position } from "types/Position"
+
+// Classes
+import Symbol from "classes/Symbol"
 
 // Global State Management
 import { useRecoilValue } from "recoil"
@@ -35,27 +37,11 @@ import { name } from "atoms/NameAtom"
 // Filter
 import { withSession } from "hoc/withSession"
 
-// Importing Symbols
-import * as fs from "fs"
-import * as path from "path"
-type Props = InferGetStaticPropsType<typeof getStaticProps>
-
-export const getStaticProps = async () => {
-  const jsonPath = path.join(process.cwd(), "json", "symbols.json")
-  const jsonText = fs.readFileSync(jsonPath, "utf-8")
-  const symbols = JSON.parse(jsonText) as ConstantSymbols
-
-  return {
-    props: { symbols: symbols }
-  }
-}
-
-const ManageUsers: NextPage<Props> = ({ symbols }) => {
+const ManageUsers: NextPage = () => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
   const { showToast } = useStyledToast()
   const [usernameInput, setUsernameInput] = useState("")
   const [clickedUserId, setClickedUserId] = useState("")
-  const flattenSymbols = useMemo(() => toFlattenObject(symbols), [symbols])
   const { isOpen: isModalOpened, onOpen: openModal, onClose: closeModal } = useDisclosure()
   const { getAllUsers, switchUserPosition, deleteUser } = useApiConnection()
   const myName = useRecoilValue(name)
@@ -122,7 +108,7 @@ const ManageUsers: NextPage<Props> = ({ symbols }) => {
                         <Text className="kb" mr={2} fontSize={resp("1rem", "1.2rem", "1.2rem")} cursor="default">{"認可済みユーザー"}</Text>
                       </Tooltip>
                     }
-                    <Text className="kr" ml={2} mr={1} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">{flattenSymbols[user.department]}</Text>
+                    <Text className="kr" ml={2} mr={1} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">{Symbol.toStringSymbol(user.department)}</Text>
                     {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" ml={1} fontSize="0.75rem" color="#5f5f5f">{user.studentNumber}</Text> : null}
                   </Flex>
                   {user.name !== myName ?

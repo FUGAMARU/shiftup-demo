@@ -1,5 +1,5 @@
 // Next.js
-import { NextPage, InferGetStaticPropsType } from "next"
+import { NextPage } from "next"
 import Head from "next/head"
 
 // React Hooks
@@ -30,28 +30,12 @@ import { withSession } from "hoc/withSession"
 // Types
 import { SendButtonState } from "types/SendButtonState"
 import { Position } from "types/Position"
-import { Symbols } from "types/Symbols"
+import { Department } from "types/Department"
 
 // Error Classes
 import AlreadyAddedError from "classes/AlreadyAddedError"
 
-// Importing Symbols
-import * as fs from "fs"
-import * as path from "path"
-import { Department } from "types/Department"
-type Props = InferGetStaticPropsType<typeof getStaticProps>
-
-export const getStaticProps = async () => {
-  const jsonPath = path.join(process.cwd(), "json", "symbols.json")
-  const jsonText = fs.readFileSync(jsonPath, "utf-8")
-  const symbols = JSON.parse(jsonText) as Symbols
-
-  return {
-    props: { symbols: symbols }
-  }
-}
-
-const AddApprovedUser: NextPage<Props> = ({ symbols }) => {
+const AddApprovedUser: NextPage = () => {
   // 学籍番号入力欄
   const [studentIdNumberInput, setStudentIdNumberInput] = useState("")
   const [studentIdNumberInputErrorMessage, setStudentIdNumberInputErrorMessage] = useState("")

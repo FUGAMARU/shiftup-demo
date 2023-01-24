@@ -1,5 +1,5 @@
 // Next.js
-import type { NextPage, InferGetStaticPropsType } from "next"
+import type { NextPage } from "next"
 import Head from "next/head"
 
 // React
@@ -25,40 +25,26 @@ import { faUserGroup, faCalendar, faCheck } from "@fortawesome/free-solid-svg-ic
 import { up, down } from "slide-element"
 
 // Functions
-import { resp, toFlattenObject, standBy } from "ts/functions"
+import { resp, standBy } from "ts/functions"
 
 // Interfaces
 import { Candidate } from "interfaces/Candidate"
 
 // Types
-import { Symbols } from "types/Symbols"
 import { SendButtonState } from "types/SendButtonState"
 
 // Filter
 import { withSession } from "hoc/withSession"
 
-// Importing Symbols
-import * as fs from "fs"
-import * as path from "path"
-type Props = InferGetStaticPropsType<typeof getStaticProps>
-
-export const getStaticProps = async () => {
-  const jsonPath = path.join(process.cwd(), "json", "symbols.json")
-  const jsonText = fs.readFileSync(jsonPath, "utf-8")
-  const symbols = JSON.parse(jsonText) as Symbols
-
-  return {
-    props: { symbols: symbols }
-  }
-}
+// Classes
+import Symbol from "classes/Symbol"
 
 interface DynamicObject {
   [key: string]: boolean
 }
 
-const TallySurvey: NextPage<Props> = ({ symbols }) => {
+const TallySurvey: NextPage = () => {
   const { showToast } = useStyledToast()
-  const flattenSymbols = useMemo(() => toFlattenObject(symbols), [symbols])
   const [sendButtonState, setSendButtonState] = useState<SendButtonState>("text")
   const { getSurveyResult, sendRequests } = useApiConnection()
 
@@ -168,7 +154,7 @@ const TallySurvey: NextPage<Props> = ({ symbols }) => {
                           <Checkbox key={idx} isChecked={checkboxItems[candidate.id]} onChange={() => toggleItemState(candidate.id)}>
                             <Flex alignItems="center">
                               <Text className="kr">{candidate.name}</Text>
-                              <Text pl={2} fontSize={10} color="#898989">{flattenSymbols[candidate.schoolProfile.department]}</Text>
+                              <Text pl={2} fontSize={10} color="#898989">{Symbol.toStringSymbol(candidate.schoolProfile.department)}</Text>
                             </Flex>
                           </Checkbox>
                         )
