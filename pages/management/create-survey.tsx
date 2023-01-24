@@ -23,7 +23,7 @@ import { faPen, faCalendar, faCheck, faCirclePlus, faXmark } from "@fortawesome/
 import { subMonths } from "date-fns"
 
 // Functions
-import { resp, formatDateForDisplay, standBy, isDateOrderCorrect } from "ts/functions"
+import { resp, formatDateForDisplay, standBy, isDateOrderCorrect, isBlank } from "ts/functions"
 
 // Filter
 import { withSession } from "hoc/withSession"
@@ -78,8 +78,7 @@ const CreateSurvey: NextPage = () => {
     let tmpSurveyTitleErrorMessage = ""
     let tmpScheduleListErrorMessage = ""
 
-    const surveyTitlePattern = /^[ 　\r\n\t]*$/
-    if (surveyTitlePattern.test(surveyTitleRef.current.value)) tmpSurveyTitleErrorMessage = "タイトルが入力されていません"
+    if (isBlank(surveyTitleRef.current.value)) tmpSurveyTitleErrorMessage = "タイトルが入力されていません"
 
     const isValidSchedules = scheduleList.every((schedule) => isDateOrderCorrect(time, new Date(schedule)))
     if (!isValidSchedules) tmpScheduleListErrorMessage = "現在より過去の日付が指定されています"

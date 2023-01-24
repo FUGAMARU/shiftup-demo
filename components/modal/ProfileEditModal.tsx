@@ -16,6 +16,9 @@ import SymbolSelector from "components/select/SymbolSelector"
 // Types
 import { Department } from "types/Department"
 
+// Functions
+import { isBlank } from "ts/functions"
+
 // Global State Management
 import { useRecoilValue } from "recoil"
 import { name } from "atoms/NameAtom"
@@ -43,8 +46,7 @@ const ProfileEditModal = ({ isOpen, onClose }: Props) => {
   const checkValidation = useCallback(() => {
     let valid = true
 
-    const blankCharacters = /^[ 　\r\n\t]*$/
-    if (blankCharacters.test(nameInput)) {
+    if (isBlank(nameInput)) {
       openNameInputPopover()
       valid = false
     }

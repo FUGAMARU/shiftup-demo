@@ -34,6 +34,8 @@ export const getSchoolType = (input: string) => {
   return undefined
 }
 
+export const isBlank = (str: string) => new RegExp(/^[                　ㅤ\r\n\t]*$/).test(str)
+
 export const toFlattenObject = (obj: { [x: string]: { [y: string]: string } }) => {
   const result: { [key: string]: string } = {}
 
