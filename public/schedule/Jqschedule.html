@@ -12,11 +12,12 @@
   </script>
   <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
   <script type="text/javascript" src="jq.schedule.plus.js"></script>
+  <script type="text/javascript" src="api-example.js"></script>
   <link rel="stylesheet" type="text/css" href="style.css" />
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="screen">
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
   <style type="text/css">
-    .hero-unit{
+    .hero-unit {
       padding: 0px;
     }
   </style>
@@ -26,433 +27,499 @@
   <div class="container">
     <div class="hero-unit">
     </div>
-    
-  <div>
-    <input id="templateName" type="text" placeholder="テンプレート名を入力" />
-    <select name="template" id="templateSelector"></select>
-    <button class="template_save_btn" onClick="template_save(); document.getElementById('templateName').value=''" >テンプレート保存</button>
-    <button class="template_applying_btn" onclick="template_applying()">テンプレート適用</button>
-    <button class="deleteTemplateButton" onclick="template_delete()">テンプレート削除</button>
 
-  </div>
-  <input id="task-name" type="text" value="" placeholder="タスク名を入力" />
-  <input id="user-name" type="text" value="" placeholder="ユーザー名を入力" />
-  <button class="add_user_btn" onClick="handleButtonClick(); document.getElementById('user-name').value=''">ユーザー追加</button>
-        <!--<button onClick="schedule_save()">クラスに保存</button>
+    <div>
+      <input type="date" aria-haspopup="dialog" aria-expanded="false" aria-controls="popover-content-:r1i:"
+        id="templateName">
+      <select name="template" id="templateSelector"></select>
+      <button class="template_save_btn"
+        onClick="template_save(); document.getElementById('templateName').value=''">テンプレート保存</button>
+
+      <button class="deleteTemplateButton" onclick="template_delete()">テンプレート削除</button>
+
+    </div>
+    <input id="task-name" type="text" value="" placeholder="タスク名を入力" />
+    <input id="user-name" type="text" value="" placeholder="ユーザー名を入力" />
+    <button class="add_user_btn"
+      onClick="handleButtonClick(); document.getElementById('user-name').value=''">ユーザー追加</button>
+    <!--<button onClick="schedule_save()">クラスに保存</button>
               <button onClick="extractData()">データー抽出</button>
               <button onclick="schedule_data_recovery()">データー復元</button>-->
-  <div style="display: flex;">
-  </div>
+    <div style="display: flex;">
+    </div>
 
-  <div id="schedule-container">
-    <div id="schedule" style="margin: 0 auto;"></div>
-  </div>
+    <div id="schedule-container">
+      <div id="schedule" style="margin: 0 auto;"></div>
+    </div>
 
-  <script src="https://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript" language="javascript"></script>
-  <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.min.js" type="text/javascript"
-    language="javascript"></script>
-  <script src="jq.schedule.plus.js"></script>
-  <script type="text/javascript">
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript" language="javascript"></script>
+    <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.min.js" type="text/javascript" language="javascript">
+    </script>
 
-
-//URLのクエリーパラメーターからテンプレートを取得
-  const urlParams = new URLSearchParams(window.location.search);
-  const templateName = urlParams.get('templateName'); 
-
-
-//テンプレートが存在する場合、それを適用する
-if (templateName && localStorage.getItem(templateName)) { 
-    template_applying(templateName); // 変更点
-  }
-
-
-
-//テンプレート
-    $(() => {
-      if (localStorage.getItem("templates")) {
-        $.each(Object.keys(JSON.parse(localStorage.getItem("templates"))), (idx, val) => {
-          $("#templateSelector").append(`<option value=${val}>${val}</option>`)
-        })
-      }
-    })
-//テンプレート保存
-const template_save = () => {
-  if (localStorage.getItem("templates") === null) localStorage.setItem("templates", JSON.stringify({}))
-  schedule_save()
-  extractData()
-  schedule_data_recovery()
-  const templateName = document.getElementById("templateName").value
-  if (!/\S/.test(templateName)) {
-    alert("テンプレート名が入力されていません")
-    return
-  }
-  let templates = JSON.parse(localStorage.getItem("templates"))
-  scheduleHTML.setInnerHTML = $("#schedule").html()
-  users = getUserList()
-  tasks = getTaskList()
-  userTasks = []
-  users.forEach((userName, idx) => {
-    userTasks.push({
-      "name": userName,
-      "tasks": tasks[idx]
-    })
-  })
-  localStorage.setItem("templates", JSON.stringify(userTasks))
-  templates[templateName] = scheduleData.getSchedule
-  localStorage.setItem("templates", JSON.stringify(templates))
-  $("#templateSelector").append(`<option value=${templateName}>${templateName}</option>`)
-  document.getElementById("templateName").value = ""
-}
-//テンプレート適用
-const template_applying = () => {
-  let templateName = $("#templateSelector").val() || templateName; 
-  if (localStorage.getItem("templates") === null) localStorage.setItem("templates", JSON.stringify({}))
-  const templates = JSON.parse(localStorage.getItem("templates"))
-  scheduleData.setSchedule = templates[templateName]
-  scheduleData.updateScheduleTable()
-}
-
-  //テンプレート削除
-const template_delete = () => {
-  let templateName = $("#templateSelector").val()
-  if (localStorage.getItem("templates") === null) localStorage.setItem("templates", JSON.stringify({}))
-const templates = JSON.parse(localStorage.getItem("templates"))
-  if (!templateName) {
-  alert("削除するテンプレートが選択されていません");
-  return;
-}
-  if (confirm(`${templateName}を削除しますか？`)) {
-  delete templates[templateName]
-  localStorage.setItem("templates", JSON.stringify(templates))
-  $("#templateSelector option[value='" + templateName + "']").remove()
-  }
-}
-
-const ScheduleHTML = class {
-  constructor(innerHTML) {
-    this.innerHTML = innerHTML
-  }
-
-  set setInnerHTML(innerHTML) {
-    this.innerHTML = innerHTML
-  }
-
-  get getInnerHTML() {
-    return this.innerHTML
-  }
-}
-
-const ScheduleData = class {
-  constructor(data) {
-    this.data = data
-  }
-
-  set setSchedule(arr) {
-    this.data = arr
-  }
-
-  get getSchedule() {
-    return this.data
-  }
-
-  addUser(username) {
-    this.data.push({
-      title: username,
-      impossibleDate: [
-        '2022/08/17'
-      ],
-      businessHours: [{
-        dow: ['0'],
-        start: '07:00',
-        end: '19:00'
-      }, {
-        dow: ['1'],
-        start: '07:00',
-        end: '19:00'
-      }],
-      schedule: []
-    })
-  }
-
-  updateScheduleTable() {
-    const oldSchedule = document.querySelector("#schedule")
-    oldSchedule.innerHTML = ""
-
-        jQuery("#schedule").timeSchedule({
-          today: '2022/08/18', // LIN 追加機能 - 本日
-          nowTime: '00:00', // LIN 追加機能 - 現在時刻
-          startDate: '2022/08/18', // LIN 追加機能 - 開始日
-          endDate: '2022/08/18', // LIN 追加機能 - 終了日
-          weekday: ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'], // LIN 追加機能 - DOW表示
-          startTime: "07:00",
-          endTime: "19:00",
-          widthTimeX: 45,
-          widthTime: 60 * 15,
-          timeLineY: 132,
-          verticalScrollbar: 10,
-          timeLineBorder: 1,
-          dataWidth: 200,
-          nextNo: 1, // LIN 追加機能 - 複数選択初期番号
-          debug: "",
-          multiple: true, // LIN 追加機能-複数選択機能有無
-          rows: this.data,
-          init_data: function (node, data) {
-            $("#logs").append($("<div>").text("init event:" + JSON.stringify(data)));
-          },
-          click: function (node, data) {
-            $("#logs").append($("<div>").text("click event:" + JSON.stringify(data)));
-          },
-          append: function (node, data) {
-            $("#logs").append($("<div>").text("append event:" + JSON.stringify(
-              data)));
-          },
-          timeClick: function (element, data) {
-            // LIN 追加機能-シングルクリックイベント
-            $("#logs").append($("<div>").text("Time click event:" + JSON.stringify(
-              data)));
-          },
-          dateClick: function (date) {
-            // LIN 追加機能-日付クリックイベント
-            $("#logs").append($("<div>").text("Date click event:" + JSON.stringify(
-              date)));
-          },
-          timeDrag: function (data) {
-            // LIN 追加機能-ドラッグイベント
-            $("#logs").append($("<div>").text("Drag event:" + JSON.stringify(data)));
-          },
-          titleClick: function (data) {
-            // LIN 追加機能-行タイトルクリックイベント
-            $("#logs").append($("<div>").text("Title click event:" + JSON.stringify(
-              data)));
-          },
-          change: function (node, data) {
-            $("#logs").append($("<div>").text("Change event:" + JSON.stringify(
-              data)));
-          },
-          delete: function (data) {
-            // LIN 追加機能-削除イベント
-            $("#logs").append($("<div>").text("Delete event:" + JSON.stringify(
-              data)));
+    <script type="text/javascript">
+      //fetch("https://shiftup.works/api/users/me/roles")
+      fetch("http://localhost:3000/api/dev/role")
+        .then(response => response.json())
+        .then(data => {
+          let roles = data;
+          let templateName = document.getElementById("templateName");
+          let templateSelector = document.getElementById("templateSelector");
+          let templateSaveButton = document.getElementsByClassName("template_save_btn")[0];
+          let deleteTemplateButton = document.getElementsByClassName("deleteTemplateButton")[0];
+          let taskName = document.getElementById("task-name");
+          let userName = document.getElementById("user-name");
+          let AddUserBtn = document.getElementsByClassName("add_user_btn")[0];
+          if (roles.includes("Cast")) {
+            templateName.style.display = "none";
+            templateSelector.style.display = "none";
+            templateSaveButton.style.display = "none";
+            deleteTemplateButton.style.display = "none";
+            taskName.style.display = "none";
+            userName.style.display = "none";
+            AddUserBtn.style.display = "none";
+          } else if (roles.includes("Manager")) {
+            templateName.style.display = "block";
+            templateSelector.style.display = "block";
+            templateSaveButton.style.display = "block";
+            deleteTemplateButton.style.display = "block";
+            taskName.style.display = "block";
+            userName.style.display = "block";
+            AddUserBtn.style.display = "block";
           }
-        })
+        });
+    </script>
 
+    <script src="jq.schedule.plus.js"></script>
+    <script type="text/javascript">
+      //URLのクエリーパラメーターからテンプレートを取得
+      const urlParams = new URLSearchParams(window.location.search);
+      const templateName = urlParams.get('templateName');
+
+      const convert = (str) => {
+        const dt = new Date(str);
+        return `${dt.getFullYear()}-${("0" + (dt.getMonth() + 1)).slice(-2)}-${("0" + dt.getDate()).slice(-2)}-${("0" + dt.getHours()).slice(-2)}:${("0" + dt.getMinutes()).slice(-2)}:${("0" + dt.getSeconds()).slice(-2)}`;
       }
-    }
 
-    const scheduleHTML = new ScheduleHTML("")
-    const scheduleData = new ScheduleData([
+      //テンプレートが存在する場合、それを適用する
+      if (templateName && localStorage.getItem(templateName)) {
+        template_applying(templateName); // 変更点
+      }
 
-    ])
+      //テンプレート
+      $(() => {
+        if (localStorage.getItem("templates")) {
+          $.each(Object.keys(JSON.parse(localStorage.getItem("templates"))), (idx, val) => {
+            $("#templateSelector").append(`<option value=${val}>${val}</option>`)
+          })
+        }
+        //セレクターから選択したときに自動的にテンプレートを適用
+        $("#templateSelector").on("change", () => {
+          let templateName = $("#templateSelector").val()
+          if (localStorage.getItem("templates") === null) localStorage.setItem("templates", JSON.stringify({}))
+          const templates = JSON.parse(localStorage.getItem("templates"))
+          scheduleData.setSchedule = templates[templateName]
+          scheduleData.updateScheduleTable()
+        });
+      })
 
-//ユーザー取得
-    const getUserList = () => {
-    const divElement = document.createElement("div")
-    divElement.style.display = "none"
-    divElement.innerHTML = scheduleHTML.getInnerHTML
-    const workerNames = divElement.querySelectorAll(
-        ".sc_wrapper > .sc_data > .sc_data_scroll > .timeline"
-    )
-    const workerList = []
-    workerNames.forEach(node => {
-        workerList.push(node.textContent)
-    })
-    return workerList
-}            
-//タスク取得                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
-const getTaskList = () => {
-  const divElement = document.createElement("div");
-  divElement.style.display = "none";
-  divElement.innerHTML = scheduleHTML.getInnerHTML;
+      //テンプレート保存
+      const template_save = () => {
+        if (localStorage.getItem("templates") === null) localStorage.setItem("templates", JSON.stringify({}))
 
-  const users = divElement.querySelectorAll(
-    ".sc_wrapper > .sc_main_box > .sc_main_scroll > .sc_main > .timeline"
-  );
+        const tmp = {
 
-  const userTasks = [];
+        }
 
-  users.forEach(node => {
-    const tasks = node.querySelectorAll(".sc_Bar");
-    userTasks.push(
-      Array.from(tasks, taskNode => ({
-        startAt: taskNode.querySelector(".startTime").textContent,
-        endAt: taskNode.querySelector(".endTime").textContent,
-        taskName: taskNode.querySelector(".text").textContent
-      }))
-    );
-  });
+        schedule_save()
+        extractData()
+        schedule_data_recovery()
+        const templateName = document.getElementById("templateName").value
+        if (!/\S/.test(templateName)) {
+          alert("テンプレート名が入力されていません")
+          return
+        }
+        let templates = JSON.parse(localStorage.getItem("templates"))
+        scheduleHTML.setInnerHTML = $("#schedule").html()
+        users = getUserList()
+        tasks = getTaskList()
+        userTasks = []
+        users.forEach((userName, idx) => {
+          userTasks.push({
+            "name": userName,
+            "tasks": tasks[idx]
+          })
+        })
+        templates[templateName] = scheduleData.getSchedule
 
-  return userTasks;
-};
-//スケジュールデータ保存
-function schedule_save() {
-    scheduleHTML.setInnerHTML = $("#schedule").html();
-    console.log("SET完了");
-}
-//スケジュールデータ抽出
-const extractData = () => {
-    const users = getUserList();
-    const tasks = getTaskList();
+        console.log("====Formatted Data")
+        const changed = templates[templateName].map(val => {
+          return val.schedule.map(schedule => {
+            return ({
+              "text": schedule.text,
+              "start": convert(schedule.start),
+              "end": convert(schedule.end),
+              "class": "newAdd"
+            })
+          })
+        })
+        console.log(changed)
+        localStorage.setItem("templates", JSON.stringify(templates))
 
-    const userTasks = users.map((userName, idx) => { // タスク一覧
-        return {
+
+        $("#templateSelector").append(`<option value=${templateName}>${templateName}</option>`)
+        document.getElementById("templateName").value = ""
+      }
+      //テンプレートの読み込み
+      const template_applying = () => {
+        const selectedTemplateName = $("#templateSelector").val()
+        const templates = JSON.parse(localStorage.getItem("templates"))
+
+        let finalData = []
+
+        scheduleData.setSchedule = templates[selectedTemplateName]
+        scheduleData.updateScheduleTable()
+      }
+
+      //テンプレート削除
+      const template_delete = () => {
+        let templateName = $("#templateSelector").val()
+        if (localStorage.getItem("templates") === null) localStorage.setItem("templates", JSON.stringify({}))
+        const templates = JSON.parse(localStorage.getItem("templates"))
+        if (!templateName) {
+          alert("削除するテンプレートが選択されていません");
+          return;
+        }
+        if (confirm(`${templateName}を削除しますか？`)) {
+          delete templates[templateName]
+          localStorage.setItem("templates", JSON.stringify(templates))
+          $("#templateSelector option[value='" + templateName + "']").remove()
+        }
+      }
+
+      const ScheduleHTML = class {
+        constructor(innerHTML) {
+          this.innerHTML = innerHTML
+        }
+
+        set setInnerHTML(innerHTML) {
+          this.innerHTML = innerHTML
+        }
+
+        get getInnerHTML() {
+          return this.innerHTML
+        }
+      }
+
+      const ScheduleData = class {
+        constructor(data) {
+          this.data = data
+        }
+
+        set setSchedule(arr) {
+          this.data = arr
+        }
+
+        get getSchedule() {
+          return this.data
+        }
+
+        addUser(username) {
+          this.data.push({
+            title: username,
+            impossibleDate: [
+              '2022/08/17'
+            ],
+            businessHours: [{
+              dow: ['0'],
+              start: '07:00',
+              end: '19:00'
+            }, {
+              dow: ['1'],
+              start: '07:00',
+              end: '19:00'
+            }],
+            schedule: []
+          })
+        }
+
+        updateScheduleTable() {
+          const oldSchedule = document.querySelector("#schedule")
+          oldSchedule.innerHTML = ""
+
+          jQuery("#schedule").timeSchedule({
+            today: '2023/02/22', // LIN 追加機能 - 本日
+            nowTime: '00:00', // LIN 追加機能 - 現在時刻
+            startDate: '2023/02/22', // LIN 追加機能 - 開始日
+            endDate: '2023/02/22', // LIN 追加機能 - 終了日
+            weekday: ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'], // LIN 追加機能 - DOW表示
+            startTime: "07:00",
+            endTime: "19:00",
+            widthTimeX: 45,
+            widthTime: 60 * 15,
+            timeLineY: 132,
+            verticalScrollbar: 10,
+            timeLineBorder: 1,
+            dataWidth: 200,
+            nextNo: 1, // LIN 追加機能 - 複数選択初期番号
+            debug: "",
+            multiple: true, // LIN 追加機能-複数選択機能有無
+            rows: this.data,
+            init_data: function (node, data) {
+              $("#logs").append($("<div>").text("init event:" + JSON.stringify(data)));
+            },
+            click: function (node, data) {
+              $("#logs").append($("<div>").text("click event:" + JSON.stringify(data)));
+            },
+            append: function (node, data) {
+              $("#logs").append($("<div>").text("append event:" + JSON.stringify(
+                data)));
+            },
+            timeClick: function (element, data) {
+              // LIN 追加機能-シングルクリックイベント
+              $("#logs").append($("<div>").text("Time click event:" + JSON.stringify(
+                data)));
+            },
+            dateClick: function (date) {
+              // LIN 追加機能-日付クリックイベント
+              $("#logs").append($("<div>").text("Date click event:" + JSON.stringify(
+                date)));
+            },
+            timeDrag: function (data) {
+              // LIN 追加機能-ドラッグイベント
+              $("#logs").append($("<div>").text("Drag event:" + JSON.stringify(data)));
+            },
+            titleClick: function (data) {
+              // LIN 追加機能-行タイトルクリックイベント
+              $("#logs").append($("<div>").text("Title click event:" + JSON.stringify(
+                data)));
+            },
+            change: function (node, data) {
+              $("#logs").append($("<div>").text("Change event:" + JSON.stringify(
+                data)));
+            },
+            delete: function (data) {
+              // LIN 追加機能-削除イベント
+              $("#logs").append($("<div>").text("Delete event:" + JSON.stringify(
+                data)));
+            }
+          })
+
+        }
+      }
+
+      const scheduleHTML = new ScheduleHTML("")
+      const scheduleData = new ScheduleData([
+
+      ])
+
+      //ユーザー取得
+      const getUserList = () => {
+        const divElement = document.createElement("div")
+        divElement.style.display = "none"
+        divElement.innerHTML = scheduleHTML.getInnerHTML
+        const workerNames = divElement.querySelectorAll(
+          ".sc_wrapper > .sc_data > .sc_data_scroll > .timeline"
+        )
+        const workerList = []
+        workerNames.forEach(node => {
+          workerList.push(node.textContent)
+        })
+        return workerList
+      }
+      //タスク取得                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+      const getTaskList = () => {
+        const divElement = document.createElement("div");
+        divElement.style.display = "none";
+        divElement.innerHTML = scheduleHTML.getInnerHTML;
+
+        const users = divElement.querySelectorAll(
+          ".sc_wrapper > .sc_main_box > .sc_main_scroll > .sc_main > .timeline"
+        );
+
+        const userTasks = [];
+
+        users.forEach(node => {
+          const tasks = node.querySelectorAll(".sc_Bar");
+          userTasks.push(
+            Array.from(tasks, taskNode => ({
+              startAt: taskNode.querySelector(".startTime").textContent,
+              endAt: taskNode.querySelector(".endTime").textContent,
+              taskName: taskNode.querySelector(".text").textContent
+            }))
+          );
+        });
+
+        return userTasks;
+      };
+
+
+      //スケジュールデータ保存
+      function schedule_save() {
+        scheduleHTML.setInnerHTML = $("#schedule").html();
+        console.log("SET完了");
+      }
+      //スケジュールデータ抽出
+      const extractData = () => {
+        const users = getUserList();
+        const tasks = getTaskList();
+
+        const userTasks = users.map((userName, idx) => { // タスク一覧
+          return {
             name: userName,
             tasks: tasks[idx]
-        }
-    });
-
-    console.log(userTasks);
-    localStorage.setItem("userTasks", JSON.stringify(userTasks));
-}
-
-
-
-    let sampleRows = []
-    //スケジュールデータ復元
-    const schedule_data_recovery = () => {
-    const userTasks = JSON.parse(localStorage.getItem("userTasks"));
-    let finalData = [];
-    userTasks.forEach(data => {
-        let tasks = [];
-        data.tasks.forEach(task => {
-            tasks.push({
-                text: task.taskName,
-                start: task.startAt,
-                end: task.endAt,
-                class: "green"
-            });
+          }
         });
-        finalData.push({
+
+        console.log(userTasks);
+        localStorage.setItem("userTasks", JSON.stringify(userTasks));
+      }
+
+
+
+      let sampleRows = []
+      //スケジュールデータ復元
+      const schedule_data_recovery = () => {
+        const userTasks = JSON.parse(localStorage.getItem("userTasks"));
+        let finalData = [];
+        userTasks.forEach(data => {
+          let tasks = [];
+          data.tasks.forEach(task => {
+            tasks.push({
+              text: task.taskName,
+              start: task.startAt,
+              end: task.endAt,
+              class: "newAdd"
+            });
+          });
+          finalData.push({
             title: data.name,
             impossibleDate: ["2022/08/17"],
             businessHours: [{
-                dow: ["0"],
-                start: "07:00",
-                end: "19:00"
+              dow: ["0"],
+              start: "07:00",
+              end: "19:00"
             }, {
-                dow: ["1"],
-                start: "07:00",
-                end: "19:00"
+              dow: ["1"],
+              start: "07:00",
+              end: "19:00"
             }],
             schedule: tasks
+          });
         });
-    });
-    scheduleData.setSchedule = finalData;
-    scheduleData.updateScheduleTable();
-};
+        scheduleData.setSchedule = finalData;
+        scheduleData.updateScheduleTable();
+      };
 
 
-//ユーザー追加
-    const handleButtonClick = () => {
-    schedule_save()
-    extractData()
+      //ユーザー追加
+      const handleButtonClick = () => {
+        schedule_save()
+        extractData()
 
-    let userName = $("#user-name").val()
-      if(/^\s*$/.test(userName)) {
-        alert("空白文字は入力できません")
-        return
+        let userName = $("#user-name").val()
+        if (/^[\s\u3000\u3164]*$/.test(userName)) {
+          alert("空白文字は入力できません")
+          return
+        }
+        scheduleData.addUser(userName)
+        scheduleData.updateScheduleTable()
+
+        schedule_data_recovery()
+
+        scheduleData.addUser(userName)
+        scheduleData.updateScheduleTable()
       }
-    scheduleData.addUser(userName)
-    scheduleData.updateScheduleTable()
 
-    schedule_data_recovery()
-
-    scheduleData.addUser(userName)
-    scheduleData.updateScheduleTable()
-    }
-
-    const TaskData = class {
-    constructor(TaskData) {
-    this.TaskData = TaskData;
-    }
-    }
-
-
-
-    jQuery(document).ready(function () {
-      sampleRows = [{
-      }];
-      sampleRows2 = []
-      // 時間単位種別（6時間、1時間、１５分）
-      var widthTimeTypes = [360, 60, 15];
-      var selectedType = jQuery('input[name="timeType"]:checked').val();
-      jQuery('input[name="timeType"]').change(function () {
-        jQuery('#schedule').empty();
-        if (jQuery('input[name="mutiple"]:checked').val() == '') {
-          scheduleInit(widthTimeTypes[jQuery(this).val()], false);
-        } else {
-          scheduleInit(widthTimeTypes[jQuery(this).val()], true);
+      const TaskData = class {
+        constructor(TaskData) {
+          this.TaskData = TaskData;
         }
-      });
+      }
 
-      jQuery('input[name="mutiple"]').change(function () {
-        jQuery('#schedule').empty();
-        selectedType = jQuery('input[name="timeType"]:checked').val();
-        if (jQuery(this).val() == '0') {
-          scheduleInit(widthTimeTypes[selectedType], false);
-        } else {
-          scheduleInit(widthTimeTypes[selectedType], true);
-        }
-      });
 
-      scheduleInit(widthTimeTypes[selectedType], true);
 
-      function scheduleInit(timeType, multiple) {
-        jQuery("#schedule").timeSchedule({
-          today: '2022/08/18', // LIN 追加機能 - 本日
-          nowTime: '00:00', // LIN 追加機能 - 現在時刻
-          startDate: '2022/08/18', // LIN 追加機能 - 開始日
-          endDate: '2022/08/18', // LIN 追加機能 - 終了日
-          weekday: ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'], // LIN 追加機能 - DOW表示
-          startTime: "07:00",
-          endTime: "19:00",
-          widthTimeX: 45,
-          widthTime: 60 * 15,
-          timeLineY: 132,
-          verticalScrollbar: 10,
-          timeLineBorder: 1,
-          dataWidth: 200,
-          nextNo: 1, // LIN 追加機能 - 複数選択初期番号
-          debug: "",
-          multiple: true, // LIN 追加機能-複数選択機能有無
-          rows: sampleRows2,
-          init_data: function (node, data) {
-            $("#logs").append($("<div>").text("init event:" + JSON.stringify(data)));
-          },
-          click: function (node, data) {
-            $("#logs").append($("<div>").text("click event:" + JSON.stringify(data)));
-          },
-          append: function (node, data) {
-            $("#logs").append($("<div>").text("append event:" + JSON.stringify(data)));
-          },
-          timeClick: function (element, data) {
-            // LIN 追加機能-シングルクリックイベント
-            $("#logs").append($("<div>").text("Time click event:" + JSON.stringify(data)));
-          },
-          dateClick: function (date) {
-            // LIN 追加機能-日付クリックイベント
-            $("#logs").append($("<div>").text("Date click event:" + JSON.stringify(date)));
-          },
-          timeDrag: function (data) {
-            // LIN 追加機能-ドラッグイベント
-            $("#logs").append($("<div>").text("Drag event:" + JSON.stringify(data)));
-          },
-          titleClick: function (data) {
-            // LIN 追加機能-行タイトルクリックイベント
-            $("#logs").append($("<div>").text("Title click event:" + JSON.stringify(data)));
-          },
-          change: function (node, data) {
-            $("#logs").append($("<div>").text("Change event:" + JSON.stringify(data)));
-          },
-          delete: function (data) {
-            // LIN 追加機能-削除イベント
-            $("#logs").append($("<div>").text("Delete event:" + JSON.stringify(data)));
+      jQuery(document).ready(function () {
+        sampleRows = [{}];
+        sampleRows2 = []
+        // 時間単位種別（6時間、1時間、１５分）
+        var widthTimeTypes = [360, 60, 15];
+        var selectedType = jQuery('input[name="timeType"]:checked').val();
+        jQuery('input[name="timeType"]').change(function () {
+          jQuery('#schedule').empty();
+          if (jQuery('input[name="mutiple"]:checked').val() == '') {
+            scheduleInit(widthTimeTypes[jQuery(this).val()], false);
+          } else {
+            scheduleInit(widthTimeTypes[jQuery(this).val()], true);
           }
         });
-      }
-    })
 
-    
-  </script>
+        jQuery('input[name="mutiple"]').change(function () {
+          jQuery('#schedule').empty();
+          selectedType = jQuery('input[name="timeType"]:checked').val();
+          if (jQuery(this).val() == '0') {
+            scheduleInit(widthTimeTypes[selectedType], false);
+          } else {
+            scheduleInit(widthTimeTypes[selectedType], true);
+          }
+        });
+
+        scheduleInit(widthTimeTypes[selectedType], true);
+
+        function scheduleInit(timeType, multiple) {
+          jQuery("#schedule").timeSchedule({
+            today: '2023/02/22', // LIN 追加機能 - 本日
+            nowTime: '00:00', // LIN 追加機能 - 現在時刻
+            startDate: '2023/02/22', // LIN 追加機能 - 開始日
+            endDate: '2023/02/22', // LIN 追加機能 - 終了日
+            weekday: ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'], // LIN 追加機能 - DOW表示
+            startTime: "07:00",
+            endTime: "19:00",
+            widthTimeX: 45,
+            widthTime: 60 * 15,
+            timeLineY: 132,
+            verticalScrollbar: 10,
+            timeLineBorder: 1,
+            dataWidth: 200,
+            nextNo: 1, // LIN 追加機能 - 複数選択初期番号
+            debug: "",
+            multiple: true, // LIN 追加機能-複数選択機能有無
+            rows: sampleRows2,
+            init_data: function (node, data) {
+              $("#logs").append($("<div>").text("init event:" + JSON.stringify(data)));
+            },
+            click: function (node, data) {
+              $("#logs").append($("<div>").text("click event:" + JSON.stringify(data)));
+            },
+            append: function (node, data) {
+              $("#logs").append($("<div>").text("append event:" + JSON.stringify(data)));
+            },
+            timeClick: function (element, data) {
+              // LIN 追加機能-シングルクリックイベント
+              $("#logs").append($("<div>").text("Time click event:" + JSON.stringify(data)));
+            },
+            dateClick: function (date) {
+              // LIN 追加機能-日付クリックイベント
+              $("#logs").append($("<div>").text("Date click event:" + JSON.stringify(date)));
+            },
+            timeDrag: function (data) {
+              // LIN 追加機能-ドラッグイベント
+              $("#logs").append($("<div>").text("Drag event:" + JSON.stringify(data)));
+            },
+            titleClick: function (data) {
+              // LIN 追加機能-行タイトルクリックイベント
+              $("#logs").append($("<div>").text("Title click event:" + JSON.stringify(data)));
+            },
+            change: function (node, data) {
+              $("#logs").append($("<div>").text("Change event:" + JSON.stringify(data)));
+            },
+            delete: function (data) {
+              // LIN 追加機能-削除イベント
+              $("#logs").append($("<div>").text("Delete event:" + JSON.stringify(data)));
+            }
+          });
+        }
+      })
+    </script>
 
 
 </body>

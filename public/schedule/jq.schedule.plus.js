@@ -7,6 +7,8 @@
         var nowDate = (date.getDate() < 10) ? '0' + date.getDate() : date.getDate();
         var today = nowYear + '/' + nowMonth + '/' + nowDate;
 
+        var val = true;
+
         var defaults = {
             rows: {},
             startDate: today,
@@ -191,34 +193,55 @@
                 var st = Math.floor((data["start"] - tableStartTime) / setting.widthTime) + startMultiples;
                 var et = Math.ceil((data["end"] - tableStartTime) / setting.widthTime) + endMultiples;
 
-                // 削除ボタンの追加
                 var $deleteBtn = jQuery('<span style="float: right; padding: 5px">✖</span>');
-                $deleteBtn.click(function () {
-                    // LIN 削除した列の高さを調整する
-                    var sc_key = $bar.data("sc_key");
-                    var deleteTimelineNum = scheduleData[sc_key].timeline;
-                    var tempDeleteData = scheduleData[sc_key];
-                    $bar.remove();
-                    element.resetBarPosition(deleteTimelineNum);
-
-                    // LIN 追加したエレメントの削除は追加番号を削除する
-                    if (tempDeleteData['data']['No'] !== undefined) {
-                        var key = jQuery.inArray(tempDeleteData['data']['No'], liveDataNo);
-                        liveDataNo.splice(key, 1);
-                    }
-
-                    if (setting.delete) {
-                        if (jQuery(this).data("dragCheck") !== true && jQuery(this).data("resizeCheck") !== true) {
-                            setting.delete(tempDeleteData);
+                //fetch("https://shiftup.works/api/users/me/roles")
+                    fetch("http://localhost:3000/api/dev/role")
+                        .then(response => response.json())
+                        .then(data => {
+                            var roles = data;
+                            if (roles.includes("Cast")) {
+                                $deleteBtn.hide();
+                            }
+                        });
+                $deleteBtn.click(function (event) {
+                    //fetch("https://shiftup.works/api/users/me/roles")
+                    fetch("http://localhost:3000/api/dev/role")
+                    .then(response => response.json())
+                    .then(data => {
+                        var roles = data;
+                        if (roles.includes("Cast")) {
+                            event.preventDefault();
+                            $deleteBtn.hide();
+                            return;
                         }
-                    }
+                        // LIN 削除した列の高さを調整する
+                        var sc_key = $bar.data("sc_key");
+                        var deleteTimelineNum = scheduleData[sc_key].timeline;
+                        var tempDeleteData = scheduleData[sc_key];
+                        $bar.remove();
+                        element.resetBarPosition(deleteTimelineNum);
+                
+                        // LIN 追加したエレメントの削除は追加番号を削除する
+                        if (tempDeleteData['data']['No'] !== undefined) {
+                            var key = jQuery.inArray(tempDeleteData['data']['No'], liveDataNo);
+                            liveDataNo.splice(key, 1);
+                        }
+                
+                        if (setting.delete) {
+                            if (jQuery(this).data("dragCheck") !== true && jQuery(this).data("resizeCheck") !== true) {
+                                setting.delete(tempDeleteData);
+                            }
+                        }
+                    });
                 });
+                
                 // ブロック内容の追加
                 var $content = jQuery('<span class="all"><span class="head"><span class="startTime time"></span>～<span class="endTime time"></span></span><span class="text"></span><span class="balloon"><span class="head"><span class="startTime time"></span>～<span class="endTime time"></span></span><span class="text"></span>');
                 var $bar = jQuery('<div class="sc_Bar ' + data['class'] + '"></div>').append($deleteBtn).append($content);
                 var stext = startDate + ' ' + element.formatTime(data["start"]);
                 var etext = endDate + ' ' + element.formatTime(data["end"]);
                 var snum = element.getScheduleCount(data["timeline"]);
+                
                 $bar.css({
                     left: (st * setting.widthTimeX),
                     top: ((snum * setting.timeLineY) + setting.timeLinePaddingTop),
@@ -253,6 +276,94 @@
 
                 // var $node = $element.find(".sc_Bar");
                 // move bar.
+                //fetch("https://shiftup.works/api/users/me/roles")
+                fetch("http://localhost:3000/api/dev/role")
+.then(response => response.json())
+.then(data => {
+    if (data.includes("Cast")) {
+        // Cast の場合、ドラッグ処理を実行しない
+        $bar.draggable({
+            disabled: true
+        });
+        $bar.css("opacity", 1); // Castの場合に透過率を1に設定
+    } else {
+        // Cast 以外の場合、通常通りドラッグ処理を実行
+        $bar.draggable({
+            grid: [setting.widthTimeX, setting.timeLineY],
+            containment: ".sc_main",
+            helper: 'original',
+            opacity: 0.5,
+            start: function (event, ui) {
+                var node = {};
+                        node["node"] = this;
+                        node["offsetTop"] = ui.position.top;
+                        node["offsetLeft"] = ui.position.left;
+                        node["currentTop"] = ui.position.top;
+                        node["currentLeft"] = ui.position.left;
+                        node["timeline"] = element.getTimeLineNumber(ui.position.top);
+                        node["nowTimeline"] = node["timeline"];
+                        // LIN 元の位置へ戻すために初期位置を記憶する
+                        node['startedTop'] = jQuery(this).position().top;
+                        node['startedLeft'] = jQuery(this).position().left;
+                        node["startedTimeline"] = scheduleData[jQuery(this).data("sc_key")].timeline;
+                        node["movedDiff"] = 0;
+                        currentNode = node;
+                    },
+            revert: function (event) {
+                var node = jQuery(this);
+                        var sc_key = node.data("sc_key");
+                        var x = node.position().left;
+                        var w = node.width();
+                        // LIN 予約できない場合、戻す
+                        var timelineNum = scheduleData[sc_key].timeline
+                        var $movedStartTarget = jQuery(jQuery(".line_" + (timelineNum + 1))[Math.floor(x / setting.widthTimeX)]);
+                        var $movedEndTarget = jQuery(jQuery(".line_" + (timelineNum + 1))[(Math.floor((x + w) / setting.widthTimeX)) - 1]);
+                        if ($movedStartTarget.hasClass("cant_res") || $movedEndTarget.hasClass("cant_res")) {
+                            // LIN 元の位置へ戻す
+                            var timelineDiff = currentNode["startedTimeline"] - timelineNum;
+                            jQuery(this).data("uiDraggable").originalPosition = {
+                                top: setting.timeLineY * timelineDiff,
+                                left: Math.floor(currentNode['startedLeft'] / setting.widthTimeX) * setting.widthTimeX
+                            };
+                            return true;
+                        }
+                        return false;
+                    },
+            drag: function (event, ui) {
+                jQuery(this).data("dragCheck", true);
+                        if (!currentNode) {
+                            return false;
+                        }
+                        currentNode["movedDiff"] = parseInt((ui.position.top - currentNode["startedTop"]) / setting.timeLineY);
+                        return true;
+                    },
+            stop: function (event, ui) {
+                var node = jQuery(this);
+                var sc_key = node.data("sc_key");
+                var x = node.position().left;
+                var w = node.width();
+                var start = tableStartTime + (Math.floor(x / setting.widthTimeX) * setting.widthTime);
+                var end = tableStartTime + (Math.floor((x + w) / setting.widthTimeX) * setting.widthTime);
+                var timelineNum = scheduleData[sc_key]["timeline"];
+
+                scheduleData[sc_key]["start"] = start;
+                scheduleData[sc_key]["end"] = end;
+
+                // 高さ調整
+                element.resetBarPosition(timelineNum);
+                // テキスト変更
+                element.rewriteBarText(node, scheduleData[sc_key]);
+
+                node.data("resizeCheck", false);
+                // コールバックがセットされていたら呼出
+                if (setting.change) {
+                    setting.change(node, scheduleData[sc_key]);
+                }
+            }
+        });
+    }
+});
+
                 $bar.draggable({
                     grid: [setting.widthTimeX, setting.timeLineY],
                     containment: ".sc_main",
@@ -467,14 +578,38 @@
                     $timeline.append($tl);
                 }
             }
+            
+
+            $("#task-name").on("input", function() {
+                if(/^[\s\u3000\u3164]*$/.test(this.value)) {
+                console.log("true")
+                val = true;
+                } else {
+                console.log("false")
+                val = false;
+                }
+                });
+            
 
             // クリックイベント
             // left click
             $timeline.find(".tl").click(function () {
-                if (setting.timeClick) {
-                    setting.timeClick(this, [jQuery(this).data("date") + " " + jQuery(this).data('time_start')]);
-                }
+                //fetch("https://shiftup.works/api/users/me/roles")
+                fetch("http://localhost:3000/api/dev/role")
+                .then(response => response.json())
+                .then(data => {
+                    var roles = data;
+                    if (roles.includes("Cast")) {
+                        event.preventDefault();
+                        return;
+                    }
+                    if (setting.timeClick) {
+                        setting.timeClick(this, [jQuery(this).data("date") + " " + jQuery(this).data('time_start')]);
+                    }
+                });
             });
+            
+            
 
             // LIN ドラッグイベント
             if (setting.timeDrag) {
@@ -484,38 +619,58 @@
                 var $startElement;
                 var $endElement;
                 $timeline.find(".tl").bind("mousedown", function (event) {
-                    if (!setting.multiple && liveDataNo.length > 0) {
-                        console.log('not support multiple!');
-                        return false;
-                    }
-                    $startElement = jQuery(this);
-                    if ($startElement.hasClass('can_res')) {
-                        $endElement = undefined;
-                        if (!$startElement.hasClass('selected_time')) {
-                            $startElement.toggleClass('time_first', true);
-                            $startElement.toggleClass('selected_no_' + addNo, true);
-                            lineId = $startElement.data('lineId');
-                            startX = event.pageX;
-                            if (!setting.multiple) {
-                                jQuery('.selected_time').toggleClass('selected_time', false);
+                    fetch("http://localhost:3000/api/dev/role")
+                        .then(response => response.json())
+                        .then(data => {
+                            var roles = data;
+                            if (roles.includes("Cast")) {
+                                event.preventDefault();
+                                return;
                             }
-                            isMouseDown = true;
-                            $startElement.toggleClass("selected_time", true);
-                            if (setting.multiple) {
-                                $startElement.html('');
-                                $startElement.append($('<div>' + addNo + '</div>'));
+                            if (!setting.multiple && liveDataNo.length > 0) {
+                                console.log('not support multiple!');
+                                return false;
                             }
-                        }
-                    }
+                            $startElement = jQuery(this);
+                            if ($startElement.hasClass('can_res')) {
+                                $endElement = undefined;
+                                if (!$startElement.hasClass('selected_time')) {
+                                    $startElement.toggleClass('time_first', true);
+                                    $startElement.toggleClass('selected_no_' + addNo, true);
+                                    lineId = $startElement.data('lineId');
+                                    startX = event.pageX;
+                                    if (!setting.multiple) {
+                                        jQuery('.selected_time').toggleClass('selected_time', false);
+                                    }
+                                    isMouseDown = true;
+                                    $startElement.toggleClass("selected_time", true);
+                                    if (setting.multiple) {
+                                        $startElement.html('');
+                                        $startElement.append($('<div>' + addNo + '</div>'));
+                                    }
+                                }
+                            }
+                        });
                 });
+                
+                
                 jQuery('#schedule').mouseup(function (event) {
+                    if(val) {
+                        event.preventDefault();
+                        return;
+                    }
                     if (isMouseDown) {
                         const taskName = $("#task-name").val();
-                        if(/^\s*$/.test(taskName)){
-                        alert("空白文字は入力できません");
-                        return;
+                        if (/^[\s\u3000\u3164]*$/.test(taskName)){
+                            alert("空白文字は入力できません");
+                            event.stopPropagation();
+                            event.preventDefault();
+                            return;
                         }
+                        
+                        console.log("い")
                         $("#task-name").val(""); // テキストエリアをリセット}
+                        val = true;
                         isMouseDown = false;
                         var startDate = $startElement.data('date');
                         var startTime = $startElement.data('time_start');
@@ -524,17 +679,17 @@
                         console.log(`StartTime: ${startDate} : ${startTime}`)
                         console.log(`EndTime: ${endDate} : ${endTime}`)
                         if (!$startElement.hasClass('cant_res') && ($endElement == undefined || !$endElement.hasClass('cant_res'))) {
-                            var timelintnum = (lineId - 1);
-                            var addTempData = {
-                                timeline: timelintnum,
-                                start: element.calcStringTime(startTime),
-                                end: element.calcStringTime(endTime),
-                                class: 'newAdd',
-                                text: taskName,
-                                data: {
-                                    'No': addNo
-                                }
-                            };
+                        var timelintnum = (lineId - 1);
+                        var addTempData = {
+                        timeline: timelintnum,
+                        start: element.calcStringTime(startTime),
+                        end: element.calcStringTime(endTime),
+                        class: 'newAdd',
+                        text: taskName,
+                        data: {
+                        'No': addNo
+                        }
+                        };
                             element.addScheduleData(addTempData, startDate, endDate);
                             element.resetBarPosition(timelintnum);
                             jQuery('.selected_no_' + addNo)
@@ -557,7 +712,13 @@
                     }
                 });
                 jQuery('body').mousemove(function (event) {
+                    if(val) {
+                        event.preventDefault();
+                        return;
+                    }
                     if (isMouseDown) {
+                        
+                        console.log("あ")
                         var nowX = event.pageX;
                         var setSelectedTime = function ($element, nowX) {
                             var elementPositionX = $element.offset().left;
@@ -841,7 +1002,7 @@
 
                 // LIN 日付ヘッダーの作成
                 var nowDate = new Date(daysArray[count]);
-                var $dateDiv = $('<div class="sc_date" data-date="' + daysArray[count] + '">' + daysArray[count] + '(' + setting.weekday[nowDate.getDay()] + ')</div>');
+                var $dateDiv = $('<div class="sc_date" data-date=" "> ㅤ </div>');
                 var $timeDiv = $('<div class="sc_header_time"></div>');
                 var allWidth = 0;
                 if (nowDate.getDay() === 0 || nowDate.getDay() == 6) {
