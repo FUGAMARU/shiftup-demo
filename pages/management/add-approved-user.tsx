@@ -12,7 +12,7 @@ import { useApiConnection } from "hooks/useApiConnection"
 import { Flex, Grid, Text, Box, Input, Radio, RadioGroup, Stack, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
-import Body from "components/Body"
+import Body from "components/view/Body"
 import SendButton from "components/button/SendButton"
 import PopOver from "components/PopOver"
 import SymbolSelector from "components/select/SymbolSelector"

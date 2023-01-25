@@ -10,6 +10,10 @@ export const formatDateForDisplay = (str: string) => {
   if (str) return format(new Date(str), "yyyy/MM/dd (E)", { locale: ja })
 }
 
+export const formatDateForMinimumDisplay = (str: string) => {
+  if (str) return format(new Date(str), "MM/dd", { locale: ja })
+}
+
 export const toHankaku = (str: string) => {
   return str.replace(/[Ａ-Ｚａ-ｚ０-９]/g, s => {
     return String.fromCharCode(s.charCodeAt(0) - 0xFEE0)

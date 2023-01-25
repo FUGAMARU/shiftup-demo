@@ -14,7 +14,7 @@ import { useStyledToast } from "hooks/useStyledToast"
 import { Box, Flex, Text, SimpleGrid, StackDivider, VStack, Button, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
-import Body from "components/Body"
+import Body from "components/view/Body"
 import StatusText from "components/text/StatusText"
 import ButtonModal from "components/modal/ButtonModal"
 

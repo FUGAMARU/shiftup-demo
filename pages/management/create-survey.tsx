@@ -13,7 +13,7 @@ import { useStyledToast } from "hooks/useStyledToast"
 import { Box, Input, Flex, Grid, Tooltip, VStack, StackDivider, Text, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
-import Body from "components/Body"
+import Body from "components/view/Body"
 import SendButton from "components/button/SendButton"
 import PopOver from "components/PopOver"
 

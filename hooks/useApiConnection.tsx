@@ -15,6 +15,7 @@ import { User, UserNew } from "interfaces/User"
 import { CreateSurvey } from "interfaces/request/CreateSurvey"
 import { AddApprovedUser } from "interfaces/request/AddApprovedUser"
 import { Request } from "interfaces/Request"
+import { PersonalizedData } from "interfaces/PersonalizedData"
 
 // Types
 import { UseCheckboxGroupReturn } from "@chakra-ui/react"
@@ -57,6 +58,13 @@ export const useApiConnection = () => {
     if (data) time = new Date(data.datetime)
     return { time, error }
   }, [])
+
+  const getPersonalizedData = useCallback(() => {
+    const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me/detail` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/toppage`
+    const { data, error } = useSWR<PersonalizedData, Error>(url, fetcher)
+    const fetchErrorMessage = error ? "個人用データーの取得に失敗しました" : ""
+    return { data, fetchErrorMessage }
+  }, [isProdEnv])
 
   const getAllSurveys = useCallback(() => {
     const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/attendance/surveys` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/surveys`
@@ -218,5 +226,5 @@ export const useApiConnection = () => {
       throw new Error("プロフィールの更新に失敗しました")
     }
   }, [isProdEnv])
-  return { getSession, getMyName, getRole, getCurrentTime, getAllSurveys, getAllSchedules, getAnswerableSurveys, getSurveyResult, getAllUsers, getAllRequests, getConfirmedUsers, sendRequests, createSurvey, answerSurvey, switchSurveyAvailability, switchUserPosition, deleteSurvey, addApprovedUser, deleteUser, confirmAttendance, changeRequestState, updateProfile }
+  return { getSession, getMyName, getRole, getCurrentTime, getPersonalizedData, getAllSurveys, getAllSchedules, getAnswerableSurveys, getSurveyResult, getAllUsers, getAllRequests, getConfirmedUsers, sendRequests, createSurvey, answerSurvey, switchSurveyAvailability, switchUserPosition, deleteSurvey, addApprovedUser, deleteUser, confirmAttendance, changeRequestState, updateProfile }
 }

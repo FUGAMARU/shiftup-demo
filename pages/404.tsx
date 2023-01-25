@@ -7,7 +7,7 @@ import { Box } from "@chakra-ui/react"
 
 // Custom Components
 import Header from "components/header/Header"
-import ErrorView from "components/ErrorView"
+import ErrorView from "components/view/ErrorView"
 
 const NotFoundPage: NextPage = () => {
   return (

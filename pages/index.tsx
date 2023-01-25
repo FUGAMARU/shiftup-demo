@@ -7,8 +7,8 @@ import { Box, Button, Flex, Text } from "@chakra-ui/react"
 
 // Custom Components
 import Header from "components/header/Header"
-import MyPage from "components/toppage-view/MyPage"
-import Login from "components/toppage-view/Login"
+import MyPage from "components/view/MyPage"
+import Login from "components/view/Login"
 
 // Global State Management
 import { useRecoilState, useSetRecoilState } from "recoil"

@@ -13,7 +13,7 @@ import { useApiConnection } from "hooks/useApiConnection"
 import { Box, Flex, Text, VStack, StackDivider, Checkbox, Select, useCheckboxGroup, Button, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
-import Body from "components/Body"
+import Body from "components/view/Body"
 import GizaHeading from "components/heading/GizaHeading"
 import SendButton from "components/button/SendButton"
 import ButtonModal from "components/modal/ButtonModal"

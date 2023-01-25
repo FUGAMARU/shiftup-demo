@@ -15,7 +15,7 @@ import { Box, Flex, VStack, StackDivider, Text, Checkbox, Grid, useDisclosure } 
 
 // Custom Components
 import SendButton from "components/button/SendButton"
-import Body from "components/Body"
+import Body from "components/view/Body"
 import PopOver from "components/PopOver"
 import ScheduleSelector from "components/select/ScheduleSelector"
 

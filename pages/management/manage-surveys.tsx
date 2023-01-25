@@ -14,7 +14,7 @@ import { useApiConnection } from "hooks/useApiConnection"
 import { Box, Flex, Text, VStack, StackDivider, Button, Tooltip, Input, Popover, PopoverTrigger, PopoverContent, PopoverBody, PopoverArrow, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
-import Body from "components/Body"
+import Body from "components/view/Body"
 import ButtonModal from "components/modal/ButtonModal"
 
 //Libraries

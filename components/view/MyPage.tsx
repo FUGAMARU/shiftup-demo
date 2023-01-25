@@ -1,6 +1,10 @@
 // React
 import { useState, memo } from "react"
 
+// Custom Hooks
+import { useStyledToast } from "hooks/useStyledToast"
+import { useApiConnection } from "hooks/useApiConnection"
+
 // Chakra UI Components
 import { Box, Flex, SimpleGrid } from "@chakra-ui/react"
 
@@ -11,7 +15,7 @@ import SimpleButton from "components/button/SimpleButton"
 
 // Libraries
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core"
-import { faUpRightFromSquare, faCalendarCheck, faThumbsUp, faYenSign, faForward } from "@fortawesome/free-solid-svg-icons"
+import { faUpRightFromSquare, faCalendarCheck, faThumbsUp, faForward, faPersonWalking, faBell } from "@fortawesome/free-solid-svg-icons"
 import { faDiscord } from "@fortawesome/free-brands-svg-icons"
 import { useRecoilValue } from "recoil"
 
@@ -19,11 +23,15 @@ import { useRecoilValue } from "recoil"
 import { name } from "atoms/NameAtom"
 
 // Functions
-import { resp } from "ts/functions"
+import { resp, formatDateForMinimumDisplay } from "ts/functions"
 
 const MyPage = () => {
   const [cardAnimationTrigger, setCardAnimationTrigger] = useState(false)
   const myName = useRecoilValue(name)
+  const { showToast } = useStyledToast()
+  const { getPersonalizedData } = useApiConnection()
+  const { data, fetchErrorMessage } = getPersonalizedData()
+  if (fetchErrorMessage) showToast("エラー", fetchErrorMessage, "error")
 
   const viewTodaySchedule = () => {
     // 「今日のタイムテーブルを見る」 ボタンをクリックした時の処理をそのうち書く
@@ -39,22 +47,22 @@ const MyPage = () => {
 
           <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={5} justifyItems="center" alignItems="center">
             <Box className={cardAnimationTrigger ? "animate__animated card-in card1" : "hidden"}>
-              <Visualizer color="#32ccbc" icon={faCalendarCheck} title="未回答の希望日程アンケート" gradientColor1="#90f7ec" gradientColor2="#32ccbc" value={1} unit="件" isShowButton={true} linkURL="/answer-survey" />
+              <Visualizer color="#32ccbc" icon={faCalendarCheck} title="未回答の希望日程アンケート" gradientColor1="#90f7ec" gradientColor2="#32ccbc" value={data?.unansweredAttendanceSurveyCount} unit="件" isShowButton={true} linkURL="/answer-survey" />
             </Box>
             <Box className={cardAnimationTrigger ? "animate__animated card-in card2" : "hidden"}>
-              <Visualizer color="#ea5455" icon={faThumbsUp} title="未確定の出勤" gradientColor1="#feb692" gradientColor2="#ea5455" value={1} unit="件" isShowButton={true} linkURL="/confirm-attendance" />
+              <Visualizer color="#ea5455" icon={faThumbsUp} title="未確定の出勤" gradientColor1="#feb692" gradientColor2="#ea5455" value={data?.canRespondAttendanceRequestCount} unit="件" isShowButton={true} linkURL="/confirm-attendance" />
             </Box>
             <Box className={cardAnimationTrigger ? "animate__animated card-in card3" : "hidden"}>
-              <Visualizer color="#28c76f" icon={faForward} title="次の出勤日" gradientColor1="#81fbb8" gradientColor2="#28c76f" value="9/16" unit="" isShowButton={false} />
+              <Visualizer color="#28c76f" icon={faForward} title="次の出勤日" gradientColor1="#81fbb8" gradientColor2="#28c76f" value={!!!data?.nextWorkDay ? "未定" : formatDateForMinimumDisplay(data?.nextWorkDay)} unit="" isShowButton={false} />
             </Box>
             <Box className={cardAnimationTrigger ? "animate__animated card-in card4" : "hidden"}>
-              <Visualizer color="#0396ff" icon={faCalendarCheck} title="今月の出勤回数" gradientColor1="#abdcff" gradientColor2="#0396ff" value={3} unit="回" isShowButton={false} />
+              <Visualizer color="#0396ff" icon={faPersonWalking} title="今月の出勤実績" gradientColor1="#abdcff" gradientColor2="#0396ff" value={data?.currentMonthWorkedDayCount} unit="回" isShowButton={false} />
             </Box>
             <Box className={cardAnimationTrigger ? "animate__animated card-in card5" : "hidden"}>
-              <Visualizer color="#f8d800" icon={faYenSign} title="今月の見込み給与" gradientColor1="#fdeb71" gradientColor2="#f8d800" value={20400} unit="円" isShowButton={false} />
+              <Visualizer color="#f8d800" icon={faBell} title="今月の残り出勤予定回数" gradientColor1="#fdeb71" gradientColor2="#f8d800" value={data?.currentMonthWorkScheduleDayCount} unit="回" isShowButton={false} />
             </Box>
             <Box className={cardAnimationTrigger ? "animate__animated card-in card6" : "hidden"}>
-              <Visualizer color="#9f44d3" icon={faDiscord as IconDefinition} title="Discord" gradientColor1="#e2b0ff" gradientColor2="#9f44d3" value="専門OC" unit="" isShowButton={true} linkURL="https://discord.com/channels/947388983179091969/947390083445715035" />
+              <Visualizer color="#9f44d3" icon={faDiscord as IconDefinition} title="Discord" gradientColor1="#e2b0ff" gradientColor2="#9f44d3" value="専門OC" unit="" isShowButton={true} linkURL={process.env.NEXT_PUBLIC_DISCORD_LINK} />
             </Box>
           </SimpleGrid>
         </Box>
