@@ -12,7 +12,7 @@
   </script>
   <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
   <script type="text/javascript" src="jq.schedule.plus.js"></script>
-  <script type="text/javascript" src="api-example.js"></script>
+  <script type="text/javascript" src="pages\api\dev\role.ts"></script>
   <link rel="stylesheet" type="text/css" href="style.css" />
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="screen">
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
@@ -69,7 +69,7 @@
           let taskName = document.getElementById("task-name");
           let userName = document.getElementById("user-name");
           let AddUserBtn = document.getElementsByClassName("add_user_btn")[0];
-          if (roles.includes("Cast")) {
+          if (roles.length === 1 && roles[0] === "Cast") {
             templateName.style.display = "none";
             templateSelector.style.display = "none";
             templateSaveButton.style.display = "none";
@@ -77,14 +77,6 @@
             taskName.style.display = "none";
             userName.style.display = "none";
             AddUserBtn.style.display = "none";
-          } else if (roles.includes("Manager")) {
-            templateName.style.display = "block";
-            templateSelector.style.display = "block";
-            templateSaveButton.style.display = "block";
-            deleteTemplateButton.style.display = "block";
-            taskName.style.display = "block";
-            userName.style.display = "block";
-            AddUserBtn.style.display = "block";
           }
         });
     </script>

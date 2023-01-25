@@ -199,7 +199,7 @@
                         .then(response => response.json())
                         .then(data => {
                             var roles = data;
-                            if (roles.includes("Cast")) {
+                            if (roles.length === 1 && roles[0] === "Cast") {
                                 $deleteBtn.hide();
                             }
                         });
@@ -209,7 +209,7 @@
                     .then(response => response.json())
                     .then(data => {
                         var roles = data;
-                        if (roles.includes("Cast")) {
+                        if (roles.length === 1 && roles[0] === "Cast") {
                             event.preventDefault();
                             $deleteBtn.hide();
                             return;
@@ -278,92 +278,18 @@
                 // move bar.
                 //fetch("https://shiftup.works/api/users/me/roles")
                 fetch("http://localhost:3000/api/dev/role")
-.then(response => response.json())
-.then(data => {
-    if (data.includes("Cast")) {
-        // Cast の場合、ドラッグ処理を実行しない
-        $bar.draggable({
-            disabled: true
-        });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 1 && data[0] === "Cast") {
+                      // Cast の場合、ドラッグ処理を実行しない
+                        $bar.draggable({
+                            disabled: true
+                        });
+                      $bar.css("opacity", 1); // Castの場合に透過率を1に設定
+                    }
+                });
         $bar.css("opacity", 1); // Castの場合に透過率を1に設定
-    } else {
-        // Cast 以外の場合、通常通りドラッグ処理を実行
-        $bar.draggable({
-            grid: [setting.widthTimeX, setting.timeLineY],
-            containment: ".sc_main",
-            helper: 'original',
-            opacity: 0.5,
-            start: function (event, ui) {
-                var node = {};
-                        node["node"] = this;
-                        node["offsetTop"] = ui.position.top;
-                        node["offsetLeft"] = ui.position.left;
-                        node["currentTop"] = ui.position.top;
-                        node["currentLeft"] = ui.position.left;
-                        node["timeline"] = element.getTimeLineNumber(ui.position.top);
-                        node["nowTimeline"] = node["timeline"];
-                        // LIN 元の位置へ戻すために初期位置を記憶する
-                        node['startedTop'] = jQuery(this).position().top;
-                        node['startedLeft'] = jQuery(this).position().left;
-                        node["startedTimeline"] = scheduleData[jQuery(this).data("sc_key")].timeline;
-                        node["movedDiff"] = 0;
-                        currentNode = node;
-                    },
-            revert: function (event) {
-                var node = jQuery(this);
-                        var sc_key = node.data("sc_key");
-                        var x = node.position().left;
-                        var w = node.width();
-                        // LIN 予約できない場合、戻す
-                        var timelineNum = scheduleData[sc_key].timeline
-                        var $movedStartTarget = jQuery(jQuery(".line_" + (timelineNum + 1))[Math.floor(x / setting.widthTimeX)]);
-                        var $movedEndTarget = jQuery(jQuery(".line_" + (timelineNum + 1))[(Math.floor((x + w) / setting.widthTimeX)) - 1]);
-                        if ($movedStartTarget.hasClass("cant_res") || $movedEndTarget.hasClass("cant_res")) {
-                            // LIN 元の位置へ戻す
-                            var timelineDiff = currentNode["startedTimeline"] - timelineNum;
-                            jQuery(this).data("uiDraggable").originalPosition = {
-                                top: setting.timeLineY * timelineDiff,
-                                left: Math.floor(currentNode['startedLeft'] / setting.widthTimeX) * setting.widthTimeX
-                            };
-                            return true;
-                        }
-                        return false;
-                    },
-            drag: function (event, ui) {
-                jQuery(this).data("dragCheck", true);
-                        if (!currentNode) {
-                            return false;
-                        }
-                        currentNode["movedDiff"] = parseInt((ui.position.top - currentNode["startedTop"]) / setting.timeLineY);
-                        return true;
-                    },
-            stop: function (event, ui) {
-                var node = jQuery(this);
-                var sc_key = node.data("sc_key");
-                var x = node.position().left;
-                var w = node.width();
-                var start = tableStartTime + (Math.floor(x / setting.widthTimeX) * setting.widthTime);
-                var end = tableStartTime + (Math.floor((x + w) / setting.widthTimeX) * setting.widthTime);
-                var timelineNum = scheduleData[sc_key]["timeline"];
-
-                scheduleData[sc_key]["start"] = start;
-                scheduleData[sc_key]["end"] = end;
-
-                // 高さ調整
-                element.resetBarPosition(timelineNum);
-                // テキスト変更
-                element.rewriteBarText(node, scheduleData[sc_key]);
-
-                node.data("resizeCheck", false);
-                // コールバックがセットされていたら呼出
-                if (setting.change) {
-                    setting.change(node, scheduleData[sc_key]);
-                }
-            }
-        });
-    }
-});
-
+    
                 $bar.draggable({
                     grid: [setting.widthTimeX, setting.timeLineY],
                     containment: ".sc_main",
@@ -599,7 +525,7 @@
                 .then(response => response.json())
                 .then(data => {
                     var roles = data;
-                    if (roles.includes("Cast")) {
+                    if (roles.length === 1 && roles[0] === "Cast") {
                         event.preventDefault();
                         return;
                     }
@@ -623,7 +549,7 @@
                         .then(response => response.json())
                         .then(data => {
                             var roles = data;
-                            if (roles.includes("Cast")) {
+                            if (roles.length === 1 && roles[0] === "Cast") {
                                 event.preventDefault();
                                 return;
                             }
