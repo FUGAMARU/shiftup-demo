@@ -8,13 +8,11 @@ import useSWR from "swr"
 import axios, { isAxiosError } from "axios"
 
 // Interfaces
-import { Survey } from "interfaces/Survey"
-import { AvailableSurvey } from "interfaces/AvailableSurvey"
-import { SurveyResult } from "interfaces/SurveyResult"
+import { Survey, AvailableSurvey, SurveyResult } from "interfaces/Survey"
 import { User, Invite } from "interfaces/User"
 import { CreateSurvey } from "interfaces/request/CreateSurvey"
 import { AddApprovedUser } from "interfaces/request/AddApprovedUser"
-import { Request } from "interfaces/Request"
+import { AttendanceRequest } from "interfaces/AttendanceRequest"
 import { PersonalizedData } from "interfaces/PersonalizedData"
 
 // Types
@@ -107,7 +105,7 @@ export const useApiConnection = () => {
 
   const getAllRequests = useCallback(() => {
     const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me/attendance/requests/divided` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/requests`
-    const { data, error, mutate } = useSWR<Request, Error>(url, fetcher, { fallback: [] })
+    const { data, error, mutate } = useSWR<AttendanceRequest, Error>(url, fetcher, { fallback: [] })
     const fetchErrorMessage = error ? "出勤依頼一覧の取得に失敗しました" : ""
     return { data, fetchErrorMessage, mutate }
   }, [isProdEnv])

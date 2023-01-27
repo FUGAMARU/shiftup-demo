@@ -31,7 +31,7 @@ import { withSession } from "hoc/withSession"
 import { SendButtonState } from "types/SendButtonState"
 
 // Interfaces
-import { AvailableSurvey } from "interfaces/AvailableSurvey"
+import { AvailableSurvey } from "interfaces/Survey"
 
 const AnswerSurvey: NextPage = () => {
   const { showToast } = useStyledToast()

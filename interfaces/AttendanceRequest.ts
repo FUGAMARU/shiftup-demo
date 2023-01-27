@@ -1,7 +1,7 @@
 // Types
 import { RequestState } from "types/RequestState"
 
-export interface Request {
+export interface AttendanceRequest {
   canRespondRequests: {
     openCampusDate: string,
     surveyName: string
