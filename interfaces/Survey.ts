@@ -4,5 +4,6 @@ export interface Survey {
   openCampusSchedule: string[],
   creationDate: string,
   available: boolean,
+  canDelete: boolean,
   answerCount: number
 }

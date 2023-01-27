@@ -18,7 +18,8 @@ export default function handler(
           ],
           "creationDate": "2022-11-30",
           "available": true,
-          "answerCount": 0
+          "answerCount": 0,
+          "canDelete": true
         },
         {
           "id": "37eaaef0-1494-4c34-994c-52d0f0d62d47",
@@ -32,7 +33,8 @@ export default function handler(
           ],
           "creationDate": "2022-12-02",
           "available": false,
-          "answerCount": 0
+          "answerCount": 0,
+          "canDelete": true
         },
         {
           "id": "f57c089c-b770-401e-977f-0a2c8d412e96",
@@ -42,7 +44,8 @@ export default function handler(
           ],
           "creationDate": "2022-11-30",
           "available": true,
-          "answerCount": 0
+          "answerCount": 0,
+          "canDelete": false
         },
         {
           "id": "77cabd67-1c6d-4673-b25a-157d199ba2f8",
@@ -53,7 +56,8 @@ export default function handler(
           ],
           "creationDate": "2023-01-10",
           "available": true,
-          "answerCount": 1
+          "answerCount": 1,
+          "canDelete": false
         },
         {
           "id": "83e29142-a14d-45bf-9668-bfa62e8a313c",
@@ -65,7 +69,8 @@ export default function handler(
           ],
           "creationDate": "2023-01-11",
           "available": true,
-          "answerCount": 1
+          "answerCount": 1,
+          "canDelete": true
         }
       ])
       break

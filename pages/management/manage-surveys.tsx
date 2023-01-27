@@ -132,9 +132,15 @@ const ManageSurveys: NextPage = () => {
                     <Tooltip label={survey.available ? "回答を締め切る" : "回答の受付を再開する"}>
                       <Button mr={resp(3, 5, 5)} size="xs" colorScheme={survey.available ? "whatsapp" : "red"} variant="outline" onClick={() => toggleAvailable(survey.id, !!!survey.available)}>{survey.available ? "回答受付中" : "締切済み"}</Button>
                     </Tooltip>
-                    <Tooltip label="アンケートを削除する">
-                      <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color={survey.available ? "#159848" : "#c43030"} cursor="pointer" onClick={() => { openModal(); setClickedSurveyId(survey.id) }} />
-                    </Tooltip>
+                    {survey.canDelete ?
+                      <Tooltip label="アンケートを削除する">
+                        <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color={survey.available ? "#159848" : "#c43030"} cursor="pointer" onClick={() => { openModal(); setClickedSurveyId(survey.id) }} />
+                      </Tooltip>
+                      :
+                      <Tooltip label="このアンケートは過去に集計されたことがあるため削除できません">
+                        <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color="#8b8b8b" />
+                      </Tooltip>
+                    }
                   </Flex>
                 </Flex>
               )
