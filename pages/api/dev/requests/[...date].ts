@@ -11,22 +11,18 @@ export default function handler(
           {
             "id": "111311839178632200390",
             "name": "真壁政宗",
-            "schoolProfile": {
-              "email": "g021c0000@g.neec.ac.jp",
-              "department": "C2"
-            },
-            "studentNumber": "G021xxxxx",
-            "position": "Manager",
+            "studentNumber": "G021C0000",
+            "email": "g021c0000@g.neec.ac.jp",
+            "department": "BT",
+            "position": "Manager"
           },
           {
             "id": "111311839178632200391",
             "name": "藤ノ宮寧子",
-            "schoolProfile": {
-              "email": "g021c0000@g.neec.ac.jp",
-              "department": "C2"
-            },
-            "studentNumber": "G021xxxxx",
-            "position": "Cast",
+            "studentNumber": "G021C0001",
+            "email": "g021c0001@g.neec.ac.jp",
+            "department": "BT",
+            "position": "Cast"
           }
         ])
       }
@@ -35,12 +31,10 @@ export default function handler(
           {
             "id": "111311839178632200392",
             "name": "安達垣愛姫",
-            "schoolProfile": {
-              "email": "g021c0000@g.neec.ac.jp",
-              "department": "C2"
-            },
-            "studentNumber": "G021xxxxx",
-            "position": "Manager",
+            "studentNumber": "G021C0002",
+            "email": "g021c0002@g.neec.ac.jp",
+            "department": "BT",
+            "position": "Manager"
           }
         ])
       }

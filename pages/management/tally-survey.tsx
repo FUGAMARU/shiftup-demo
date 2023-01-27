@@ -28,7 +28,7 @@ import { up, down } from "slide-element"
 import { resp, standBy } from "ts/functions"
 
 // Interfaces
-import { Candidate } from "interfaces/Candidate"
+import { AvailableCast } from "interfaces/User"
 
 // Types
 import { SendButtonState } from "types/SendButtonState"
@@ -56,7 +56,7 @@ const TallySurvey: NextPage = () => {
   // ユーザーリスト
   const { isOpen: isCandidatesPopoverOpened, onOpen: openCandidatesPopover, onClose: closeCandidatesPopover } = useDisclosure()
   const { checkboxItems, setCheckbox, checkedItems, toggleItemState } = useCheckbox()
-  const [candidates, setCandidates] = useState<Candidate[]>()
+  const [candidates, setCandidates] = useState<AvailableCast[]>()
 
   // 日程選択時
   useEffect(() => {
@@ -154,7 +154,7 @@ const TallySurvey: NextPage = () => {
                           <Checkbox key={idx} isChecked={checkboxItems[candidate.id]} onChange={() => toggleItemState(candidate.id)}>
                             <Flex alignItems="center">
                               <Text className="kr">{candidate.name}</Text>
-                              <Text pl={2} fontSize={10} color="#898989">{Symbol.toStringSymbol(candidate.schoolProfile.department)}</Text>
+                              <Text pl={2} fontSize={10} color="#898989">{Symbol.toStringSymbol(candidate.department)}</Text>
                             </Flex>
                           </Checkbox>
                         )

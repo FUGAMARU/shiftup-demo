@@ -1,11 +1,11 @@
 // Interfaces
-import { Candidate } from "interfaces/Candidate"
+import { AvailableCast } from "interfaces/User"
 
 export interface SurveyResult {
   tallied: boolean,
   openCampuses: {
     date: string,
     tallied: boolean,
-    availableCasts: Candidate[]
+    availableCasts: AvailableCast[]
   }[]
 }

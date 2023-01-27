@@ -11,7 +11,7 @@ import axios, { isAxiosError } from "axios"
 import { Survey } from "interfaces/Survey"
 import { AvailableSurvey } from "interfaces/AvailableSurvey"
 import { SurveyResult } from "interfaces/SurveyResult"
-import { User, UserNew } from "interfaces/User"
+import { User, Invite } from "interfaces/User"
 import { CreateSurvey } from "interfaces/request/CreateSurvey"
 import { AddApprovedUser } from "interfaces/request/AddApprovedUser"
 import { Request } from "interfaces/Request"
@@ -100,7 +100,7 @@ export const useApiConnection = () => {
 
   const getAllUsers = useCallback(() => {
     const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/invites` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/invites`
-    const { data, error, mutate } = useSWR<User[], Error>(url, fetcher, { fallback: [] })
+    const { data, error, mutate } = useSWR<Invite[], Error>(url, fetcher, { fallback: [] })
     const fetchErrorMessage = error ? "ユーザー一覧の取得に失敗しました" : ""
     return { data, fetchErrorMessage, mutate }
   }, [isProdEnv])
@@ -116,8 +116,8 @@ export const useApiConnection = () => {
   const getConfirmedUsers = useCallback(async (date: string) => {
     try {
       const baseUrl = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/attendance/requests/${date}/casts?state=` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/requests/${date}?state=`
-      const acceptedUsers = date ? (await axios.get<UserNew[]>(baseUrl + "Accepted")).data : undefined
-      const declinedUsers = date ? (await axios.get<UserNew[]>(baseUrl + "Declined")).data : undefined
+      const acceptedUsers = date ? (await axios.get<User[]>(baseUrl + "Accepted")).data : undefined
+      const declinedUsers = date ? (await axios.get<User[]>(baseUrl + "Declined")).data : undefined
       return { acceptedUsers, declinedUsers }
     } catch {
       throw new Error("出勤確定/辞退一覧の取得に失敗しました")

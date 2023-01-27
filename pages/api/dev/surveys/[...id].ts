@@ -21,12 +21,11 @@ export default function handler(
               "tallied": false,
               "availableCasts": [
                 {
-                  "id": "100272172001688966091",
-                  "name": "山田一郎1",
-                  "schoolProfile": {
-                    "email": "g021c0000@g.neec.ac.jp",
-                    "department": "C2"
-                  },
+                  "id": "111311839178632200390",
+                  "name": "ホゲ山ホゲ太郎1",
+                  "studentNumber": "G021C0000",
+                  "email": "g021c0000@g.neec.ac.jp",
+                  "department": "C2",
                   "position": "Manager",
                   "attendanceRequested": false
                 }
@@ -45,12 +44,11 @@ export default function handler(
               "tallied": false,
               "availableCasts": [
                 {
-                  "id": "100272172001688966090",
-                  "name": "山田一郎2",
-                  "schoolProfile": {
-                    "email": "g021c0000@g.neec.ac.jp",
-                    "department": "C2"
-                  },
+                  "id": "111311839178632200391",
+                  "name": "ホゲ山ホゲ太郎2",
+                  "studentNumber": "G021C0001",
+                  "email": "g021c0001@g.neec.ac.jp",
+                  "department": "C2",
                   "position": "Manager",
                   "attendanceRequested": false
                 }
@@ -61,32 +59,29 @@ export default function handler(
               "tallied": false,
               "availableCasts": [
                 {
-                  "id": "100272172001688966097",
-                  "name": "山田一郎3",
-                  "schoolProfile": {
-                    "email": "g021c0000@g.neec.ac.jp",
-                    "department": "C2"
-                  },
+                  "id": "111311839178632200392",
+                  "name": "ホゲ山ホゲ太郎3",
+                  "studentNumber": "G021C0002",
+                  "email": "g021c0002@g.neec.ac.jp",
+                  "department": "C2",
                   "position": "Manager",
                   "attendanceRequested": false
                 },
                 {
-                  "id": "100272172001688966098",
-                  "name": "山田一郎4",
-                  "schoolProfile": {
-                    "email": "g021c0000@g.neec.ac.jp",
-                    "department": "C2"
-                  },
+                  "id": "111311839178632200393",
+                  "name": "ホゲ山ホゲ太郎4",
+                  "studentNumber": "G021C0003",
+                  "email": "g021c0003@g.neec.ac.jp",
+                  "department": "C2",
                   "position": "Manager",
                   "attendanceRequested": true
                 },
                 {
-                  "id": "100272172001688966099",
-                  "name": "山田一郎5",
-                  "schoolProfile": {
-                    "email": "g021c0000@g.neec.ac.jp",
-                    "department": "C2"
-                  },
+                  "id": "111311839178632200394",
+                  "name": "ホゲ山ホゲ太郎5",
+                  "studentNumber": "G021C0004",
+                  "email": "g021c0004@g.neec.ac.jp",
+                  "department": "C2",
                   "position": "Manager",
                   "attendanceRequested": false
                 }

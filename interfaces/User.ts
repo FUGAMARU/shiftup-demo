@@ -2,21 +2,24 @@
 import { Position } from "types/Position"
 import { Department } from "types/Department"
 
-export interface User {
-  id: string,
-  studentNumber: string,
+interface Base {
+  id: string, //UUIDが入る場合もあるし学籍番号が入る場合もある
   name: string | null,
+  studentNumber: string,
+  email: string | null,
   department: Department,
-  position: Position
+  position: Position,
 }
 
-export interface UserNew {
-  id: string,
-  studentNumber: string,
+export interface User extends Base {
   name: string,
-  position: Position,
-  schoolProfile: {
-    email: string,
-    department: Department
-  }
+  email: string,
+}
+
+export interface AvailableCast extends User {
+  attendanceRequested: boolean
+}
+
+export interface Invite extends Base {
+  userId: string | null
 }

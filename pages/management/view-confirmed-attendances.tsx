@@ -32,7 +32,7 @@ import { RequestState } from "types/RequestState"
 import Symbol from "classes/Symbol"
 
 // Interfaces
-import { UserNew } from "interfaces/User"
+import { User } from "interfaces/User"
 
 // Filter
 import { withSession } from "hoc/withSession"
@@ -47,8 +47,8 @@ const ViewConfirmedAttendances: NextPage = () => {
   const { isOpen: isModalOpened1, onOpen: openModal1, onClose: closeModal1 } = useDisclosure()
   const { isOpen: isModalOpened2, onOpen: openModal2, onClose: closeModal2 } = useDisclosure()
 
-  const [acceptedUsers, setAcceptedUsers] = useState<UserNew[] | undefined>()
-  const [declinedUsers, setDeclinedUsers] = useState<UserNew[] | undefined>()
+  const [acceptedUsers, setAcceptedUsers] = useState<User[] | undefined>()
+  const [declinedUsers, setDeclinedUsers] = useState<User[] | undefined>()
   const mutate = useCallback(() => {
     (async () => {
       try {
@@ -98,7 +98,7 @@ const ViewConfirmedAttendances: NextPage = () => {
                 <Flex key={user.id} justifyContent="space-between" alignItems="center">
                   <Flex alignItems="center" px={3}>
                     <Text className="kb" mr={2} fontSize={resp("1rem", "1.2rem", "1.2rem")}>{user.name}</Text>
-                    <Text className="kr" ml={2} mr={1} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">{Symbol.toStringSymbol(user.schoolProfile.department)}</Text>
+                    <Text className="kr" ml={2} mr={1} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">{Symbol.toStringSymbol(user.department)}</Text>
                     {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" ml={1} fontSize="0.75rem" color="#5f5f5f">{user.studentNumber}</Text> : null}
                   </Flex>
                   <Flex alignItems="center">
@@ -118,7 +118,7 @@ const ViewConfirmedAttendances: NextPage = () => {
                 <Flex key={user.id} justifyContent="space-between" alignItems="center">
                   <Flex alignItems="center" px={3}>
                     <Text className="kb" mr={2} fontSize={resp("1rem", "1.2rem", "1.2rem")}>{user.name}</Text>
-                    <Text className="kr" ml={2} mr={1} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">{Symbol.toStringSymbol(user.schoolProfile.department)}</Text>
+                    <Text className="kr" ml={2} mr={1} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">{Symbol.toStringSymbol(user.department)}</Text>
                     {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" ml={1} fontSize="0.75rem" color="#5f5f5f">{user.studentNumber}</Text> : null}
                   </Flex>
                   <Flex alignItems="center">
