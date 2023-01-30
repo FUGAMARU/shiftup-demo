@@ -6,6 +6,13 @@ export const resp = (base: number | string, md: number | string, lg: number | st
   return { base: base, md: md, lg: lg }
 }
 
+export const formatDate = (dt: Date) => {
+  const y = dt.getFullYear()
+  const m = ("00" + (dt.getMonth() + 1)).slice(-2)
+  const d = ("00" + dt.getDate()).slice(-2)
+  return `${y}-${m}-${d}`
+}
+
 export const formatDateForDisplay = (str: string) => {
   if (str) return format(new Date(str), "yyyy/MM/dd (E)", { locale: ja })
 }

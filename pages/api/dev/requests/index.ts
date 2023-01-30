@@ -27,6 +27,11 @@ export default function handler(
             "openCampusDate": "2022-12-05",
             "state": "Declined",
             "surveyName": "大学オープンキャンパス"
+          },
+          {
+            "openCampusDate": "2022-12-10",
+            "state": "Accepted",
+            "surveyName": "大学オープンキャンパス"
           }
         ]
       })
