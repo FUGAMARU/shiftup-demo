@@ -242,6 +242,9 @@
                 var etext = endDate + ' ' + element.formatTime(data["end"]);
                 var snum = element.getScheduleCount(data["timeline"]);
                 
+                // $bar.find(".startTime").text(stext).css("display", "none");
+                ;
+
                 $bar.css({
                     left: (st * setting.widthTimeX),
                     top: ((snum * setting.timeLineY) + setting.timeLinePaddingTop),
@@ -531,6 +534,8 @@
                     }
                     if (setting.timeClick) {
                         setting.timeClick(this, [jQuery(this).data("date") + " " + jQuery(this).data('time_start')]);
+                        event.preventDefault();
+                        return;
                     }
                 });
             });
@@ -569,6 +574,8 @@
                                         jQuery('.selected_time').toggleClass('selected_time', false);
                                     }
                                     isMouseDown = true;
+                                    event.preventDefault();
+                                return;
                                     $startElement.toggleClass("selected_time", true);
                                     if (setting.multiple) {
                                         $startElement.html('');

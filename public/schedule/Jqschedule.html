@@ -109,6 +109,22 @@
           let templateName = $("#templateSelector").val()
           if (localStorage.getItem("templates") === null) localStorage.setItem("templates", JSON.stringify({}))
           const templates = JSON.parse(localStorage.getItem("templates"))
+          console.log(templates)
+          const hoge = templates[templateName]
+
+          const newArr = hoge.map(user => {
+            let tmpUser = Object.assign({}, user)
+            const newSchedule = user["schedule"].map(task => {
+              let tmp = Object.assign({}, task)
+              tmp["start"] = tmp["start"] += "|開始"
+              tmp["end"] = tmp["end"] += "|終了"
+              return tmp
+            })
+            tmpUser["schedule"] = newSchedule
+            return tmpUser
+          })
+
+          // scheduleData.setSchedule = newArr
           scheduleData.setSchedule = templates[templateName]
           scheduleData.updateScheduleTable()
         });
@@ -116,34 +132,35 @@
 
       //テンプレート保存
       const template_save = () => {
-        if (localStorage.getItem("templates") === null) localStorage.setItem("templates", JSON.stringify({}))
+        if (localStorage.getItem("templates") === null) localStorage.setItem("templates", JSON.stringify({}));
 
-        const tmp = {
-
-        }
-
-        schedule_save()
-        extractData()
-        schedule_data_recovery()
-        const templateName = document.getElementById("templateName").value
+        schedule_save();
+        extractData();
+        schedule_data_recovery();
+        const templateName = document.getElementById("templateName").value;
         if (!/\S/.test(templateName)) {
-          alert("テンプレート名が入力されていません")
-          return
+          alert("テンプレート名が入力されていません");
+          return;
         }
-        let templates = JSON.parse(localStorage.getItem("templates"))
-        scheduleHTML.setInnerHTML = $("#schedule").html()
-        users = getUserList()
-        tasks = getTaskList()
-        userTasks = []
+        let templates = JSON.parse(localStorage.getItem("templates"));
+        scheduleHTML.setInnerHTML = $("#schedule").html();
+        users = getUserList();
+        tasks = getTaskList();
+        userTasks = [];
         users.forEach((userName, idx) => {
           userTasks.push({
             "name": userName,
             "tasks": tasks[idx]
-          })
-        })
-        templates[templateName] = scheduleData.getSchedule
+          });
+        });
+        if (templates[templateName]) {
+          if (!confirm(`${templateName} は既に存在します。上書きしますか？`)) {
+            return;
+          }
+        }
+        templates[templateName] = scheduleData.getSchedule;
 
-        console.log("====Formatted Data")
+        console.log("====Formatted Data");
         const changed = templates[templateName].map(val => {
           return val.schedule.map(schedule => {
             return ({
@@ -151,16 +168,21 @@
               "start": convert(schedule.start),
               "end": convert(schedule.end),
               "class": "newAdd"
-            })
-          })
-        })
-        console.log(changed)
-        localStorage.setItem("templates", JSON.stringify(templates))
+            });
+          });
+        });
+        console.log(changed);
+        localStorage.setItem("templates", JSON.stringify(templates));
+
+        const templateSelector = $("#templateSelector");
+        const optionExists = templateSelector.find(`option[value=${templateName}]`).length > 0;
+        if (!optionExists) {
+          templateSelector.append(`<option value=${templateName}>${templateName}</option>`);
+        }
+        document.getElementById("templateName").value = "";
+      };
 
 
-        $("#templateSelector").append(`<option value=${templateName}>${templateName}</option>`)
-        document.getElementById("templateName").value = ""
-      }
       //テンプレートの読み込み
       const template_applying = () => {
         const selectedTemplateName = $("#templateSelector").val()
