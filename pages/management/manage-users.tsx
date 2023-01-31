@@ -43,11 +43,15 @@ const ManageUsers: NextPage = () => {
   const [usernameInput, setUsernameInput] = useState("")
   const [clickedUserId, setClickedUserId] = useState("")
   const { isOpen: isModalOpened, onOpen: openModal, onClose: closeModal } = useDisclosure()
-  const { getAllUsers, switchUserPosition, deleteUser } = useApiConnection()
+  const { getAllUsers, switchUserPosition, deleteUser, getSuperUser, getId } = useApiConnection()
   const myName = useRecoilValue(name)
 
-  const { data: users, fetchErrorMessage, mutate } = getAllUsers()
-  if (fetchErrorMessage) showToast("エラー", fetchErrorMessage, "error")
+  const { data: users, fetchErrorMessage: errMsg1, mutate } = getAllUsers()
+  const { data: superUserId, fetchErrorMessage: errMsg2 } = getSuperUser()
+  const { data: myId, fetchErrorMessage: errMsg3 } = getId()
+  if (errMsg1) showToast("エラー", errMsg1, "error")
+  if (errMsg2) showToast("エラー", errMsg2, "error")
+  if (errMsg3) showToast("エラー", errMsg3, "error")
 
   const filteredUsers = useMemo(() => usernameInput ? users?.filter(user => user.name?.match(new RegExp(usernameInput))) : users, [users, usernameInput])
 
@@ -112,7 +116,16 @@ const ManageUsers: NextPage = () => {
                     <Text className="kr" ml={2} mr={1} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">{Symbol.toStringSymbol(user.department)}</Text>
                     {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" ml={1} fontSize="0.75rem" color="#5f5f5f">{user.studentNumber}</Text> : null}
                   </Flex>
-                  {user.name !== myName ?
+                  {user.userId === myId || user.studentNumber === superUserId ?
+                    <Flex alignItems="center">
+                      <Tooltip label="このユーザーの役職を切り替えることはできません">
+                        <Button mr={resp(3, 5, 5)} size="xs" color="#8b8b8b" borderColor="#8b8b8b" variant="outline" cursor="default">運営チーム</Button>
+                      </Tooltip>
+                      <Tooltip label="ユーザーを削除することはできません">
+                        <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color="#8b8b8b" />
+                      </Tooltip>
+                    </Flex>
+                    :
                     <Flex alignItems="center">
                       <Tooltip label={user.position === "Manager" ? "キャストに役職を切り替える" : "運営チームに役職を切り替える"}>
                         <Button mr={resp(3, 5, 5)} size="xs" colorScheme={user.position === "Manager" ? "orange" : "cyan"} variant="outline" onClick={() => handleSwitchUserPosition(user.id, user.position === "Manager" ? "Cast" : "Manager")}>{user.position === "Manager" ? "運営チーム" : "キャスト"}</Button>
@@ -120,8 +133,7 @@ const ManageUsers: NextPage = () => {
                       <Tooltip label="ユーザーを削除する">
                         <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color={user.position === "Manager" ? "#c15520" : "#00a4c4"} cursor="pointer" onClick={() => { openModal(); setClickedUserId(user.id) }} />
                       </Tooltip>
-                    </Flex>
-                    : null}
+                    </Flex>}
                 </Flex>
               )
             })}

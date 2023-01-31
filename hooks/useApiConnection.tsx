@@ -50,6 +50,13 @@ export const useApiConnection = () => {
     return { data, error }
   }, [isProdEnv])
 
+  const getId = useCallback(() => {
+    const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me/id` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/id`
+    const { data, error } = useSWR<string, Error>(url, fetcher)
+    const fetchErrorMessage = error ? "ユーザーIDの取得に失敗しました" : ""
+    return { data, fetchErrorMessage }
+  }, [isProdEnv])
+
   const getCurrentTime = useCallback(() => {
     const { data, error } = useSWR(`${process.env.NEXT_PUBLIC_WORLD_TIME_API_URL}`, fetcher)
     let time = new Date(0)
@@ -61,6 +68,13 @@ export const useApiConnection = () => {
     const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me/detail` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/toppage`
     const { data, error } = useSWR<PersonalizedData, Error>(url, fetcher)
     const fetchErrorMessage = error ? "個人用データーの取得に失敗しました" : ""
+    return { data, fetchErrorMessage }
+  }, [isProdEnv])
+
+  const getSuperUser = useCallback(() => {
+    const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/invites/first/id` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/invites/superuser`
+    const { data, error } = useSWR<string, Error>(url, fetcher)
+    const fetchErrorMessage = error ? "特殊権限ユーザーの取得に失敗しました" : ""
     return { data, fetchErrorMessage }
   }, [isProdEnv])
 
@@ -224,5 +238,5 @@ export const useApiConnection = () => {
       throw new Error("プロフィールの更新に失敗しました")
     }
   }, [isProdEnv])
-  return { getSession, getMyName, getRole, getCurrentTime, getPersonalizedData, getAllSurveys, getAllSchedules, getAnswerableSurveys, getSurveyResult, getAllUsers, getAllRequests, getConfirmedUsers, sendRequests, createSurvey, answerSurvey, switchSurveyAvailability, switchUserPosition, deleteSurvey, addApprovedUser, deleteUser, confirmAttendance, changeRequestState, updateProfile }
+  return { getSession, getMyName, getRole, getId, getCurrentTime, getPersonalizedData, getSuperUser, getAllSurveys, getAllSchedules, getAnswerableSurveys, getSurveyResult, getAllUsers, getAllRequests, getConfirmedUsers, sendRequests, createSurvey, answerSurvey, switchSurveyAvailability, switchUserPosition, deleteSurvey, addApprovedUser, deleteUser, confirmAttendance, changeRequestState, updateProfile }
 }
