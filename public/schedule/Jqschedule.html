@@ -38,13 +38,20 @@
         <script>
           $(function () {
             $("#templateSelector").datepicker({
-              changeMonth: true,
-              changeYear: true,
-              showButtonPanel: true,
               dateFormat: "yy-mm-dd",
-              regional: "ja",
+              beforeShowDay: function (date) {
+                let templates = localStorage.getItem("templates");
+                if (!templates) {
+                  return [true, ""];
+                }
+                templates = JSON.parse(templates);
+                let templateDate = $.datepicker.formatDate("yy-mm-dd", date);
+                if (templates[templateDate]) {
+                  return [true, "template-date"];
+                }
+                return [true, ""];
+              },
               onSelect: function (dateText) {
-                console.log(dateText)
                 let templateName = dateText;
                 let templates = localStorage.getItem("templates");
                 if (!templates) {
@@ -57,6 +64,7 @@
                 if (selectedTemplate) {
                   scheduleData.setSchedule = selectedTemplate;
                   scheduleData.updateScheduleTable();
+                  $("#templateSelector").parent().addClass("template-date");
                 } else {
                   scheduleData.setSchedule = [];
                   scheduleData.updateScheduleTable();
@@ -66,9 +74,10 @@
                 }
               }
             });
-          });
+          })
         </script>
       </div>
+
 
       <button class="template_save_btn"
         onClick="template_save(); document.getElementById('templateName').value=''">テンプレート保存</button>

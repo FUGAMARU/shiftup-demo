@@ -392,3 +392,11 @@
 #user-name{
 	width:150px;
 }
+
+.ui-datepicker-calendar td.template-date {
+	background-color: #ffcccc;
+}
+
+.ui-datepicker-calendar td.template-date {
+	background-color: #ffa500;
+  }

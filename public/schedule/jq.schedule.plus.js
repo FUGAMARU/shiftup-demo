@@ -575,7 +575,7 @@
                                     }
                                     isMouseDown = true;
                                     event.preventDefault();
-                                    return;
+                                return;
                                     $startElement.toggleClass("selected_time", true);
                                     if (setting.multiple) {
                                         $startElement.html('');
