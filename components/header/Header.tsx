@@ -62,7 +62,6 @@ const Header = () => {
                   <MenuItem href="/management/tally-survey" icon={faListCheck} title={"希望日程\nアンケート集計"} onClose={closeMenu} />
                   <MenuItem href="/management/manage-users" icon={faUsersGear} title={"ユーザー管理"} onClose={closeMenu} />
                   <MenuItem href="/management/add-approved-user" icon={faUserPlus} title={"認可ユーザー\n追加"} onClose={closeMenu} />
-                  <MenuItem href="/management/manage-schedule" icon={faClock} title={"スケジュール\n管理"} onClose={closeMenu} />
                 </SimpleGrid>
               </Box>
               : null}
@@ -71,6 +70,7 @@ const Header = () => {
             <SimpleGrid columns={3} spacing={3} pt={3} justifyItems="center">
               <MenuItem href="/answer-survey" icon={faCalendarCheck} title={"希望日程\nアンケート回答"} onClose={closeMenu} />
               <MenuItem href="/confirm-attendance" icon={faThumbsUp} title={"出勤確定処理"} onClose={closeMenu} />
+              <MenuItem href="/manage-schedule" icon={faClock} title={"スケジュール\n管理"} onClose={closeMenu} />
             </SimpleGrid>
 
           </DrawerBody>

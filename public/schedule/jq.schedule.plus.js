@@ -575,7 +575,7 @@
                                     }
                                     isMouseDown = true;
                                     event.preventDefault();
-                                return;
+                                    return;
                                     $startElement.toggleClass("selected_time", true);
                                     if (setting.multiple) {
                                         $startElement.html('');
@@ -787,7 +787,7 @@
 
             // LIN 複数日対応のため追加
             var startDateTime = new Date(setting.startDate);
-            var endDateTime = new Date(setting.startDate);
+            var endDateTime = new Date(setting.endDate);
             startDateTime.setSeconds(startDateTime.getSeconds() + start);
             endDateTime.setSeconds(endDateTime.getSeconds() + end);
 

@@ -1,16 +1,4 @@
-@media all and (max-width: 480px) {
-	#schedule .sc_data,
-	#schedule .sc_data .sc_data_scroll,
-	#schedule .sc_menu .sc_header_cell{
-		width: 8.75rem !important;
-	}
-	#schedule .sc_header {
-		width:12.025rem !important;
-	}
-	#schedule .sc_main_box {
-		width: 12.025rem !important;
-	}
-}
+
 
 
 #schedule{

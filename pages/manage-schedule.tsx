@@ -6,10 +6,10 @@ import Head from "next/head"
 import { Box } from "@chakra-ui/react"
 
 // Custom Components
-import Header from "../../components/header/Header"
+import Header from "../components/header/Header"
 
 // Filter
-import { withSession } from "../../hoc/withSession"
+import { withSession } from "../hoc/withSession"
 
 const ManageSchedule: NextPage = () => {
   return (
@@ -20,7 +20,7 @@ const ManageSchedule: NextPage = () => {
 
       <Box mb={5}><Header /></Box>
 
-      <Box h="100vh" m={0} p={0} overflow="hidden">
+      <Box h="95vh" m={0} p={0} overflow="hidden">
         <Box as="iframe" h="100%" w="100%" border="none" src="../schedule/Jqschedule.html"></Box>
       </Box>
 

@@ -16,6 +16,10 @@
   <link rel="stylesheet" type="text/css" href="style.css" />
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="screen">
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   <style type="text/css">
     .hero-unit {
       padding: 0px;
@@ -29,19 +33,63 @@
     </div>
 
     <div>
-      <input type="date" aria-haspopup="dialog" aria-expanded="false" aria-controls="popover-content-:r1i:"
-        id="templateName">
-      <select name="template" id="templateSelector"></select>
+      <div>
+        <input type="text" id="templateSelector">
+        <script>
+          $(function () {
+            $("#templateSelector").datepicker({
+              changeMonth: true,
+              changeYear: true,
+              showButtonPanel: true,
+              dateFormat: "yy-mm-dd",
+              regional: "ja",
+              onSelect: function (dateText) {
+                console.log(dateText)
+                let templateName = dateText;
+                let templates = localStorage.getItem("templates");
+                if (!templates) {
+                  templates = {};
+                  localStorage.setItem("templates", JSON.stringify(templates));
+                } else {
+                  templates = JSON.parse(templates);
+                }
+                let selectedTemplate = templates[templateName];
+                if (selectedTemplate) {
+                  scheduleData.setSchedule = selectedTemplate;
+                  scheduleData.updateScheduleTable();
+                } else {
+                  scheduleData.setSchedule = [];
+                  scheduleData.updateScheduleTable();
+                  $("#task-name").prop("disabled", false);
+                  $("#user-name").prop("disabled", false);
+                  $(".add_user_btn").prop("disabled", false);
+                }
+              }
+            });
+          });
+        </script>
+      </div>
+
       <button class="template_save_btn"
         onClick="template_save(); document.getElementById('templateName').value=''">テンプレート保存</button>
 
       <button class="deleteTemplateButton" onclick="template_delete()">テンプレート削除</button>
 
     </div>
-    <input id="task-name" type="text" value="" placeholder="タスク名を入力" />
-    <input id="user-name" type="text" value="" placeholder="ユーザー名を入力" />
-    <button class="add_user_btn"
+    <input id="task-name" type="text" value="" placeholder="タスク名を入力" disabled />
+    <input id="user-name" type="text" value="" placeholder="ユーザー名を入力" disabled />
+    <button class="add_user_btn" disabled
       onClick="handleButtonClick(); document.getElementById('user-name').value=''">ユーザー追加</button>
+
+    <script>
+      document.getElementById("templateName").addEventListener("input", function () {
+        document.getElementById("task-name").disabled = false;
+        document.getElementById("user-name").disabled = false;
+        document.querySelector(".add_user_btn").disabled = false;
+      });
+    </script>
+
+
     <!--<button onClick="schedule_save()">クラスに保存</button>
               <button onClick="extractData()">データー抽出</button>
               <button onclick="schedule_data_recovery()">データー復元</button>-->
@@ -57,6 +105,13 @@
     </script>
 
     <script type="text/javascript">
+      const formatDate = (dt) => {
+        const y = dt.getFullYear()
+        const m = ("00" + (dt.getMonth() + 1)).slice(-2)
+        const d = ("00" + dt.getDate()).slice(-2)
+        return `${y}-${m}-${d}`
+      }
+
       //fetch("https://shiftup.works/api/users/me/roles")
       fetch("http://localhost:3000/api/dev/role")
         .then(response => response.json())
@@ -107,7 +162,8 @@
         //セレクターから選択したときに自動的にテンプレートを適用
         $("#templateSelector").on("change", () => {
           let templateName = $("#templateSelector").val()
-          if (localStorage.getItem("templates") === null) localStorage.setItem("templates", JSON.stringify({}))
+          if (localStorage.getItem("templates") === null) localStorage.setItem("templates", JSON
+            .stringify({}))
           const templates = JSON.parse(localStorage.getItem("templates"))
           console.log(templates)
           const hoge = templates[templateName]
@@ -137,7 +193,11 @@
         schedule_save();
         extractData();
         schedule_data_recovery();
-        const templateName = document.getElementById("templateName").value;
+        let templateName = formatDate($("#templateSelector").datepicker("getDate"));
+        if (!templateName) {
+          templateName = prompt("テンプレート名を入力してください");
+        }
+
         if (!/\S/.test(templateName)) {
           alert("テンプレート名が入力されていません");
           return;
@@ -158,20 +218,8 @@
             return;
           }
         }
-        templates[templateName] = scheduleData.getSchedule;
 
-        console.log("====Formatted Data");
-        const changed = templates[templateName].map(val => {
-          return val.schedule.map(schedule => {
-            return ({
-              "text": schedule.text,
-              "start": convert(schedule.start),
-              "end": convert(schedule.end),
-              "class": "newAdd"
-            });
-          });
-        });
-        console.log(changed);
+        templates[templateName] = scheduleData.getSchedule;
         localStorage.setItem("templates", JSON.stringify(templates));
 
         const templateSelector = $("#templateSelector");
@@ -181,6 +229,9 @@
         }
         document.getElementById("templateName").value = "";
       };
+
+
+
 
 
       //テンプレートの読み込み
