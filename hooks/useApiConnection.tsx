@@ -180,7 +180,7 @@ export const useApiConnection = () => {
 
   const switchUserPosition = useCallback(async (userId: string, to: Position) => {
     try {
-      const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/${userId}/position` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/invites/${userId}`
+      const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/invites/${userId}/position` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/invites/${userId}`
       await axios.put(url, to)
     } catch {
       throw new Error("ユーザーの役職の切り替えに失敗しました")
