@@ -50,6 +50,7 @@ const ManageUsers: NextPage = () => {
   if (fetchErrorMessage) showToast("エラー", fetchErrorMessage, "error")
 
   const filteredUsers = useMemo(() => usernameInput ? users?.filter(user => user.name?.match(new RegExp(usernameInput))) : users, [users, usernameInput])
+
   const statusMessage = useMemo(() => {
     if (!!!users) return ""
     if (!!!usernameInput) return `${users.length}名のユーザーが存在します`
@@ -87,7 +88,7 @@ const ManageUsers: NextPage = () => {
 
       <Body title="ユーザー管理" statusMessage={statusMessage}>
         <Box w={resp("100%", "80%", "80%")} mx="auto">
-          {filteredUsers?.length ?
+          {users?.length ?
             <Box textAlign="center" mb={8}>
               <Input w={resp("80%", "60%", "60%")} variant="flushed" placeholder="名前を入力してユーザーを検索…" textAlign="center" focusBorderColor="#48c3eb" onChange={e => setUsernameInput(e.target.value)} />
             </Box>

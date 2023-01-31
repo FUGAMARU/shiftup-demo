@@ -44,6 +44,7 @@ const ManageSurveys: NextPage = () => {
   if (fetchErrorMessage) showToast("エラー", fetchErrorMessage, "error")
 
   const filteredSurveys = useMemo(() => surveys?.filter(survey => survey.name.match(new RegExp(surveyNameInput))), [surveys, surveyNameInput])
+
   const statusMessage = useMemo(() => {
     if (!!!surveys) return ""
     if (!!!surveyNameInput) return `${surveys.length}件のアンケートが存在します`
@@ -98,7 +99,7 @@ const ManageSurveys: NextPage = () => {
 
       <Body title="アンケート管理" statusMessage={statusMessage}>
         <Box w={resp("100%", "80%", "80%")} mx="auto">
-          {filteredSurveys?.length ?
+          {surveys?.length ?
             <Box textAlign="center" mb={8}>
               <Input w={resp("80%", "60%", "60%")} variant="flushed" placeholder="タイトルを入力してアンケートを検索…" textAlign="center" focusBorderColor="#48c3eb" onChange={e => setSurveyNameInput(e.target.value)} />
             </Box>
