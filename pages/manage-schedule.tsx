@@ -20,8 +20,8 @@ const ManageSchedule: NextPage = () => {
 
       <Box mb={5}><Header /></Box>
 
-      <Box h="100vh" m={0} p={0} overflow="hidden">
-        <Box as="iframe" h="100%" w="100%" marginLeft={"40px"} border="0" src="../schedule/Jqschedule.html"style={{ width: "100%", height: "100%"  }}></Box>
+      <Box h="100vh"  m={0} p={0} overflow="hidden">
+        <Box as="iframe" h="100%" w="100%"  border="0" src="../schedule/Jqschedule.html"></Box>
       </Box>
 
 

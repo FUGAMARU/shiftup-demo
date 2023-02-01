@@ -33,96 +33,15 @@
     </div>
 
     <div>
-      <div>
-        <input type="text" id="templateSelector" readonly="readonly">
-        <script>
-          $(function () {
-            //日本語化
-            $.datepicker.regional['ja'] = {
-              closeText: "閉じる",
-              prevText: "&#x3C;前",
-              nextText: "次&#x3E;",
-              currentText: "今日",
-              monthNames: ["1月", "2月", "3月", "4月", "5月", "6月",
-                "7月", "8月", "9月", "10月", "11月", "12月"
-              ],
-              monthNamesShort: ["1月", "2月", "3月", "4月", "5月", "6月",
-                "7月", "8月", "9月", "10月", "11月", "12月"
-              ],
-              dayNames: ["日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"],
-              dayNamesShort: ["日", "月", "火", "水", "木", "金", "土"],
-              dayNamesMin: ["日", "月", "火", "水", "木", "金", "土"],
-              weekHeader: "週",
-              firstDay: 0,
-              isRTL: false,
-              showMonthAfterYear: true,
-              yearSuffix: "年"
-            };
-            $.datepicker.setDefaults($.datepicker.regional['ja']);
-            $("#templateSelector").datepicker({
-              dateFormat: "yy-mm-dd",
-              beforeShowDay: function (date) {
-                let templates = localStorage.getItem("templates");
-                if (!templates) {
-                  return [true, ""];
-                }
-                templates = JSON.parse(templates);
-                let templateDate = $.datepicker.formatDate("yy-mm-dd", date);
-                if (templates[templateDate]) {
-                  return [true, "template-date"];
-                }
-                return [true, ""];
-              },
-              onSelect: function (dateText) {
-                let templateName = dateText;
-                let templates = localStorage.getItem("templates");
-                if (!templates) {
-                  templates = {};
-                  localStorage.setItem("templates", JSON.stringify(templates));
-                } else {
-                  templates = JSON.parse(templates);
-                }
-                let selectedTemplate = templates[templateName];
-                if (selectedTemplate) {
-                  scheduleData.setSchedule = selectedTemplate;
-                  scheduleData.updateScheduleTable();
-                  $("#templateSelector").parent().addClass("template-date");
-                  $("#task-name").prop("disabled", false);
-                  $("#user-name").prop("disabled", false);
-                  $(".add_user_btn").prop("disabled", false);
-                } else {
-                  scheduleData.setSchedule = [];
-                  scheduleData.updateScheduleTable();
-                  $("#task-name").prop("disabled", false);
-                  $("#user-name").prop("disabled", false);
-                  $(".add_user_btn").prop("disabled", false);
-                }
-              }
-            });
-          })
-        </script>
-      </div>
-
-
+      <input type="text" id="templateSelector" readonly="readonly">
       <button class="template_save_btn"
         onClick="template_save(); document.getElementById('templateName').value=''">テンプレート保存</button>
-
       <button class="deleteTemplateButton" onclick="template_delete()">テンプレート削除</button>
-
     </div>
     <input id="task-name" type="text" value="" placeholder="タスク名を入力" disabled />
     <input id="user-name" type="text" value="" placeholder="ユーザー名を入力" disabled />
     <button class="add_user_btn" disabled
       onClick="handleButtonClick(); document.getElementById('user-name').value=''">ユーザー追加</button>
-
-    <script>
-      document.getElementById("templateName").addEventListener("input", function () {
-        document.getElementById("task-name").disabled = false;
-        document.getElementById("user-name").disabled = false;
-        document.querySelector(".add_user_btn").disabled = false;
-      });
-    </script>
-
 
     <!--<button onClick="schedule_save()">クラスに保存</button>
               <button onClick="extractData()">データー抽出</button>
@@ -138,6 +57,74 @@
     <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.min.js" type="text/javascript" language="javascript">
     </script>
 
+    <script>
+      //Datepicker
+      $(function () {
+        //日本語化
+        $.datepicker.regional['ja'] = {
+          closeText: "閉じる",
+          prevText: "&#x3C;前",
+          nextText: "次&#x3E;",
+          currentText: "今日",
+          monthNames: ["1月", "2月", "3月", "4月", "5月", "6月",
+            "7月", "8月", "9月", "10月", "11月", "12月"
+          ],
+          monthNamesShort: ["1月", "2月", "3月", "4月", "5月", "6月",
+            "7月", "8月", "9月", "10月", "11月", "12月"
+          ],
+          dayNames: ["日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"],
+          dayNamesShort: ["日", "月", "火", "水", "木", "金", "土"],
+          dayNamesMin: ["日", "月", "火", "水", "木", "金", "土"],
+          weekHeader: "週",
+          firstDay: 0,
+          isRTL: false,
+          showMonthAfterYear: true,
+          yearSuffix: "年"
+        };
+        $.datepicker.setDefaults($.datepicker.regional['ja']);
+        $("#templateSelector").datepicker({
+          dateFormat: "yy-mm-dd",
+          beforeShowDay: function (date) {
+            let templates = localStorage.getItem("templates");
+            if (!templates) {
+              return [true, ""];
+            }
+            templates = JSON.parse(templates);
+            let templateDate = $.datepicker.formatDate("yy-mm-dd", date);
+            if (templates[templateDate]) {
+              return [true, "template-date"];
+            }
+            return [true, ""];
+          },
+          onSelect: function (dateText) {
+            let templateName = dateText;
+            let templates = localStorage.getItem("templates");
+            if (!templates) {
+              templates = {};
+              localStorage.setItem("templates", JSON.stringify(templates));
+            } else {
+              templates = JSON.parse(templates);
+            }
+            let selectedTemplate = templates[templateName];
+            if (selectedTemplate) {
+              scheduleData.setSchedule = selectedTemplate;
+              scheduleData.updateScheduleTable();
+              $("#templateSelector").parent().addClass("template-date");
+              $("#task-name").prop("disabled", false);
+              $("#user-name").prop("disabled", false);
+              $(".add_user_btn").prop("disabled", false);
+            } else {
+              scheduleData.setSchedule = [];
+              scheduleData.updateScheduleTable();
+              $("#task-name").prop("disabled", false);
+              $("#user-name").prop("disabled", false);
+              $(".add_user_btn").prop("disabled", false);
+            }
+          }
+        });
+      })
+    </script>
+
     <script type="text/javascript">
       const formatDate = (dt) => {
         const y = dt.getFullYear()
@@ -145,7 +132,7 @@
         const d = ("00" + dt.getDate()).slice(-2)
         return `${y}-${m}-${d}`
       }
-
+      //役職がCastの場合の編集禁止処理
       //fetch("https://shiftup.works/api/users/me/roles")
       fetch("http://localhost:3000/api/dev/role")
         .then(response => response.json())
@@ -186,6 +173,17 @@
         template_applying(templateName); // 変更点
       }
 
+      //テンプレートの読み込み
+      const template_applying = () => {
+        const selectedTemplateName = $("#templateSelector").val()
+        const templates = JSON.parse(localStorage.getItem("templates"))
+
+        let finalData = []
+
+        scheduleData.setSchedule = templates[selectedTemplateName]
+        scheduleData.updateScheduleTable()
+      }
+
       //テンプレート
       $(() => {
         if (localStorage.getItem("templates")) {
@@ -223,7 +221,6 @@
       //テンプレート保存
       const template_save = () => {
         if (localStorage.getItem("templates") === null) localStorage.setItem("templates", JSON.stringify({}));
-
         schedule_save();
         extractData();
         schedule_data_recovery();
@@ -231,7 +228,6 @@
         if (!templateName) {
           templateName = prompt("テンプレート名を入力してください");
         }
-
         if (!/\S/.test(templateName)) {
           alert("テンプレート名が入力されていません");
           return;
@@ -252,10 +248,8 @@
             return;
           }
         }
-
         templates[templateName] = scheduleData.getSchedule;
         localStorage.setItem("templates", JSON.stringify(templates));
-
         const templateSelector = $("#templateSelector");
         const optionExists = templateSelector.find(`option[value=${templateName}]`).length > 0;
         if (!optionExists) {
@@ -263,21 +257,6 @@
         }
         document.getElementById("templateName").value = "";
       };
-
-
-
-
-
-      //テンプレートの読み込み
-      const template_applying = () => {
-        const selectedTemplateName = $("#templateSelector").val()
-        const templates = JSON.parse(localStorage.getItem("templates"))
-
-        let finalData = []
-
-        scheduleData.setSchedule = templates[selectedTemplateName]
-        scheduleData.updateScheduleTable()
-      }
 
       //テンプレート削除
       const template_delete = () => {
@@ -402,14 +381,10 @@
                 data)));
             }
           })
-
         }
       }
-
       const scheduleHTML = new ScheduleHTML("")
-      const scheduleData = new ScheduleData([
-
-      ])
+      const scheduleData = new ScheduleData([])
 
       //ユーザー取得
       const getUserList = () => {
@@ -447,33 +422,28 @@
             }))
           );
         });
-
         return userTasks;
       };
-
 
       //スケジュールデータ保存
       function schedule_save() {
         scheduleHTML.setInnerHTML = $("#schedule").html();
         console.log("SET完了");
       }
+
       //スケジュールデータ抽出
       const extractData = () => {
         const users = getUserList();
         const tasks = getTaskList();
-
         const userTasks = users.map((userName, idx) => { // タスク一覧
           return {
             name: userName,
             tasks: tasks[idx]
           }
         });
-
         console.log(userTasks);
         localStorage.setItem("userTasks", JSON.stringify(userTasks));
       }
-
-
 
       let sampleRows = []
       //スケジュールデータ復元
@@ -509,12 +479,10 @@
         scheduleData.updateScheduleTable();
       };
 
-
       //ユーザー追加
       const handleButtonClick = () => {
         schedule_save()
         extractData()
-
         let userName = $("#user-name").val()
         if (/^[\s\u3000\u3164]*$/.test(userName)) {
           alert("空白文字は入力できません")
@@ -534,8 +502,6 @@
           this.TaskData = TaskData;
         }
       }
-
-
 
       jQuery(document).ready(function () {
         sampleRows = [{}];
@@ -619,8 +585,6 @@
         }
       })
     </script>
-
-
 </body>
 
 </html>

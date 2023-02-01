@@ -393,6 +393,9 @@
 	width:150px;
 }
 
+#templateSelector {
+	background-color: white;
+}
 .ui-datepicker-calendar td.template-date {
 	background-color: #ffcccc;
 }
