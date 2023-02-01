@@ -1,5 +1,5 @@
 // Next.js
-import { useRouter } from "next/router"
+import Router from "next/router"
 
 // Chakra UI Components
 import { Box, Alert, AlertIcon, AlertTitle, AlertDescription } from "@chakra-ui/react"
@@ -19,8 +19,6 @@ interface Props {
 }
 
 const ErrorView = (props: Props) => {
-  const router = useRouter()
-
   return (
     <Box bg="#f5f5f7" pt={5}>
       <Alert status="error" w={resp("95%", "80%", "75%")} mx="auto" boxShadow="xl" borderRadius="15px" border="solid 0.5px red">
@@ -30,7 +28,7 @@ const ErrorView = (props: Props) => {
       </Alert>
 
       <Box mt={5}>
-        <SimpleButton title="トップページに戻る" icon={faRightToBracket} onClick={() => router.push("/")} />
+        <SimpleButton title="トップページに戻る" icon={faRightToBracket} onClick={() => Router.push("/")} />
       </Box>
     </Box>
   )

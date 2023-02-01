@@ -1,6 +1,5 @@
 // Next.js
 import { NextPage } from "next"
-import Router from "next/router"
 import { useRouter } from "next/router"
 
 // Custom Components
@@ -21,12 +20,12 @@ export const withSession = (Page: NextPage<any>) => {
 
     if (isInSession === null || !!!myInfo) return <Header />
 
-    if (isInSession === false) Router.push("/error/authentication-error")
+    if (isInSession === false) router.push("/error/authentication-error")
 
     if ((!isManagementPage) || (isManagementPage && myInfo.position === "Manager")) {
       return <Page {...props} />
     } else {
-      Router.push("/error/not-permitted")
+      router.push("/error/not-permitted")
     }
   }
 }

@@ -4,7 +4,7 @@ import { memo, useCallback } from "react"
 // Next.js Components
 import Image from "next/image"
 import Link from "next/link"
-import { useRouter } from "next/router"
+import Router from "next/router"
 
 //Custom Hooks
 import { useResponsive } from "hooks/useResponsive"
@@ -41,12 +41,10 @@ const Header = () => {
   const { isOpen: isUserMenuOpened, onOpen: openUserMenu, onClose: closeUserMenu } = useDisclosure()
   const { isOpen: isProfileEditModalOpened, onOpen: openProfileEditModal, onClose: closeProfileEditModal } = useDisclosure()
 
-  const router = useRouter()
-
   const jump = useCallback(async (path: string) => {
     closeMenu()
-    await router.push(path)
-  }, [router, closeMenu])
+    await Router.push(path)
+  }, [closeMenu])
 
   return (
     <Box>
@@ -132,7 +130,7 @@ const Header = () => {
                 <PopoverBody borderRadius={20} boxShadow="xl">
                   <Flex alignItems="center" justifyContent="space-around">
                     <SpongeSlimeButton w="8.5rem" h="3.8rem" text={"ユーザー情報編集"} fontSize={12} icon={faScrewdriverWrench} iconSize={22} func={openProfileEditModal} />
-                    <SpongeSlimeButton w="8.5rem" h="3.8rem" text={"サインアウト"} fontSize={12} icon={faArrowRightFromBracket} iconSize={22} func={() => router.push(`${process.env.NEXT_PUBLIC_API_BASE_URL}/logout`)} />
+                    <SpongeSlimeButton w="8.5rem" h="3.8rem" text={"サインアウト"} fontSize={12} icon={faArrowRightFromBracket} iconSize={22} func={() => Router.push(`${process.env.NEXT_PUBLIC_API_BASE_URL}/logout`)} />
                   </Flex>
                 </PopoverBody>
               </PopoverContent>

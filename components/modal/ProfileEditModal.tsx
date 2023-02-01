@@ -23,7 +23,7 @@ import { Department } from "types/Department"
 import { isBlank } from "ts/functions"
 
 // Global State Management
-import { useRecoilValue } from "recoil"
+import { useRecoilState } from "recoil"
 import { me } from "atoms/MeAtom"
 
 interface Props {
@@ -35,7 +35,7 @@ const ProfileEditModal = ({ isOpen, onClose }: Props) => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
   const { showToast } = useStyledToast()
   const { updateProfile } = useApiConnection()
-  const myInfo = useRecoilValue(me)
+  const [myInfo, setMyInfo] = useRecoilState(me)
 
   useEffect(() => {
     setNameInput(myInfo.name)
@@ -71,13 +71,18 @@ const ProfileEditModal = ({ isOpen, onClose }: Props) => {
 
     try {
       await updateProfile(nameInput, selectedDept as Department)
+      setMyInfo({
+        name: nameInput,
+        department: selectedDept as Department,
+        position: myInfo.position
+      })
       showToast("成功", "プロフィールを更新しました", "success")
       onClose()
       setNameInput(myInfo.name)
     } catch (e) {
       if (e instanceof Error) showToast("エラー", e.message, "error")
     }
-  }, [checkValidation, nameInput, selectedDept, myInfo, showToast, onClose, updateProfile])
+  }, [checkValidation, nameInput, selectedDept, myInfo, setMyInfo, showToast, onClose, updateProfile])
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered={responsiveType === "SmartPhone"}>
