@@ -17,6 +17,7 @@ interface Props {
   filtering?: SchoolType,
   isInvalid?: boolean,
   isDisabled?: boolean,
+  value?: string | number,
   dispatch: Dispatch<SetStateAction<Department | "">>
 }
 
@@ -26,7 +27,7 @@ const SymbolSelector = (props: Props) => {
   const tutSymbols = useMemo(() => Symbol.tutSymbols, [])
 
   return (
-    <Select placeholder={!!!props.filtering ? "学科・学部を選択" : props.filtering === "NEEC" ? "学科を選択" : "学部を選択"} focusBorderColor="#48c3eb" isInvalid={props.isInvalid} isDisabled={props.isDisabled} errorBorderColor="red.200" onChange={e => props.dispatch(e.target.value as Department | "")}>
+    <Select placeholder={!!!props.filtering ? "学科・学部を選択" : props.filtering === "NEEC" ? "学科を選択" : "学部を選択"} focusBorderColor="#48c3eb" isInvalid={props.isInvalid} isDisabled={props.isDisabled} errorBorderColor="red.200" value={props.value} onChange={e => props.dispatch(e.target.value as Department | "")}>
       {
         !!!props.filtering ?
           Object.keys(allSymbols).map(college => {

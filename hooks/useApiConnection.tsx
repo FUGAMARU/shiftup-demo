@@ -12,8 +12,7 @@ import { Survey, AvailableSurvey, SurveyResult } from "interfaces/Survey"
 import { User, Invite } from "interfaces/User"
 import { CreateSurvey } from "interfaces/request/CreateSurvey"
 import { AddApprovedUser } from "interfaces/request/AddApprovedUser"
-import { AttendanceRequest } from "interfaces/AttendanceRequest"
-import { PersonalizedData } from "interfaces/PersonalizedData"
+import { Me, AttendanceRequest, PersonalizedData } from "interfaces/Me"
 
 // Types
 import { UseCheckboxGroupReturn } from "@chakra-ui/react"
@@ -38,23 +37,17 @@ export const useApiConnection = () => {
     return { statusCode, error }
   }, [isProdEnv])
 
-  const getMyName = useCallback(() => {
-    const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me/name` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/name`
-    const { data, error } = useSWR(url, fetcher)
-    return { data, error }
-  }, [isProdEnv])
-
-  const getRole = useCallback(() => {
-    const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me/roles` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/role`
-    const { data, error } = useSWR(url, fetcher, { fallback: [] })
-    return { data, error }
-  }, [isProdEnv])
-
   const getId = useCallback(() => {
     const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me/id` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/id`
     const { data, error } = useSWR<string, Error>(url, fetcher)
     const fetchErrorMessage = error ? "ユーザーIDの取得に失敗しました" : ""
     return { data, fetchErrorMessage }
+  }, [isProdEnv])
+
+  const getMyInfo = useCallback(() => {
+    const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/me`
+    const { data, error } = useSWR<Me, Error>(url, fetcher)
+    return { data, error }
   }, [isProdEnv])
 
   const getCurrentTime = useCallback(() => {
@@ -238,5 +231,5 @@ export const useApiConnection = () => {
       throw new Error("プロフィールの更新に失敗しました")
     }
   }, [isProdEnv])
-  return { getSession, getMyName, getRole, getId, getCurrentTime, getPersonalizedData, getSuperUser, getAllSurveys, getAllSchedules, getAnswerableSurveys, getSurveyResult, getAllUsers, getAllRequests, getConfirmedUsers, sendRequests, createSurvey, answerSurvey, switchSurveyAvailability, switchUserPosition, deleteSurvey, addApprovedUser, deleteUser, confirmAttendance, changeRequestState, updateProfile }
+  return { getSession, getId, getMyInfo, getCurrentTime, getPersonalizedData, getSuperUser, getAllSurveys, getAllSchedules, getAnswerableSurveys, getSurveyResult, getAllUsers, getAllRequests, getConfirmedUsers, sendRequests, createSurvey, answerSurvey, switchSurveyAvailability, switchUserPosition, deleteSurvey, addApprovedUser, deleteUser, confirmAttendance, changeRequestState, updateProfile }
 }

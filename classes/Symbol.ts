@@ -1,5 +1,6 @@
 // Types
 import { Symbols, OptionalSymbols } from "types/Symbols"
+import { SchoolType } from "types/SchoolType"
 
 // Functions
 import { toFlattenObject } from "ts/functions"
@@ -77,6 +78,10 @@ class Symbol {
   public static toStringSymbol(symbol: string) {
     const flatObj = toFlattenObject(this.symbols)
     return flatObj[symbol]
+  }
+
+  public static getSchoolType(symbol: string): SchoolType {
+    return Object.keys(this.symbols["東京工科大学"]).includes(symbol) ? "TUT" : "NEEC"
   }
 }
 

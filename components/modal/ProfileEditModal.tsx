@@ -13,6 +13,9 @@ import { Box, Text, Modal, ModalOverlay, ModalContent, ModalHeader, ModalFooter,
 import PopOver from "components/PopOver"
 import SymbolSelector from "components/select/SymbolSelector"
 
+// Classes
+import Symbol from "classes/Symbol"
+
 // Types
 import { Department } from "types/Department"
 
@@ -21,7 +24,7 @@ import { isBlank } from "ts/functions"
 
 // Global State Management
 import { useRecoilValue } from "recoil"
-import { name } from "atoms/NameAtom"
+import { me } from "atoms/MeAtom"
 
 interface Props {
   isOpen: boolean,
@@ -32,11 +35,15 @@ const ProfileEditModal = ({ isOpen, onClose }: Props) => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
   const { showToast } = useStyledToast()
   const { updateProfile } = useApiConnection()
-  const myName = useRecoilValue(name)
+  const myInfo = useRecoilValue(me)
+
+  useEffect(() => {
+    setNameInput(myInfo.name)
+    setDept(myInfo.department)
+  }, [myInfo])
 
   // 氏名入力欄
   const [nameInput, setNameInput] = useState("")
-  useEffect(() => setNameInput(myName), [myName])
   const { isOpen: isNameInputPopoverOpened, onOpen: openNameInputPopover, onClose: closeNameInputPopover } = useDisclosure()
 
   // 学科・学部選択欄
@@ -66,11 +73,11 @@ const ProfileEditModal = ({ isOpen, onClose }: Props) => {
       await updateProfile(nameInput, selectedDept as Department)
       showToast("成功", "プロフィールを更新しました", "success")
       onClose()
-      setNameInput(myName)
+      setNameInput(myInfo.name)
     } catch (e) {
       if (e instanceof Error) showToast("エラー", e.message, "error")
     }
-  }, [checkValidation, nameInput, selectedDept, myName, showToast, onClose, updateProfile])
+  }, [checkValidation, nameInput, selectedDept, myInfo, showToast, onClose, updateProfile])
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered={responsiveType === "SmartPhone"}>
@@ -84,7 +91,7 @@ const ProfileEditModal = ({ isOpen, onClose }: Props) => {
               <Text className="ksb" pl={2} pb={1}>氏名</Text>
               <Box textAlign="center" mb={2}>
                 <PopOver isOpen={isNameInputPopoverOpened} onClose={closeNameInputPopover} errorMessage="氏名が正しく入力されていません">
-                  <Input className="ksb" placeholder={myName} bg="white" focusBorderColor="#48c3eb" errorBorderColor="red.200" isInvalid={isNameInputPopoverOpened} value={nameInput} onChange={e => setNameInput(e.target.value)} />
+                  <Input className="ksb" placeholder={myInfo.name} bg="white" focusBorderColor="#48c3eb" errorBorderColor="red.200" isInvalid={isNameInputPopoverOpened} value={nameInput} onChange={e => setNameInput(e.target.value)} />
                 </PopOver>
               </Box>
             </Box>
@@ -94,7 +101,7 @@ const ProfileEditModal = ({ isOpen, onClose }: Props) => {
               <Box textAlign="center">
                 <PopOver isOpen={isDeptSelectorPopoverOpened} onClose={closeDeptSelectorPopover} errorMessage="学科・学部が選択されていません">
                   <Box>
-                    <SymbolSelector dispatch={setDept} />
+                    <SymbolSelector filtering={Symbol.getSchoolType(myInfo.department)} value={selectedDept} dispatch={setDept} />
                   </Box>
                 </PopOver>
               </Box>
@@ -103,7 +110,7 @@ const ProfileEditModal = ({ isOpen, onClose }: Props) => {
         </ModalBody>
         <ModalFooter>
           <Button mr={1} colorScheme="blue" onClick={handleConfirmButtonClick}>更新する</Button>
-          <Button ml={1} colorScheme="gray" variant="outline" onClick={() => { onClose(); setNameInput(myName) }}>キャンセル</Button>
+          <Button ml={1} colorScheme="gray" variant="outline" onClick={() => { onClose(); setNameInput(myInfo.name) }}>キャンセル</Button>
         </ModalFooter>
       </ModalContent>
     </Modal>

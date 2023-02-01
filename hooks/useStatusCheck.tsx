@@ -10,19 +10,16 @@ import { useApiConnection } from "hooks/useApiConnection"
 // Global State Management
 import { useSetRecoilState } from "recoil"
 import { sessionState } from "atoms/SessionStateAtom"
-import { isManager } from "atoms/RoleAtom"
-import { name } from "atoms/NameAtom"
+import { me } from "atoms/MeAtom"
 
 export const useStatusCheck = () => {
-  const { getSession, getRole, getMyName } = useApiConnection()
+  const { getSession, getMyInfo } = useApiConnection()
 
   const { statusCode, error: sessionCheckError } = getSession()
-  const { data: role, error: roleCheckError } = getRole()
-  const { data: myName, error: nameGetError } = getMyName()
+  const { data: myInfo, error: fetchMyInfoError } = getMyInfo()
 
   const setSessionState = useSetRecoilState(sessionState)
-  const setManager = useSetRecoilState(isManager)
-  const setName = useSetRecoilState(name)
+  const setMyInfo = useSetRecoilState(me)
 
   // ログイン状態チェック
   useEffect(() => {
@@ -41,32 +38,15 @@ export const useStatusCheck = () => {
     setSessionState(true)
   }, [statusCode, sessionCheckError])
 
-  // 役職チェック
+  // ユーザー情報取得
   useEffect(() => {
-    if (role === undefined) return
+    if (!!!myInfo) return
 
-    if (role && !!!role.includes("Manager")) {
-      setManager(false)
-      return
-    }
-
-    if (roleCheckError) {
+    if (fetchMyInfoError) {
       Router.push("/error/unknown-error")
       return
     }
 
-    setManager(true)
-  }, [role, roleCheckError])
-
-  // 名前取得
-  useEffect(() => {
-    if (!!!myName) return
-
-    if (nameGetError) {
-      Router.push("/error/unknown-error")
-      return
-    }
-
-    setName(myName)
-  }, [myName, nameGetError])
+    setMyInfo(myInfo)
+  }, [myInfo, setMyInfo])
 }

@@ -9,7 +9,7 @@ import Header from "components/header/Header"
 // Global State Management
 import { useRecoilValue } from "recoil"
 import { sessionState } from "atoms/SessionStateAtom"
-import { isManager } from "atoms/RoleAtom"
+import { me } from "atoms/MeAtom"
 
 export const withSession = (Page: NextPage<any>) => {
   return (props: any) => {
@@ -17,13 +17,13 @@ export const withSession = (Page: NextPage<any>) => {
     const isManagementPage = router.pathname.indexOf("/management/") !== -1
 
     const isInSession = useRecoilValue(sessionState)
-    const amIManager = useRecoilValue(isManager)
+    const myInfo = useRecoilValue(me)
 
-    if (isInSession === null || amIManager === null) return <Header />
+    if (isInSession === null || !!!myInfo) return <Header />
 
     if (isInSession === false) Router.push("/error/authentication-error")
 
-    if ((!isManagementPage) || (isManagementPage && amIManager)) {
+    if ((!isManagementPage) || (isManagementPage && myInfo.position === "Manager")) {
       return <Page {...props} />
     } else {
       Router.push("/error/not-permitted")

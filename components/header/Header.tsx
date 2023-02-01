@@ -25,8 +25,7 @@ import { faCheckCircle } from "@fortawesome/free-regular-svg-icons"
 // Global State Management
 import { useRecoilValue } from "recoil"
 import { sessionState } from "atoms/SessionStateAtom"
-import { isManager } from "atoms/RoleAtom"
-import { name } from "atoms/NameAtom"
+import { me } from "atoms/MeAtom"
 
 // Functions
 import { resp } from "ts/functions"
@@ -35,8 +34,7 @@ const Header = () => {
   useStatusCheck() // ページ遷移の度に呼ばれてかつRecoilが使えるコンポーネント内でこのメソッドを呼ぶ
 
   const isInSession = useRecoilValue(sessionState)
-  const amIManager = useRecoilValue(isManager)
-  const myName = useRecoilValue(name)
+  const myInfo = useRecoilValue(me)
 
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
   const { isOpen: isMenuOpened, onOpen: openMenu, onClose: closeMenu } = useDisclosure()
@@ -63,7 +61,7 @@ const Header = () => {
           <DrawerBody>
             <SpongeSlimeButton text="トップページに戻る" fontSize={14} func={() => jump("/")} />
 
-            {amIManager ?
+            {myInfo.position === "Manager" ?
               <Box pt={5} pb={5}>
                 <Box className="kb" borderBottom="solid 2px #615f5f">管理者メニュー</Box>
                 <SimpleGrid columns={3} spacing={3} pt={3} justifyItems="center">
@@ -125,7 +123,7 @@ const Header = () => {
             >
               <PopoverTrigger>
                 <Flex className="flex-center" w={resp(90, 150, 150)} h={50} textAlign="center" cursor="pointer" borderRadius={15} _hover={{ background: "rgba(255, 255, 255, 0.2)" }} transition=".2s cubic-bezier(0.250, 0.250, 0.750, 0.750)">
-                  <Text className="ksb" display="inline" fontSize={resp(13, 15, 17)} color="white">{myName}</Text>
+                  <Text className="ksb" display="inline" fontSize={resp(13, 15, 17)} color="white">{myInfo.name}</Text>
                   {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" display="inline" fontSize={resp(10, 10, 12)} ml={1} color="white">さん</Text> : null}
                 </Flex>
               </PopoverTrigger>

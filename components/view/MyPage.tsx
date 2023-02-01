@@ -17,17 +17,17 @@ import SimpleButton from "components/button/SimpleButton"
 import { IconDefinition } from "@fortawesome/fontawesome-svg-core"
 import { faUpRightFromSquare, faCalendarCheck, faThumbsUp, faForward, faPersonWalking, faBell } from "@fortawesome/free-solid-svg-icons"
 import { faDiscord } from "@fortawesome/free-brands-svg-icons"
-import { useRecoilValue } from "recoil"
 
 // Global State Management
-import { name } from "atoms/NameAtom"
+import { useRecoilValue } from "recoil"
+import { me } from "atoms/MeAtom"
 
 // Functions
 import { resp, formatDateForMinimumDisplay, formatDate } from "ts/functions"
 
 const MyPage = () => {
   const [cardAnimationTrigger, setCardAnimationTrigger] = useState(false)
-  const myName = useRecoilValue(name)
+  const myInfo = useRecoilValue(me)
   const { showToast } = useStyledToast()
   const { getPersonalizedData, getAllRequests, getCurrentTime } = useApiConnection()
   const { data: personalizedData, fetchErrorMessage: errMsg1 } = getPersonalizedData()
@@ -48,7 +48,7 @@ const MyPage = () => {
 
       <Flex minH="65vh" maxW={resp("100%", "100%", "85%")} mx="auto" justifyContent="center" alignItems="center">
         <Box>{/* 消さない！ */}
-          <GreetingMessage name={myName} fireCardAnimationTrigger={() => { setCardAnimationTrigger(true) }} />
+          <GreetingMessage name={myInfo.name} fireCardAnimationTrigger={() => { setCardAnimationTrigger(true) }} />
 
           <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={5} justifyItems="center" alignItems="center">
             <Box className={cardAnimationTrigger ? "animate__animated card-in card1" : "hidden"}>

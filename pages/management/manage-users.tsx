@@ -30,10 +30,6 @@ import { Position } from "types/Position"
 // Classes
 import Symbol from "classes/Symbol"
 
-// Global State Management
-import { useRecoilValue } from "recoil"
-import { name } from "atoms/NameAtom"
-
 // Filter
 import { withSession } from "hoc/withSession"
 
@@ -44,7 +40,6 @@ const ManageUsers: NextPage = () => {
   const [clickedUserId, setClickedUserId] = useState("")
   const { isOpen: isModalOpened, onOpen: openModal, onClose: closeModal } = useDisclosure()
   const { getAllUsers, switchUserPosition, deleteUser, getSuperUser, getId } = useApiConnection()
-  const myName = useRecoilValue(name)
 
   const { data: users, fetchErrorMessage: errMsg1, mutate } = getAllUsers()
   const { data: superUserId, fetchErrorMessage: errMsg2 } = getSuperUser()
@@ -121,7 +116,7 @@ const ManageUsers: NextPage = () => {
                       <Tooltip label="このユーザーの役職を切り替えることはできません">
                         <Button mr={resp(3, 5, 5)} size="xs" color="#8b8b8b" borderColor="#8b8b8b" variant="outline" cursor="default">運営チーム</Button>
                       </Tooltip>
-                      <Tooltip label="ユーザーを削除することはできません">
+                      <Tooltip label="このユーザーを削除することはできません">
                         <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color="#8b8b8b" />
                       </Tooltip>
                     </Flex>
