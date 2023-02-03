@@ -18,14 +18,18 @@ export const withSession = (Page: NextPage<any>) => {
     const isInSession = useRecoilValue(sessionState)
     const myInfo = useRecoilValue(me)
 
-    if (isInSession === null || !!!myInfo) return <Header />
+    if (isInSession === null || myInfo.name === "") return <Header />
 
-    if (isInSession === false) router.push("/error/authentication-error")
-
-    if ((!isManagementPage) || (isManagementPage && myInfo.position === "Manager")) {
-      return <Page {...props} />
-    } else {
-      router.push("/error/not-permitted")
+    if (isInSession === false) {
+      router.push("/error/authentication-error")
+      return null
     }
+
+    if (isManagementPage && myInfo.position !== "Manager") {
+      router.push("/error/not-permitted")
+      return null
+    }
+
+    return <Page {...props} />
   }
 }
