@@ -34,7 +34,7 @@ interface Props {
 const ProfileEditModal = ({ isOpen, onClose }: Props) => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
   const { showToast } = useStyledToast()
-  const { updateProfile } = useApiConnection()
+  const { updateName, updateDept } = useApiConnection()
   const [myInfo, setMyInfo] = useRecoilState(me)
 
   useEffect(() => {
@@ -70,7 +70,8 @@ const ProfileEditModal = ({ isOpen, onClose }: Props) => {
     if (!!!checkValidation()) return
 
     try {
-      await updateProfile(nameInput, selectedDept as Department)
+      await updateName(nameInput)
+      await updateDept(selectedDept as Department)
       setMyInfo({
         name: nameInput,
         department: selectedDept as Department,
@@ -82,7 +83,7 @@ const ProfileEditModal = ({ isOpen, onClose }: Props) => {
     } catch (e) {
       if (e instanceof Error) showToast("エラー", e.message, "error")
     }
-  }, [checkValidation, nameInput, selectedDept, myInfo, setMyInfo, showToast, onClose, updateProfile])
+  }, [checkValidation, nameInput, selectedDept, myInfo, setMyInfo, showToast, onClose, updateName, updateDept])
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered={responsiveType === "SmartPhone"}>
@@ -102,7 +103,7 @@ const ProfileEditModal = ({ isOpen, onClose }: Props) => {
             </Box>
 
             <Box>
-              <Text className="ksb" pl={2} pb={1}>学部・学科</Text>
+              <Text className="ksb" pl={2} pb={1}>{Symbol.getSchoolType(myInfo.department) === "NEEC" ? "学科" : "学部"}</Text>
               <Box textAlign="center">
                 <PopOver isOpen={isDeptSelectorPopoverOpened} onClose={closeDeptSelectorPopover} errorMessage="学科・学部が選択されていません">
                   <Box>

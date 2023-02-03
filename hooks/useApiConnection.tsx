@@ -20,8 +20,9 @@ import { RequestState } from "types/RequestState"
 import { Position } from "types/Position"
 import { Department } from "types/Department"
 
-// Error Classes
+// Classes
 import AlreadyAddedError from "classes/AlreadyAddedError"
+import Symbol from "classes/Symbol"
 
 // Fetchers
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
@@ -221,15 +222,23 @@ export const useApiConnection = () => {
     }
   }, [isProdEnv])
 
-  const updateProfile = useCallback(async (newName: string, newDept: Department) => {
+  const updateName = useCallback(async (newName: string) => {
     try {
       const nameUpdateUrl = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me/name` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/name`
-      const deptUpdateUrl = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me/department` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/name`
       await axios.put(nameUpdateUrl, newName)
-      await axios.put(deptUpdateUrl, newDept)
     } catch {
-      throw new Error("プロフィールの更新に失敗しました")
+      throw new Error("名前の更新に失敗しました")
     }
   }, [isProdEnv])
-  return { getSession, getId, getMyInfo, getCurrentTime, getPersonalizedData, getSuperUser, getAllSurveys, getAllSchedules, getAnswerableSurveys, getSurveyResult, getAllUsers, getAllRequests, getConfirmedUsers, sendRequests, createSurvey, answerSurvey, switchSurveyAvailability, switchUserPosition, deleteSurvey, addApprovedUser, deleteUser, confirmAttendance, changeRequestState, updateProfile }
+
+  const updateDept = useCallback(async (newDept: Department) => {
+    try {
+      const url = isProdEnv ? `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/me/department` : `${process.env.NEXT_PUBLIC_API_BASE_URL}/name`
+      await axios.put(url, newDept)
+    } catch {
+      throw new Error(`${Symbol.getSchoolType(newDept) === "NEEC" ? "学科" : "学部"}の更新に失敗しました`)
+    }
+  }, [isProdEnv])
+
+  return { getSession, getId, getMyInfo, getCurrentTime, getPersonalizedData, getSuperUser, getAllSurveys, getAllSchedules, getAnswerableSurveys, getSurveyResult, getAllUsers, getAllRequests, getConfirmedUsers, sendRequests, createSurvey, answerSurvey, switchSurveyAvailability, switchUserPosition, deleteSurvey, addApprovedUser, deleteUser, confirmAttendance, changeRequestState, updateName, updateDept }
 }
