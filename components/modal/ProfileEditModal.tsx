@@ -69,19 +69,26 @@ const ProfileEditModal = ({ isOpen, onClose }: Props) => {
   const handleConfirmButtonClick = useCallback(async () => {
     if (!!!checkValidation()) return
 
-    try {
-      await updateName(nameInput)
-      await updateDept(selectedDept as Department)
-      setMyInfo({
-        name: nameInput,
-        department: selectedDept as Department,
-        position: myInfo.position
-      })
+    const result = await Promise.allSettled([
+      updateName(nameInput),
+      updateDept(selectedDept as Department)
+    ])
+
+    const [isNameUpdated, isDeptUpdated] = result.map(r => r.status === "fulfilled")
+
+    setMyInfo({
+      name: isNameUpdated ? nameInput : myInfo.name,
+      department: isDeptUpdated ? selectedDept as Department : myInfo.department,
+      position: myInfo.position
+    })
+
+    if (!!!isNameUpdated) showToast("エラー", "名前の更新に失敗しました", "error")
+    if (!!!isDeptUpdated) showToast("エラー", "学科の更新に失敗しました", "error")
+
+    if (isNameUpdated && isDeptUpdated) {
       showToast("成功", "プロフィールを更新しました", "success")
       onClose()
       setNameInput(myInfo.name)
-    } catch (e) {
-      if (e instanceof Error) showToast("エラー", e.message, "error")
     }
   }, [checkValidation, nameInput, selectedDept, myInfo, setMyInfo, showToast, onClose, updateName, updateDept])
 
