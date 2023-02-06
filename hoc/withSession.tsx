@@ -18,7 +18,7 @@ export const withSession = (Page: NextPage<any>) => {
     const isInSession = useRecoilValue(sessionState)
     const myInfo = useRecoilValue(me)
 
-    if (isInSession === null || myInfo.name === "") return <Header />
+    if (isInSession === null) return <Header />
 
     if (isInSession === false) {
       router.push("/error/authentication-error")
