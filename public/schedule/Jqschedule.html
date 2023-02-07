@@ -41,27 +41,37 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
     <script src="jq.schedule.plus.js"></script>
 
-    <script type="text/javascript">
+    <!-- グローバル変数 -->
+    <script>
+      const IS_PROD_ENV = true
+      let selectedDate = ""
+      let sampleRows = [];
+      let savedTemplates = {};
+      let widthTimeTypes = [360, 60, 15];
+      let selectedType = jQuery('input[name="timeType"]:checked').val();
+      let sampleRows2 = []
+    </script>
+
+    <!-- 汎用関数群 -->
+    <script>
+      //日付形式変換
+      const convertToSlash = (str) => str.replace(/-/g, "/")
+
+      const toOnlyTime = (str) => str.slice(-5)
+
       const formatDate = (dt) => {
         const y = dt.getFullYear()
         const m = ("00" + (dt.getMonth() + 1)).slice(-2)
         const d = ("00" + dt.getDate()).slice(-2)
         return `${y}-${m}-${d}`
       }
-    </script>
-
-    <script>
-      const IS_PROD_ENV = true
-      let selectedDate = ""
-      let sampleRows = [];
 
       const convert = (str) => {
         const dt = new Date(str);
         return `${dt.getFullYear()}-${("0" + (dt.getMonth() + 1)).slice(-2)}-${("0" + dt.getDate()).slice(-2)}`;
       }
 
-
-      function getParam(name, url) {
+      const getParam = (name, url) => {
         if (!url) url = window.location.href;
         name = name.replace(/[\[\]]/g, "\\$&");
         var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
@@ -109,6 +119,62 @@
         return templateData;
       }
 
+      const saveTemplate = (date, template) => {
+        // 日付のテンプレートが既に存在するかどうかを確認しますs
+        if (savedTemplates[date]) {
+          // 存在する場合は、上書きを確認するアラートを表示します
+          if (confirm(`${date} は既に存在します。上書きしますか？`)) {
+            savedTemplates[date] = template;
+          }
+        } else {
+          // 存在しない場合は、テンプレートを保存します
+          savedTemplates[date] = template;
+        }
+      }
+
+      //ユーザー取得
+      const getUserList = () => {
+        const divElement = document.createElement("div")
+        divElement.style.display = "none"
+        divElement.innerHTML = scheduleHTML.getInnerHTML
+        const workerNames = divElement.querySelectorAll(
+          ".sc_wrapper > .sc_data > .sc_data_scroll > .timeline"
+        )
+        const workerList = []
+        workerNames.forEach(node => {
+          workerList.push(node.textContent)
+        })
+        return workerList
+      }
+
+      //タスク取得                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+      const getTaskList = () => {
+        const divElement = document.createElement("div");
+        divElement.style.display = "none";
+        divElement.innerHTML = scheduleHTML.getInnerHTML;
+
+        const users = divElement.querySelectorAll(
+          ".sc_wrapper > .sc_main_box > .sc_main_scroll > .sc_main > .timeline"
+        );
+
+        const userTasks = [];
+
+        users.forEach(node => {
+          const tasks = node.querySelectorAll(".sc_Bar");
+          userTasks.push(
+            Array.from(tasks, taskNode => ({
+              startAt: taskNode.querySelector(".startTime").textContent,
+              endAt: taskNode.querySelector(".endTime").textContent,
+              taskName: taskNode.querySelector(".text").textContent
+            }))
+          );
+        });
+        return userTasks;
+      };
+    </script>
+
+    <!-- API通信系関数群 -->
+    <script>
       const setFromApiDataFormat = (date) => {
         (async () => {
           const APItemplate = await fetch(IS_PROD_ENV ? `https://shiftup.works/api/schedules/${date}` : `http://localhost:3000/api/dev/schedule/${date}`)
@@ -123,113 +189,6 @@
         })()
       }
 
-      //日付形式変換
-      const convertToSlash = (str) => {
-        return str.replace(/-/g, "/")
-      }
-
-      const toOnlyTime = (str) => str.slice(-5)
-
-      // onPageLoading
-      document.addEventListener('DOMContentLoaded', async () => {
-        //URLのクエリパラメータからテンプレートを取得
-        //const url = new URL("http://localhost:3000/schedule?date=2023-03-02");
-        //const urlParams = new URLSearchParams(url.search);
-        //const urlParams = new URLSearchParams(window.location.search);
-        //const specifiedDate = urlParams.get('date');
-        //setFromApiDataFormat(selectedDate)
-
-        //const APItemplate = await fetch(`http://localhost:3000/api/dev/schedule/`)
-
-        //役職がCastの場合の編集禁止処理
-        fetch(IS_PROD_ENV ? "https://shiftup.works/api/users/me/roles" : "http://localhost:3000/api/dev/role")
-          .then(response => response.json())
-          .then(data => {
-            let roles = data;
-            let templateSelector = document.getElementById("templateSelector");
-            let templateSaveButton = document.getElementsByClassName("template_save_btn")[0];
-            let deleteTemplateButton = document.getElementsByClassName("deleteTemplateButton")[0];
-            let taskName = document.getElementById("task-name");
-            let userName = document.getElementById("user-name");
-            let AddUserBtn = document.getElementsByClassName("add_user_btn")[0];
-            if (roles.length === 1 && roles[0] === "Cast") {
-              //templateSelector.style.display = "none";
-              templateSaveButton.style.display = "none";
-              deleteTemplateButton.style.display = "none";
-              taskName.style.display = "none";
-              userName.style.display = "none";
-              AddUserBtn.style.display = "none";
-            }
-          });
-
-        const APItemplate = await fetch(IS_PROD_ENV ? "https://shiftup.works/api/schedules/" : "http://localhost:3000/api/dev/schedule/")
-        const templateDates = await APItemplate.json()
-
-        if (getParam("date") !== "Undefined" && templateDates.includes(getParam("date"))) {
-          selectedDate = getParam("date")
-          setFromApiDataFormat(getParam("date"))
-        }
-
-        $("#templateSelector").datepicker({
-          closeText: "閉じる",
-          prevText: "&#x3C;前",
-          nextText: "次&#x3E;",
-          currentText: "今日",
-          monthNames: ["1月", "2月", "3月", "4月", "5月", "6月",
-            "7月", "8月", "9月", "10月", "11月", "12月"
-          ],
-          monthNamesShort: ["1月", "2月", "3月", "4月", "5月", "6月",
-            "7月", "8月", "9月", "10月", "11月", "12月"
-          ],
-          dayNames: ["日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"],
-          dayNamesShort: ["日", "月", "火", "水", "木", "金", "土"],
-          dayNamesMin: ["日", "月", "火", "水", "木", "金", "土"],
-          weekHeader: "週",
-          firstDay: 0,
-          isRTL: false,
-          showMonthAfterYear: true,
-          yearSuffix: "年",
-          dateFormat: "yy-mm-dd",
-          beforeShowDay: function (date) {
-            const strDate = formatDate(date)
-
-            if (templateDates.includes(strDate)) return [true, "template-date", "Test"]
-
-            return [true, "", "Test2"]
-
-          },
-          onSelect: function (selected) {
-            selectedDate = selected
-            if (templateDates.includes(selectedDate)) {
-              setFromApiDataFormat(selectedDate)
-            } else {
-              // テンプレート新規作成
-              scheduleData.setSchedule = [];
-              scheduleData.updateScheduleTable();
-              $("#task-name").prop("disabled", false);
-              $("#user-name").prop("disabled", false);
-              $(".add_user_btn").prop("disabled", false);
-            }
-          }
-        })
-      });
-
-
-      const savedTemplates = {};
-
-      function saveTemplate(date, template) {
-        // 日付のテンプレートが既に存在するかどうかを確認しますs
-        if (savedTemplates[date]) {
-          // 存在する場合は、上書きを確認するアラートを表示します
-          if (confirm(`${date} は既に存在します。上書きしますか？`)) {
-            savedTemplates[date] = template;
-          }
-        } else {
-          // 存在しない場合は、テンプレートを保存します
-          savedTemplates[date] = template;
-        }
-      }
-
       //テンプレート保存
       const template_save = () => {
         let templateName = formatDate($("#templateSelector").datepicker("getDate"));
@@ -237,7 +196,6 @@
           alert("テンプレート名が入力されていません");
           return;
         }
-
 
         schedule_save();
         schedule_data_recovery();
@@ -269,7 +227,6 @@
         saveTemplate(templateName, container);
 
         // APIへの保存
-
         fetch(IS_PROD_ENV ? "https://shiftup.works/api/schedules/" : "http://localhost:3000/api/dev/schedule/", {
           method: 'PUT',
           headers: {
@@ -279,14 +236,11 @@
         })
           .then(response => {
             alert(`${templateName}を保存しました`);
-            // 読み込みたい関数を呼び出す
-            beforeShowDay();
           })
           .catch(error => {
             console.error(error);
             alert('保存に失敗しました');
           });
-
       };
 
       //テンプレート削除
@@ -297,7 +251,7 @@
           return;
         }
         if (confirm(`${templateName}を削除しますか？`)) {
-          fetch(IS_PROD_ENV ? `https://shiftup.works/api/schedules/${templateName}` : `http://localhost:3000/api/schedules/${templateName}`, {
+          fetch(IS_PROD_ENV ? `https://shiftup.works/api/schedules/${templateName}` : `http://localhost:3000/api/dev/schedule/${templateName}`, {
             method: "DELETE",
           })
             .then(res => {
@@ -309,18 +263,80 @@
             })
             .catch(err => console.error(err))
         }
-        document.addEventListener('DOMContentReLoaded', async () => {
-          //const APItemplate = await fetch(`http://localhost:3000/api/dev/schedule/`)
-          //const APItemplate = await fetch(`https://shiftup.works/api/schedules/`)
-          const templateDates = await APItemplate.json()
-
-          const convertedAPITemplateData = convertAPItemplateToTemplateDataFormat(templateData);
-          scheduleData.setSchedule = convertedAPITemplateData;
-          scheduleData.updateScheduleTable();
-        })
       }
 
+      //スケジュールデータ保存
+      function schedule_save() {
+        scheduleHTML.setInnerHTML = $("#schedule").html();
+      }
 
+      //スケジュールデータ抽出
+      const extractData = () => {
+        const users = getUserList();
+        const tasks = getTaskList();
+        const userTasks = users.map((userName, idx) => { // タスク一覧
+          return {
+            name: userName,
+            tasks: tasks[idx]
+          }
+        });
+
+        return userTasks
+      }
+
+      //スケジュールデータ復元
+      const schedule_data_recovery = () => {
+        const userTasks = extractData();
+        let finalData = [];
+        userTasks.forEach(data => {
+          let tasks = [];
+          data.tasks.forEach(task => {
+            tasks.push({
+              text: task.taskName,
+              start: task.startAt,
+              end: task.endAt,
+              class: "newAdd"
+            });
+          });
+          finalData.push({
+            title: data.name,
+            impossibleDate: ["2022/08/17"],
+            businessHours: [{
+              dow: ["0"],
+              start: "07:00",
+              end: "19:00"
+            }, {
+              dow: ["1"],
+              start: "07:00",
+              end: "19:00"
+            }],
+            schedule: tasks
+          });
+        });
+        scheduleData.setSchedule = finalData;
+        scheduleData.updateScheduleTable();
+      };
+
+      //ユーザー追加
+      const handleButtonClick = () => {
+        schedule_save()
+        let userName = $("#user-name").val()
+        if (/^[\s\u3000\u3164]*$/.test(userName)) {
+          alert("空白文字は入力できません")
+          return
+        }
+        scheduleData.addUser(userName)
+        scheduleData.updateScheduleTable()
+
+        schedule_data_recovery()
+
+        scheduleData.addUser(userName)
+        scheduleData.updateScheduleTable()
+      }
+    </script>
+
+    <!-- クラス群 -->
+    <script>
       const ScheduleHTML = class {
         constructor(innerHTML) {
           this.innerHTML = innerHTML
@@ -430,120 +446,89 @@
           })
         }
       }
+    </script>
+
+    <!-- インスタンス群 -->
+    <script>
       const scheduleHTML = new ScheduleHTML("")
       const scheduleData = new ScheduleData([])
+    </script>
 
-      //ユーザー取得
-      const getUserList = () => {
-        const divElement = document.createElement("div")
-        divElement.style.display = "none"
-        divElement.innerHTML = scheduleHTML.getInnerHTML
-        const workerNames = divElement.querySelectorAll(
-          ".sc_wrapper > .sc_data > .sc_data_scroll > .timeline"
-        )
-        const workerList = []
-        workerNames.forEach(node => {
-          workerList.push(node.textContent)
-        })
-        return workerList
-      }
-      //タスク取得                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
-      const getTaskList = () => {
-        const divElement = document.createElement("div");
-        divElement.style.display = "none";
-        divElement.innerHTML = scheduleHTML.getInnerHTML;
-
-        const users = divElement.querySelectorAll(
-          ".sc_wrapper > .sc_main_box > .sc_main_scroll > .sc_main > .timeline"
-        );
-
-        const userTasks = [];
-
-        users.forEach(node => {
-          const tasks = node.querySelectorAll(".sc_Bar");
-          userTasks.push(
-            Array.from(tasks, taskNode => ({
-              startAt: taskNode.querySelector(".startTime").textContent,
-              endAt: taskNode.querySelector(".endTime").textContent,
-              taskName: taskNode.querySelector(".text").textContent
-            }))
-          );
-        });
-        return userTasks;
-      };
-
-      //スケジュールデータ保存
-      function schedule_save() {
-        scheduleHTML.setInnerHTML = $("#schedule").html();
-      }
-
-      //スケジュールデータ抽出
-      const extractData = () => {
-        const users = getUserList();
-        const tasks = getTaskList();
-        const userTasks = users.map((userName, idx) => { // タスク一覧
-          return {
-            name: userName,
-            tasks: tasks[idx]
-          }
-        });
-
-        return userTasks
-      }
-
-      //スケジュールデータ復元
-      const schedule_data_recovery = () => {
-        const userTasks = extractData();
-        let finalData = [];
-        userTasks.forEach(data => {
-          let tasks = [];
-          data.tasks.forEach(task => {
-            tasks.push({
-              text: task.taskName,
-              start: task.startAt,
-              end: task.endAt,
-              class: "newAdd"
-            });
+    <script>
+      // onPageLoading
+      document.addEventListener('DOMContentLoaded', async () => {
+        //役職がCastの場合の編集禁止処理
+        fetch(IS_PROD_ENV ? "https://shiftup.works/api/users/me/roles" : "http://localhost:3000/api/dev/role")
+          .then(response => response.json())
+          .then(data => {
+            let roles = data;
+            let templateSelector = document.getElementById("templateSelector");
+            let templateSaveButton = document.getElementsByClassName("template_save_btn")[0];
+            let deleteTemplateButton = document.getElementsByClassName("deleteTemplateButton")[0];
+            let taskName = document.getElementById("task-name");
+            let userName = document.getElementById("user-name");
+            let AddUserBtn = document.getElementsByClassName("add_user_btn")[0];
+            if (roles.length === 1 && roles[0] === "Cast") {
+              //templateSelector.style.display = "none";
+              templateSaveButton.style.display = "none";
+              deleteTemplateButton.style.display = "none";
+              taskName.style.display = "none";
+              userName.style.display = "none";
+              AddUserBtn.style.display = "none";
+            }
           });
-          finalData.push({
-            title: data.name,
-            impossibleDate: ["2022/08/17"],
-            businessHours: [{
-              dow: ["0"],
-              start: "07:00",
-              end: "19:00"
-            }, {
-              dow: ["1"],
-              start: "07:00",
-              end: "19:00"
-            }],
-            schedule: tasks
-          });
-        });
-        scheduleData.setSchedule = finalData;
-        scheduleData.updateScheduleTable();
-      };
 
-      //ユーザー追加
-      const handleButtonClick = () => {
-        schedule_save()
-        let userName = $("#user-name").val()
-        if (/^[\s\u3000\u3164]*$/.test(userName)) {
-          alert("空白文字は入力できません")
-          return
+        const APItemplate = await fetch(IS_PROD_ENV ? "https://shiftup.works/api/schedules/" : "http://localhost:3000/api/dev/schedule/")
+        const templateDates = await APItemplate.json()
+
+        if (getParam("date") !== "Undefined" && templateDates.includes(getParam("date"))) {
+          selectedDate = getParam("date")
+          setFromApiDataFormat(getParam("date"))
         }
-        scheduleData.addUser(userName)
-        scheduleData.updateScheduleTable()
 
-        schedule_data_recovery()
+        $("#templateSelector").datepicker({
+          closeText: "閉じる",
+          prevText: "&#x3C;前",
+          nextText: "次&#x3E;",
+          currentText: "今日",
+          monthNames: ["1月", "2月", "3月", "4月", "5月", "6月",
+            "7月", "8月", "9月", "10月", "11月", "12月"
+          ],
+          monthNamesShort: ["1月", "2月", "3月", "4月", "5月", "6月",
+            "7月", "8月", "9月", "10月", "11月", "12月"
+          ],
+          dayNames: ["日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"],
+          dayNamesShort: ["日", "月", "火", "水", "木", "金", "土"],
+          dayNamesMin: ["日", "月", "火", "水", "木", "金", "土"],
+          weekHeader: "週",
+          firstDay: 0,
+          isRTL: false,
+          showMonthAfterYear: true,
+          yearSuffix: "年",
+          dateFormat: "yy-mm-dd",
+          beforeShowDay: function (date) {
+            const strDate = formatDate(date)
 
-        scheduleData.addUser(userName)
-        scheduleData.updateScheduleTable()
-      }
+            if (templateDates.includes(strDate)) return [true, "template-date", "Test"]
 
-      let widthTimeTypes = [360, 60, 15];
-      let selectedType = jQuery('input[name="timeType"]:checked').val();
-      let sampleRows2 = []
+            return [true, "", "Test2"]
+
+          },
+          onSelect: function (selected) {
+            selectedDate = selected
+            if (templateDates.includes(selectedDate)) {
+              setFromApiDataFormat(selectedDate)
+            } else {
+              // テンプレート新規作成
+              scheduleData.setSchedule = [];
+              scheduleData.updateScheduleTable();
+              $("#task-name").prop("disabled", false);
+              $("#user-name").prop("disabled", false);
+              $(".add_user_btn").prop("disabled", false);
+            }
+          }
+        })
+      });
 
       // 時間単位種別（6時間、1時間、１５分）
       //var widthTimeTypes = [360, 60, 15];
@@ -567,9 +552,7 @@
         }
       });
 
-      scheduleInit(widthTimeTypes[selectedType], true);
-
-      function scheduleInit(timeType, multiple) {
+      const scheduleInit = (timeType, multiple) => {
         jQuery("#schedule").timeSchedule({
           today: '2023/02/22', // LIN 追加機能 - 本日
           nowTime: '00:00', // LIN 追加機能 - 現在時刻
@@ -622,6 +605,8 @@
           }
         });
       }
+
+      scheduleInit(widthTimeTypes[selectedType], true);
     </script>
 </body>
 

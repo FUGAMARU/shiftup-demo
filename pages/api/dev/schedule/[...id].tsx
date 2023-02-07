@@ -36,10 +36,7 @@ export default function handler(
             ]
           }
         ]
-        
       })
-
-      
       break
     case "DELETE":
       res.status(204).send("")
