@@ -235,7 +235,8 @@
           body: JSON.stringify(container)
         })
           .then(response => {
-            alert(`${templateName}を保存しました`);
+            alert(`${templateName}を保存しました。ページをリロードします。`);
+            window.location.reload();
           })
           .catch(error => {
             console.error(error);
@@ -257,6 +258,8 @@
             .then(res => {
               if (res.status === 204) {
                 $("#templateSelector option[value='" + templateName + "']").remove()
+                alert("テンプレートを削除しました。ページをリロードします。")
+                window.location.reload()
               } else {
                 alert("テンプレートの削除に失敗しました")
               }
