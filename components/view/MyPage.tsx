@@ -1,5 +1,8 @@
 // React
-import { useState, useMemo, memo } from "react"
+import { useState, useMemo, memo, useCallback } from "react"
+
+// Next.js
+import Router from "next/router"
 
 // Custom Hooks
 import { useStyledToast } from "hooks/useStyledToast"
@@ -33,14 +36,14 @@ const MyPage = () => {
   const { data: personalizedData, fetchErrorMessage: errMsg1 } = getPersonalizedData()
   const { data: allRequests, fetchErrorMessage: errMsg2 } = getAllRequests()
   const { time } = getCurrentTime()
+  const today = useMemo(() => formatDate(time), [time])
+
   if (errMsg1) showToast("エラー", errMsg1, "error")
   if (errMsg2) showToast("エラー", errMsg2, "error")
 
-  const isWorkDay = useMemo(() => allRequests?.respondedRequests.filter(res => res.state === "Accepted").map(res => res.openCampusDate).includes(formatDate(time)), [allRequests, time])
+  const isWorkDay = useMemo(() => allRequests?.respondedRequests.filter(res => res.state === "Accepted").map(res => res.openCampusDate).includes(today), [allRequests, today])
 
-  const viewTodaySchedule = () => {
-    // 「今日のタイムテーブルを見る」 ボタンをクリックした時の処理をそのうち書く
-  }
+  const viewTodaySchedule = useCallback(() => Router.push(`/manage-schedule?date=${today}`), [today])
 
   return (
     <Box py={5} bg="#f5f5f7">
