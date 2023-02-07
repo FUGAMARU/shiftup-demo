@@ -3,12 +3,10 @@
 
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>タイムテーブル</title>
   <link rel="stylesheet" href="style.css">
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>jq.Schedule Plus </title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript" language="javascript"></script>
   <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.min.js" type="text/javascript" language="javascript">
   </script>
@@ -17,348 +15,560 @@
   <link rel="stylesheet" type="text/css" href="style.css" />
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="screen">
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <style type="text/css">
+    .hero-unit {
+      padding: 0px;
+    }
+  </style>
 </head>
 
 <body>
-  <div>
-    <input id="templateName" type="text" placeholder="テンプレート名を入力" />
-    <select name="template" id="templateSelector">
-    </select>
-    <button class="btn2" onClick="save()">テンプレート保存</button>
-    <button class="btn3" onclick="add()">適用</button>
-  </div>
-  <input id="task-name" type="text" value="" placeholder="タスク名を入力" />
-  <input id="user-name" type="text" value="" placeholder="ユーザー名を入力" />
-  <button class="btn1" onClick="handleButtonClick()">ユーザー追加</button>
-  <!--<button onClick="keep()">クラスに保存</button>
-        <button onClick="extractData()">データー抽出</button>
-        <button onclick="restoration()">データー復元</button>-->
-  <div style="display: flex;">
-  </div>
+  <div class="container">
+    <div class="hero-unit">
+    </div>
 
-  <div id="schedule-container">
-    <div id="schedule" style="margin: 0 auto;"></div>
-  </div>
+    <div>
+      <input type="text" id="templateSelector" readonly="readonly" placeholder="クリックして日付を選択">
+      <button class="template_save_btn" onClick="template_save(); ">テンプレート保存</button>
+      <button class="deleteTemplateButton" onclick="template_delete()">テンプレート削除</button>
+    </div>
+    <input id="task-name" type="text" value="" placeholder="タスク名を入力" disabled />
+    <input id="user-name" type="text" value="" placeholder="ユーザー名を入力" disabled />
+    <button class="add_user_btn" disabled
+      onClick="handleButtonClick(); document.getElementById('user-name').value=''">ユーザー追加</button>
 
-  <script src="https://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript" language="javascript"></script>
-  <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.min.js" type="text/javascript"
-    language="javascript"></script>
-  <script src="jq.schedule.plus.js"></script>
-  <script type="text/javascript">
-    $(() => {
-      if (localStorage.getItem("templates")) {
-        $.each(Object.keys(JSON.parse(localStorage.getItem("templates"))), (idx, val) => {
-          $("#templateSelector").append(`<option value=${val}>${val}</option>`)
-        })
+    <!--<button onClick="schedule_save()">クラスに保存</button>
+              <button onClick="extractData()">データー抽出</button>
+              <button onclick="schedule_data_recovery()">データー復元</button>-->
+    <div style="display: flex;">
+    </div>
+
+    <div id="schedule-container">
+      <div id="schedule" style="margin: 0 auto;"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript" language="javascript"></script>
+    <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.min.js" type="text/javascript" language="javascript">
+    </script>
+
+    <script type="text/javascript">
+      const formatDate = (dt) => {
+        const y = dt.getFullYear()
+        const m = ("00" + (dt.getMonth() + 1)).slice(-2)
+        const d = ("00" + dt.getDate()).slice(-2)
+        return `${y}-${m}-${d}`
       }
-    })
+    </script>
+    <script>
+      //役職がCastの場合の編集禁止処理
+      //fetch("http://localhost:3000/api/dev/role")
+      fetch("https://shiftup.works/api/users/me/roles")
+        .then(response => response.json())
+        .then(data => {
+          let roles = data;
+          let templateSelector = document.getElementById("templateSelector");
+          let templateSaveButton = document.getElementsByClassName("template_save_btn")[0];
+          let deleteTemplateButton = document.getElementsByClassName("deleteTemplateButton")[0];
+          let taskName = document.getElementById("task-name");
+          let userName = document.getElementById("user-name");
+          let AddUserBtn = document.getElementsByClassName("add_user_btn")[0];
+          if (roles.length === 1 && roles[0] === "Cast") {
+            //templateSelector.style.display = "none";
+            templateSaveButton.style.display = "none";
+            deleteTemplateButton.style.display = "none";
+            taskName.style.display = "none";
+            userName.style.display = "none";
+            AddUserBtn.style.display = "none";
+          }
+        });
+    </script>
 
-    const save = () => {
-      if (localStorage.getItem("templates") === null) localStorage.setItem("templates", JSON.stringify({}))
-
-      keep()
-      extractData()
-      restoration()
-
-      const templateName = document.getElementById("templateName").value
-
-      if (templateName === "") {
-        alert("テンプレート名が入力されていません")
-        return
-      }
-
-      let templates = JSON.parse(localStorage.getItem("templates"))
-
-      scheduleHTML.setInnerHTML = $("#schedule").html()
-
-      users = getUserList()
-      tasks = getTaskList()
-
-      userTasks = []
-
-      users.forEach((userName, idx) => {
-        userTasks.push({
-          "name": userName,
-          "tasks": tasks[idx]
-        })
-      })
-      localStorage.setItem("templates", JSON.stringify(userTasks))
-
-      templates[templateName] = scheduleData.getSchedule
-      localStorage.setItem("templates", JSON.stringify(templates))
-    }
-
-    const add = () => {
-      const selectedTemplateName = $("#templateSelector").val()
-      const templates = JSON.parse(localStorage.getItem("templates"))
-
-      let finalData = []
-
-      scheduleData.setSchedule = templates[selectedTemplateName]
-      scheduleData.updateScheduleTable()
-    }
+    <script src="jq.schedule.plus.js"></script>
+    <script type="text/javascript">
+      let selectedDate = ""
+      let sampleRows = [];
 
 
-    const ScheduleHTML = class {
-      constructor(innerHTML) {
-        this.innerHTML = innerHTML
+      const convert = (str) => {
+        const dt = new Date(str);
+        return `${dt.getFullYear()}-${("0" + (dt.getMonth() + 1)).slice(-2)}-${("0" + dt.getDate()).slice(-2)}`;
       }
 
-      set setInnerHTML(innerHTML) {
-        this.innerHTML = innerHTML
+
+      function getParam(name, url) {
+        if (!url) url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+          results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
       }
 
-      get getInnerHTML() {
-        return this.innerHTML
+      const convertAPItemplateToTemplateDataFormat = (apiTemplate) => {
+        const selectedDate = apiTemplate.id;
+        const templateData = apiTemplate.castSchedules.map(cast => {
+          return {
+            title: cast.castName,
+            impossibleDate: [
+              "2022/08/17"
+            ],
+            businessHours: [{
+                dow: [
+                  "0"
+                ],
+                start: "07:00",
+                end: "19:00"
+              },
+              {
+                dow: [
+                  "1"
+                ],
+                end: "19:00",
+                start: "07:00"
+              }
+            ],
+            templateName: apiTemplate.id,
+            openCampusDate: apiTemplate.openCampusDate,
+            schedule: cast.tasks.map(task => {
+              return {
+                text: task.name,
+                start: `${convertToSlash(selectedDate)} ${task.startTime}`,
+                end: `${convertToSlash(selectedDate)} ${task.endTime}`,
+                class: "newAdd"
+              };
+            })
+          };
+        });
+        return templateData;
       }
-    }
 
-    const ScheduleData = class {
-      constructor(data) {
-        this.data = data
+      const setFromApiDataFormat = (date) => {
+        (async () => {
+          //const APItemplate = await fetch(`http://localhost:3000/api/dev/schedule/${date}`)
+          const APItemplate = await fetch(`https://shiftup.works/api/schedules/${date}`)
+          const templateData = await APItemplate.json()
+
+          const convertedAPITemplateData = convertAPItemplateToTemplateDataFormat(templateData);
+          scheduleData.setSchedule = convertedAPITemplateData;
+          scheduleData.updateScheduleTable();
+          $("#task-name").prop("disabled", false);
+          $("#user-name").prop("disabled", false);
+          $(".add_user_btn").prop("disabled", false);
+        })()
       }
 
-      set setSchedule(arr) {
-        this.data = arr
+      //日付形式変換
+      const convertToSlash = (str) => {
+        return str.replace(/-/g, "/")
       }
 
-      get getSchedule() {
-        return this.data
-      }
+      const toOnlyTime = (str) => str.slice(-5)
 
-      addUser(username) {
-        this.data.push({
-          title: username,
-          impossibleDate: [
-            '2022/08/17'
+      // onPageLoading
+      document.addEventListener('DOMContentLoaded', async () => {
+        //URLのクエリパラメータからテンプレートを取得
+        //const url = new URL("http://localhost:3000/schedule?date=2023-03-02");
+        //const urlParams = new URLSearchParams(url.search);
+        //const urlParams = new URLSearchParams(window.location.search);
+        //const specifiedDate = urlParams.get('date');
+        //console.log(specifiedDate);
+        //setFromApiDataFormat(selectedDate)
+
+        //const APItemplate = await fetch(`http://localhost:3000/api/dev/schedule/`)
+
+        const APItemplate = await fetch(`https://shiftup.works/api/schedules/`)
+        const templateDates = await APItemplate.json()
+
+        if (getParam("date") !== "Undefined" && templateDates.includes(getParam("date"))) {
+          selectedDate = getParam("date")
+          setFromApiDataFormat(getParam("date"))
+        }
+
+        $("#templateSelector").datepicker({
+          closeText: "閉じる",
+          prevText: "&#x3C;前",
+          nextText: "次&#x3E;",
+          currentText: "今日",
+          monthNames: ["1月", "2月", "3月", "4月", "5月", "6月",
+            "7月", "8月", "9月", "10月", "11月", "12月"
           ],
-          businessHours: [{
-            dow: ['0'],
-            start: '08:00',
-            end: '16:00'
-          }, {
-            dow: ['1'],
-            start: '08:00',
-            end: '16:00'
-          }],
-          schedule: []
-        })
-      }
+          monthNamesShort: ["1月", "2月", "3月", "4月", "5月", "6月",
+            "7月", "8月", "9月", "10月", "11月", "12月"
+          ],
+          dayNames: ["日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"],
+          dayNamesShort: ["日", "月", "火", "水", "木", "金", "土"],
+          dayNamesMin: ["日", "月", "火", "水", "木", "金", "土"],
+          weekHeader: "週",
+          firstDay: 0,
+          isRTL: false,
+          showMonthAfterYear: true,
+          yearSuffix: "年",
+          dateFormat: "yy-mm-dd",
+          beforeShowDay: function (date) {
+            const strDate = formatDate(date)
 
-      updateScheduleTable() {
-        const oldSchedule = document.querySelector("#schedule")
-        oldSchedule.innerHTML = ""
+            if (templateDates.includes(strDate)) return [true, "template-date", "Test"]
 
-        jQuery("#schedule").timeSchedule({
-          today: '2022/08/18', // LIN 追加機能 - 本日
-          nowTime: '00:00', // LIN 追加機能 - 現在時刻
-          startDate: '2022/08/18', // LIN 追加機能 - 開始日
-          endDate: '2022/08/18', // LIN 追加機能 - 終了日
-          weekday: ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'], // LIN 追加機能 - DOW表示
-          startTime: "07:00",
-          endTime: "18:00",
-          widthTimeX: 45,
-          widthTime: 60 * 15,
-          timeLineY: 132,
-          verticalScrollbar: 10,
-          timeLineBorder: 1,
-          dataWidth: 200,
-          nextNo: 1, // LIN 追加機能 - 複数選択初期番号
-          debug: "",
-          multiple: true, // LIN 追加機能-複数選択機能有無
-          rows: this.data,
-          init_data: function (node, data) {
-            $("#logs").append($("<div>").text("init event:" + JSON.stringify(data)));
+            return [true, "", "Test2"]
+
           },
-          click: function (node, data) {
-            $("#logs").append($("<div>").text("click event:" + JSON.stringify(data)));
-          },
-          append: function (node, data) {
-            $("#logs").append($("<div>").text("append event:" + JSON.stringify(
-              data)));
-          },
-          timeClick: function (element, data) {
-            // LIN 追加機能-シングルクリックイベント
-            $("#logs").append($("<div>").text("Time click event:" + JSON.stringify(
-              data)));
-          },
-          dateClick: function (date) {
-            // LIN 追加機能-日付クリックイベント
-            $("#logs").append($("<div>").text("Date click event:" + JSON.stringify(
-              date)));
-          },
-          timeDrag: function (data) {
-            // LIN 追加機能-ドラッグイベント
-            $("#logs").append($("<div>").text("Drag event:" + JSON.stringify(data)));
-          },
-          titleClick: function (data) {
-            // LIN 追加機能-行タイトルクリックイベント
-            $("#logs").append($("<div>").text("Title click event:" + JSON.stringify(
-              data)));
-          },
-          change: function (node, data) {
-            $("#logs").append($("<div>").text("Change event:" + JSON.stringify(
-              data)));
-          },
-          delete: function (data) {
-            // LIN 追加機能-削除イベント
-            $("#logs").append($("<div>").text("Delete event:" + JSON.stringify(
-              data)));
+          onSelect: function (selected) {
+            selectedDate = selected
+            if (templateDates.includes(selectedDate)) {
+              setFromApiDataFormat(selectedDate)
+            } else {
+              // テンプレート新規作成
+              scheduleData.setSchedule = [];
+              scheduleData.updateScheduleTable();
+              $("#task-name").prop("disabled", false);
+              $("#user-name").prop("disabled", false);
+              $(".add_user_btn").prop("disabled", false);
+            }
           }
         })
+      });
 
+
+      const savedTemplates = {};
+
+      function saveTemplate(date, template) {
+        // 日付のテンプレートが既に存在するかどうかを確認しますs
+        if (savedTemplates[date]) {
+          // 存在する場合は、上書きを確認するアラートを表示します
+          if (confirm(`${date} は既に存在します。上書きしますか？`)) {
+            savedTemplates[date] = template;
+          }
+        } else {
+          // 存在しない場合は、テンプレートを保存します
+          savedTemplates[date] = template;
+        }
       }
-    }
 
-    const scheduleHTML = new ScheduleHTML("")
-    const scheduleData = new ScheduleData([
-
-    ])
-
-    const extractData = () => {
-      users = getUserList()
-      tasks = getTaskList()
-
-      userTasks = [] // タスク一覧
-
-      users.forEach((userName, idx) => {
-        userTasks.push({
-          "name": userName,
-          "tasks": tasks[idx]
-        })
-      })
-
-      console.log(userTasks)
-
-      localStorage.setItem("userTasks", JSON.stringify(userTasks))
-    }
+      //テンプレート保存
+      const template_save = () => {
+        let templateName = formatDate($("#templateSelector").datepicker("getDate"));
+        if (!/\S/.test(templateName)) {
+          alert("テンプレート名が入力されていません");
+          return;
+        }
 
 
-    const getUserList = () => {
-      const divElement = document.createElement("div")
-      divElement.style.display = "none"
-      divElement.innerHTML = scheduleHTML.getInnerHTML
+        schedule_save();
+        schedule_data_recovery();
+        const convertable = extractData()
 
-      const WorkerName = divElement.querySelectorAll(
-        ".sc_wrapper > .sc_data > .sc_data_scroll > .timeline")
+        let converted = []
 
-      workerList = []
-
-      WorkerName.forEach((node) => {
-        workerList.push(node.textContent)
-      })
-
-      return workerList
-    }
-
-    const getTaskList = () => {
-      const divElement = document.createElement("div")
-      divElement.style.display = "none"
-      divElement.innerHTML = scheduleHTML.getInnerHTML
-
-      const users = divElement.querySelectorAll(
-        ".sc_wrapper > .sc_main_box > .sc_main_scroll > .sc_main > .timeline")
-
-      userTasks = []
-
-      users.forEach((node) => {
-        tmpArr = []
-        const taskArr = node.querySelectorAll(".sc_Bar")
-        taskArr.forEach((taskNode) => {
-
-          startAt = taskNode.querySelector(".startTime").textContent
-          endAt = taskNode.querySelector(".endTime").textContent
-          taskName = taskNode.querySelector(".text").textContent
-
-          tmpArr.push({
-            "startAt": startAt,
-            "endAt": endAt,
-            "taskName": taskName
+        convertable.forEach((userData, idx) => {
+          let base = {}
+          base["castName"] = userData.name
+          let tasks = []
+          userData.tasks.forEach(task => {
+            tasks.push({
+              startTime: toOnlyTime(task.startAt),
+              endTime: toOnlyTime(task.endAt),
+              name: task.taskName
+            })
+            base["tasks"] = tasks
           })
+          converted.push(base)
         })
-        userTasks.push(tmpArr)
-      })
 
-      return userTasks
-    }
+        const container = {
+          "openCampusDate": selectedDate,
+          "castSchedules": converted
+        }
 
-    function keep() {
-      scheduleHTML.setInnerHTML = $("#schedule").html()
-      console.log("SET完了")
-    }
+        // Save the template to savedTemplates
+        saveTemplate(templateName, container);
 
+        // APIへの保存
 
-    let sampleRows = []
-
-    const restoration = () => {
-      const userTasks = JSON.parse(localStorage.getItem("userTasks"))
-
-      let finalData = []
-
-      userTasks.forEach((data) => {
-        let tasks = []
-        data.tasks.forEach((task) => {
-          tasks.push({
-            text: task.taskName,
-            start: task.startAt,
-            end: task.endAt,
-            class: "green"
+        //fetch(`http://localhost:3000/api/dev/schedule/`, {
+        fetch(`https://shiftup.works/api/schedules/`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(container)
           })
+          .then(response => {
+            alert(`${templateName}を保存しました`);
+            // 読み込みたい関数を呼び出す
+            beforeShowDay();
+          })
+          .catch(error => {
+            console.error(error);
+            alert('保存に失敗しました');
+          });
+
+      };
+
+      //テンプレート削除
+      const template_delete = () => {
+        let templateName = $("#templateSelector").val()
+        if (!templateName) {
+          alert("削除するテンプレートが選択されていません");
+          return;
+        }
+        if (confirm(`${templateName}を削除しますか？`)) {
+          //fetch(`http://localhost:3000/api/schedules/${templateName}`, {
+          fetch(`https://shiftup.works/api/schedules/${templateName}`, {
+              method: "DELETE",
+            })
+            .then(res => {
+              if (res.status === 204) {
+                $("#templateSelector option[value='" + templateName + "']").remove()
+              } else {
+                alert("テンプレートの削除に失敗しました")
+              }
+            })
+            .catch(err => console.error(err))
+        }
+        document.addEventListener('DOMContentReLoaded', async () => {
+          //const APItemplate = await fetch(`http://localhost:3000/api/dev/schedule/`)
+          //const APItemplate = await fetch(`https://shiftup.works/api/schedules/`)
+          const templateDates = await APItemplate.json()
+
+          const convertedAPITemplateData = convertAPItemplateToTemplateDataFormat(templateData);
+          scheduleData.setSchedule = convertedAPITemplateData;
+          scheduleData.updateScheduleTable();
         })
-
-        finalData.push({
-          "title": data.name,
-          impossibleDate: [
-            '2022/08/17'
-          ],
-          businessHours: [{
-            dow: ['0'],
-            start: '08:00',
-            end: '16:00'
-          }, {
-            dow: ['1'],
-            start: '08:00',
-            end: '16:00'
-          },],
-          schedule: tasks
-        })
-      })
-
-
-      scheduleData.setSchedule = finalData
-      scheduleData.updateScheduleTable()
-    }
-
-
-    const handleButtonClick = () => {
-      keep()
-      extractData()
-
-      scheduleData.addUser($("#user-name").val())
-      scheduleData.updateScheduleTable()
-
-      restoration()
-
-      scheduleData.addUser($("#user-name").val())
-      scheduleData.updateScheduleTable()
-    }
-
-    const TaskData = class {
-      constructor(TaskData) {
-        this.TaskData = TaskData;
       }
-    }
 
 
+      const ScheduleHTML = class {
+        constructor(innerHTML) {
+          this.innerHTML = innerHTML
+        }
 
-    jQuery(document).ready(function () {
-      sampleRows = [{
+        set setInnerHTML(innerHTML) {
+          this.innerHTML = innerHTML
+        }
 
-      }];
-      sampleRows2 = []
+        get getInnerHTML() {
+          return this.innerHTML
+        }
+      }
+
+      const ScheduleData = class {
+        constructor(data) {
+          this.data = data
+        }
+
+        set setSchedule(arr) {
+          this.data = arr
+        }
+
+        get getSchedule() {
+          return this.data
+        }
+
+        addUser(username) {
+          this.data.push({
+            title: username,
+            impossibleDate: [
+              '2022/08/17'
+            ],
+            businessHours: [{
+              dow: ['0'],
+              start: '07:00',
+              end: '19:00'
+            }, {
+              dow: ['1'],
+              start: '07:00',
+              end: '19:00'
+            }],
+            schedule: []
+          })
+        }
+
+        updateScheduleTable() {
+          const oldSchedule = document.querySelector("#schedule")
+          oldSchedule.innerHTML = ""
+
+          jQuery("#schedule").timeSchedule({
+            today: convertToSlash(selectedDate), // LIN 追加機能 - 本日
+            nowTime: '00:00', // LIN 追加機能 - 現在時刻
+            startDate: convertToSlash(selectedDate), // LIN 追加機能 - 開始日
+            endDate: convertToSlash(selectedDate), // LIN 追加機能 - 終了日
+            weekday: ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'], // LIN 追加機能 - DOW表示
+            startTime: "07:00",
+            endTime: "19:00",
+            widthTimeX: 45,
+            widthTime: 60 * 15,
+            timeLineY: 132,
+            verticalScrollbar: 10,
+            timeLineBorder: 1,
+            dataWidth: 200,
+            nextNo: 1, // LIN 追加機能 - 複数選択初期番号
+            debug: "",
+            multiple: true, // LIN 追加機能-複数選択機能有無
+            rows: this.data,
+            init_data: function (node, data) {
+              $("#logs").append($("<div>").text("init event:" + JSON.stringify(data)));
+            },
+            click: function (node, data) {
+              $("#logs").append($("<div>").text("click event:" + JSON.stringify(data)));
+            },
+            append: function (node, data) {
+              $("#logs").append($("<div>").text("append event:" + JSON.stringify(
+                data)));
+            },
+            timeClick: function (element, data) {
+              // LIN 追加機能-シングルクリックイベント
+              $("#logs").append($("<div>").text("Time click event:" + JSON.stringify(
+                data)));
+            },
+            dateClick: function (date) {
+              // LIN 追加機能-日付クリックイベント
+              $("#logs").append($("<div>").text("Date click event:" + JSON.stringify(
+                date)));
+            },
+            timeDrag: function (data) {
+              // LIN 追加機能-ドラッグイベント
+              $("#logs").append($("<div>").text("Drag event:" + JSON.stringify(data)));
+            },
+            titleClick: function (data) {
+              // LIN 追加機能-行タイトルクリックイベント
+              $("#logs").append($("<div>").text("Title click event:" + JSON.stringify(
+                data)));
+            },
+            change: function (node, data) {
+              $("#logs").append($("<div>").text("Change event:" + JSON.stringify(
+                data)));
+            },
+            delete: function (data) {
+              // LIN 追加機能-削除イベント
+              $("#logs").append($("<div>").text("Delete event:" + JSON.stringify(
+                data)));
+            }
+          })
+        }
+      }
+      const scheduleHTML = new ScheduleHTML("")
+      const scheduleData = new ScheduleData([])
+
+      //ユーザー取得
+      const getUserList = () => {
+        const divElement = document.createElement("div")
+        divElement.style.display = "none"
+        divElement.innerHTML = scheduleHTML.getInnerHTML
+        const workerNames = divElement.querySelectorAll(
+          ".sc_wrapper > .sc_data > .sc_data_scroll > .timeline"
+        )
+        const workerList = []
+        workerNames.forEach(node => {
+          workerList.push(node.textContent)
+        })
+        return workerList
+      }
+      //タスク取得                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+      const getTaskList = () => {
+        const divElement = document.createElement("div");
+        divElement.style.display = "none";
+        divElement.innerHTML = scheduleHTML.getInnerHTML;
+
+        const users = divElement.querySelectorAll(
+          ".sc_wrapper > .sc_main_box > .sc_main_scroll > .sc_main > .timeline"
+        );
+
+        const userTasks = [];
+
+        users.forEach(node => {
+          const tasks = node.querySelectorAll(".sc_Bar");
+          userTasks.push(
+            Array.from(tasks, taskNode => ({
+              startAt: taskNode.querySelector(".startTime").textContent,
+              endAt: taskNode.querySelector(".endTime").textContent,
+              taskName: taskNode.querySelector(".text").textContent
+            }))
+          );
+        });
+        return userTasks;
+      };
+
+      //スケジュールデータ保存
+      function schedule_save() {
+        scheduleHTML.setInnerHTML = $("#schedule").html();
+      }
+
+      //スケジュールデータ抽出
+      const extractData = () => {
+        const users = getUserList();
+        const tasks = getTaskList();
+        const userTasks = users.map((userName, idx) => { // タスク一覧
+          return {
+            name: userName,
+            tasks: tasks[idx]
+          }
+        });
+
+        return userTasks
+      }
+
+      //スケジュールデータ復元
+      const schedule_data_recovery = () => {
+        const userTasks = extractData();
+        let finalData = [];
+        userTasks.forEach(data => {
+          let tasks = [];
+          data.tasks.forEach(task => {
+            tasks.push({
+              text: task.taskName,
+              start: task.startAt,
+              end: task.endAt,
+              class: "newAdd"
+            });
+          });
+          finalData.push({
+            title: data.name,
+            impossibleDate: ["2022/08/17"],
+            businessHours: [{
+              dow: ["0"],
+              start: "07:00",
+              end: "19:00"
+            }, {
+              dow: ["1"],
+              start: "07:00",
+              end: "19:00"
+            }],
+            schedule: tasks
+          });
+        });
+        scheduleData.setSchedule = finalData;
+        scheduleData.updateScheduleTable();
+      };
+
+      //ユーザー追加
+      const handleButtonClick = () => {
+        schedule_save()
+        let userName = $("#user-name").val()
+        if (/^[\s\u3000\u3164]*$/.test(userName)) {
+          alert("空白文字は入力できません")
+          return
+        }
+        scheduleData.addUser(userName)
+        scheduleData.updateScheduleTable()
+
+        schedule_data_recovery()
+
+        scheduleData.addUser(userName)
+        scheduleData.updateScheduleTable()
+      }
+
+      let widthTimeTypes = [360, 60, 15];
+      let selectedType = jQuery('input[name="timeType"]:checked').val();
+      let sampleRows2 = []
+
       // 時間単位種別（6時間、1時間、１５分）
-      var widthTimeTypes = [360, 60, 15];
-      var selectedType = jQuery('input[name="timeType"]:checked').val();
+      //var widthTimeTypes = [360, 60, 15];
+      //var selectedType = jQuery('input[name="timeType"]:checked').val();
       jQuery('input[name="timeType"]').change(function () {
         jQuery('#schedule').empty();
         if (jQuery('input[name="mutiple"]:checked').val() == '') {
@@ -376,20 +586,19 @@
         } else {
           scheduleInit(widthTimeTypes[selectedType], true);
         }
-
       });
 
       scheduleInit(widthTimeTypes[selectedType], true);
 
       function scheduleInit(timeType, multiple) {
         jQuery("#schedule").timeSchedule({
-          today: '2022/08/18', // LIN 追加機能 - 本日
+          today: '2023/02/22', // LIN 追加機能 - 本日
           nowTime: '00:00', // LIN 追加機能 - 現在時刻
-          startDate: '2022/08/18', // LIN 追加機能 - 開始日
-          endDate: '2022/08/18', // LIN 追加機能 - 終了日
+          startDate: '2023/02/22', // LIN 追加機能 - 開始日
+          endDate: '2023/02/22', // LIN 追加機能 - 終了日
           weekday: ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'], // LIN 追加機能 - DOW表示
           startTime: "07:00",
-          endTime: "18:00",
+          endTime: "19:00",
           widthTimeX: 45,
           widthTime: 60 * 15,
           timeLineY: 132,
@@ -434,11 +643,7 @@
           }
         });
       }
-    })
-
-  </script>
-
-
+    </script>
 </body>
 
 </html>
