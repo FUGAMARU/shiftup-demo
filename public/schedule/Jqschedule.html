@@ -216,7 +216,7 @@
         })
       });
 
-      //テンプレート保存
+
       const savedTemplates = {};
 
       function saveTemplate(date, template) {
@@ -271,6 +271,7 @@
         saveTemplate(templateName, container);
 
         // APIへの保存
+
         //fetch(`http://localhost:3000/api/dev/schedule/`, {
         fetch(`https://shiftup.works/api/schedules/`, {
             method: 'PUT',
@@ -286,6 +287,11 @@
             console.error(error);
             alert('保存に失敗しました');
           });
+        document.addEventListener('DOMContentReLoaded', async () => {
+          //const APItemplate = await fetch(`http://localhost:3000/api/dev/schedule/`)
+          const APItemplate = await fetch(`https://shiftup.works/api/schedules/`)
+          const templateDates = await APItemplate.json()
+        })
       };
 
       //テンプレート削除
@@ -309,6 +315,11 @@
             })
             .catch(err => console.error(err))
         }
+        document.addEventListener('DOMContentReLoaded', async () => {
+          //const APItemplate = await fetch(`http://localhost:3000/api/dev/schedule/`)
+          const APItemplate = await fetch(`https://shiftup.works/api/schedules/`)
+          const templateDates = await APItemplate.json()
+        })
       }
 
 
