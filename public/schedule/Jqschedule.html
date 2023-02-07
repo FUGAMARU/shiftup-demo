@@ -291,6 +291,10 @@
           //const APItemplate = await fetch(`http://localhost:3000/api/dev/schedule/`)
           const APItemplate = await fetch(`https://shiftup.works/api/schedules/`)
           const templateDates = await APItemplate.json()
+
+          const convertedAPITemplateData = convertAPItemplateToTemplateDataFormat(templateData);
+          scheduleData.setSchedule = convertedAPITemplateData;
+          scheduleData.updateScheduleTable();
         })
       };
 
@@ -317,8 +321,12 @@
         }
         document.addEventListener('DOMContentReLoaded', async () => {
           //const APItemplate = await fetch(`http://localhost:3000/api/dev/schedule/`)
-          const APItemplate = await fetch(`https://shiftup.works/api/schedules/`)
+          //const APItemplate = await fetch(`https://shiftup.works/api/schedules/`)
           const templateDates = await APItemplate.json()
+
+          const convertedAPITemplateData = convertAPItemplateToTemplateDataFormat(templateData);
+          scheduleData.setSchedule = convertedAPITemplateData;
+          scheduleData.updateScheduleTable();
         })
       }
 
