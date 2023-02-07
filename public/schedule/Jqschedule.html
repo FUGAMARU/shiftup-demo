@@ -12,7 +12,6 @@
   </script>
   <link rel="stylesheet" type="text/css" href="https://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
   <script type="text/javascript" src="jq.schedule.plus.js"></script>
-  <script type="text/javascript" src="pages\api\dev\role.ts"></script>
   <link rel="stylesheet" type="text/css" href="style.css" />
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="screen">
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
@@ -57,74 +56,6 @@
     <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.min.js" type="text/javascript" language="javascript">
     </script>
 
-    <script>
-      //Datepicker
-      $(function () {
-        //日本語化
-        $.datepicker.regional['ja'] = {
-          closeText: "閉じる",
-          prevText: "&#x3C;前",
-          nextText: "次&#x3E;",
-          currentText: "今日",
-          monthNames: ["1月", "2月", "3月", "4月", "5月", "6月",
-            "7月", "8月", "9月", "10月", "11月", "12月"
-          ],
-          monthNamesShort: ["1月", "2月", "3月", "4月", "5月", "6月",
-            "7月", "8月", "9月", "10月", "11月", "12月"
-          ],
-          dayNames: ["日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"],
-          dayNamesShort: ["日", "月", "火", "水", "木", "金", "土"],
-          dayNamesMin: ["日", "月", "火", "水", "木", "金", "土"],
-          weekHeader: "週",
-          firstDay: 0,
-          isRTL: false,
-          showMonthAfterYear: true,
-          yearSuffix: "年"
-        };
-        $.datepicker.setDefaults($.datepicker.regional['ja']);
-        $("#templateSelector").datepicker({
-          dateFormat: "yy-mm-dd",
-          beforeShowDay: function (date) {
-            let templates = localStorage.getItem("templates");
-            if (!templates) {
-              return [true, ""];
-            }
-            templates = JSON.parse(templates);
-            let templateDate = $.datepicker.formatDate("yy-mm-dd", date);
-            if (templates[templateDate]) {
-              return [true, "template-date"];
-            }
-            return [true, ""];
-          },
-          onSelect: function (dateText) {
-            let templateName = dateText;
-            let templates = localStorage.getItem("templates");
-            if (!templates) {
-              templates = {};
-              localStorage.setItem("templates", JSON.stringify(templates));
-            } else {
-              templates = JSON.parse(templates);
-            }
-            let selectedTemplate = templates[templateName];
-            if (selectedTemplate) {
-              scheduleData.setSchedule = selectedTemplate;
-              scheduleData.updateScheduleTable();
-              $("#templateSelector").parent().addClass("template-date");
-              $("#task-name").prop("disabled", false);
-              $("#user-name").prop("disabled", false);
-              $(".add_user_btn").prop("disabled", false);
-            } else {
-              scheduleData.setSchedule = [];
-              scheduleData.updateScheduleTable();
-              $("#task-name").prop("disabled", false);
-              $("#user-name").prop("disabled", false);
-              $(".add_user_btn").prop("disabled", false);
-            }
-          }
-        });
-      })
-    </script>
-
     <script type="text/javascript">
       const formatDate = (dt) => {
         const y = dt.getFullYear()
@@ -132,6 +63,8 @@
         const d = ("00" + dt.getDate()).slice(-2)
         return `${y}-${m}-${d}`
       }
+    </script>
+    <script>
       //役職がCastの場合の編集禁止処理
       //fetch("https://shiftup.works/api/users/me/roles")
       fetch("http://localhost:3000/api/dev/role")
@@ -159,120 +92,215 @@
 
     <script src="jq.schedule.plus.js"></script>
     <script type="text/javascript">
-      //URLのクエリーパラメーターからテンプレートを取得
-      const urlParams = new URLSearchParams(window.location.search);
-      const templateName = urlParams.get('templateName');
+      let selectedDate = ""
+      let sampleRows = [];
+
 
       const convert = (str) => {
         const dt = new Date(str);
-        return `${dt.getFullYear()}-${("0" + (dt.getMonth() + 1)).slice(-2)}-${("0" + dt.getDate()).slice(-2)}-${("0" + dt.getHours()).slice(-2)}:${("0" + dt.getMinutes()).slice(-2)}:${("0" + dt.getSeconds()).slice(-2)}`;
+        return `${dt.getFullYear()}-${("0" + (dt.getMonth() + 1)).slice(-2)}-${("0" + dt.getDate()).slice(-2)}`;
       }
 
-      //テンプレートが存在する場合、それを適用する
-      if (templateName && localStorage.getItem(templateName)) {
-        template_applying(templateName); // 変更点
-      }
-
-      //テンプレートの読み込み
-      const template_applying = () => {
-        const selectedTemplateName = $("#templateSelector").val()
-        const templates = JSON.parse(localStorage.getItem("templates"))
-
-        let finalData = []
-
-        scheduleData.setSchedule = templates[selectedTemplateName]
-        scheduleData.updateScheduleTable()
-      }
-
-      //テンプレート
-      $(() => {
-        if (localStorage.getItem("templates")) {
-          $.each(Object.keys(JSON.parse(localStorage.getItem("templates"))), (idx, val) => {
-            $("#templateSelector").append(`<option value=${val}>${val}</option>`)
-          })
-        }
-        //セレクターから選択したときに自動的にテンプレートを適用
-        $("#templateSelector").on("change", () => {
-          let templateName = $("#templateSelector").val()
-          if (localStorage.getItem("templates") === null) localStorage.setItem("templates", JSON
-            .stringify({}))
-          const templates = JSON.parse(localStorage.getItem("templates"))
-          console.log(templates)
-          const hoge = templates[templateName]
-
-          const newArr = hoge.map(user => {
-            let tmpUser = Object.assign({}, user)
-            const newSchedule = user["schedule"].map(task => {
-              let tmp = Object.assign({}, task)
-              tmp["start"] = tmp["start"] += "|開始"
-              tmp["end"] = tmp["end"] += "|終了"
-              return tmp
+      const convertAPItemplateToTemplateDataFormat = (apiTemplate) => {
+        const selectedDate = apiTemplate.id;
+        const templateData = apiTemplate.castSchedules.map(cast => {
+          return {
+            title: cast.castName,
+            impossibleDate: [
+              "2022/08/17"
+            ],
+            businessHours: [{
+                dow: [
+                  "0"
+                ],
+                start: "07:00",
+                end: "19:00"
+              },
+              {
+                dow: [
+                  "1"
+                ],
+                end: "19:00",
+                start: "07:00"
+              }
+            ],
+            templateName: apiTemplate.id,
+            openCampusDate: apiTemplate.openCampusDate,
+            schedule: cast.tasks.map(task => {
+              return {
+                text: task.name,
+                start: `${convertToSlash(selectedDate)} ${task.startTime}`,
+                end: `${convertToSlash(selectedDate)} ${task.endTime}`,
+                class: "newAdd"
+              };
             })
-            tmpUser["schedule"] = newSchedule
-            return tmpUser
-          })
-
-          // scheduleData.setSchedule = newArr
-          scheduleData.setSchedule = templates[templateName]
-          scheduleData.updateScheduleTable()
+          };
         });
-      })
+        return templateData;
+      }
+
+      const setFromApiDataFormat = (date) => {
+        (async () => {
+          //const APItemplate = await fetch(`https://shiftup.works/api/schedules/`)
+          const APItemplate = await fetch(
+            `http://localhost:3000/api/dev/schedule/${date}`)
+          const templateData = await APItemplate.json()
+
+          const convertedAPITemplateData = convertAPItemplateToTemplateDataFormat(templateData);
+          scheduleData.setSchedule = convertedAPITemplateData;
+          scheduleData.updateScheduleTable();
+          $("#task-name").prop("disabled", false);
+          $("#user-name").prop("disabled", false);
+          $(".add_user_btn").prop("disabled", false);
+        })()
+      }
+
+      //日付形式変換
+      const convertToSlash = (str) => {
+        return str.replace(/-/g, "/")
+      }
+
+      const toOnlyTime = (str) => str.slice(-5)
+
+      // onPageLoading
+      document.addEventListener('DOMContentLoaded', async () => {
+        //URLのクエリパラメータからテンプレートを取得
+        //const url = new URL("http://localhost:3000/schedule?date=2023-03-02");
+        //const urlParams = new URLSearchParams(url.search);
+        const urlParams = new URLSearchParams(window.location.search);
+        const specifiedDate = urlParams.get('date');
+        console.log(specifiedDate);
+        //setFromApiDataFormat(selectedDate)
+
+        //const APItemplate = await fetch("https://shiftup.works/api/schedules/スケジュールId")
+        const APItemplate = await fetch(`http://localhost:3000/api/dev/schedule/`)
+        const templateDates = await APItemplate.json()
+
+        $("#templateSelector").datepicker({
+          closeText: "閉じる",
+          prevText: "&#x3C;前",
+          nextText: "次&#x3E;",
+          currentText: "今日",
+          monthNames: ["1月", "2月", "3月", "4月", "5月", "6月",
+            "7月", "8月", "9月", "10月", "11月", "12月"
+          ],
+          monthNamesShort: ["1月", "2月", "3月", "4月", "5月", "6月",
+            "7月", "8月", "9月", "10月", "11月", "12月"
+          ],
+          dayNames: ["日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"],
+          dayNamesShort: ["日", "月", "火", "水", "木", "金", "土"],
+          dayNamesMin: ["日", "月", "火", "水", "木", "金", "土"],
+          weekHeader: "週",
+          firstDay: 0,
+          isRTL: false,
+          showMonthAfterYear: true,
+          yearSuffix: "年",
+          dateFormat: "yy-mm-dd",
+          beforeShowDay: function (date) {
+            const strDate = formatDate(date)
+
+            if (templateDates.includes(strDate)) return [true, "template-date", "Test"]
+
+            return [true, "", "Test2"]
+
+          },
+          onSelect: function (selected) {
+            selectedDate = selected
+            if (templateDates.includes(selectedDate)) {
+              setFromApiDataFormat(selectedDate)
+            } else {
+              // テンプレート新規作成
+              scheduleData.setSchedule = [];
+              scheduleData.updateScheduleTable();
+              $("#task-name").prop("disabled", false);
+              $("#user-name").prop("disabled", false);
+              $(".add_user_btn").prop("disabled", false);
+            }
+          }
+        })
+      });
 
       //テンプレート保存
       const template_save = () => {
-        if (localStorage.getItem("templates") === null) localStorage.setItem("templates", JSON.stringify({}));
-        schedule_save();
-        extractData();
-        schedule_data_recovery();
         let templateName = formatDate($("#templateSelector").datepicker("getDate"));
-        if (!templateName) {
-          templateName = prompt("テンプレート名を入力してください");
-        }
         if (!/\S/.test(templateName)) {
           alert("テンプレート名が入力されていません");
           return;
         }
-        let templates = JSON.parse(localStorage.getItem("templates"));
-        scheduleHTML.setInnerHTML = $("#schedule").html();
-        users = getUserList();
-        tasks = getTaskList();
-        userTasks = [];
-        users.forEach((userName, idx) => {
-          userTasks.push({
-            "name": userName,
-            "tasks": tasks[idx]
-          });
-        });
-        if (templates[templateName]) {
+
+        if (scheduleData[templateName]) {
           if (!confirm(`${templateName} は既に存在します。上書きしますか？`)) {
             return;
           }
         }
-        templates[templateName] = scheduleData.getSchedule;
-        localStorage.setItem("templates", JSON.stringify(templates));
-        const templateSelector = $("#templateSelector");
-        const optionExists = templateSelector.find(`option[value=${templateName}]`).length > 0;
-        if (!optionExists) {
-          templateSelector.append(`<option value=${templateName}>${templateName}</option>`);
+
+        schedule_save();
+        schedule_data_recovery();
+        const convertable = extractData()
+
+        let converted = []
+
+        convertable.forEach((userData, idx) => {
+          let base = {}
+          base["castName"] = userData.name
+          let tasks = []
+          userData.tasks.forEach(task => {
+            tasks.push({
+              startTime: toOnlyTime(task.startAt),
+              endTime: toOnlyTime(task.endAt),
+              name: task.taskName
+            })
+            base["tasks"] = tasks
+          })
+          converted.push(base)
+        })
+
+        const container = {
+          "openCampusDate": selectedDate,
+          "castSchedules": converted
         }
-        document.getElementById("templateName").value = "";
+
+        // APIへの保存
+        //fetch("https://shiftup.works/api/schedules")
+        fetch(`http://localhost:3000/api/dev/schedule/`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(container)
+          })
+          .then(response => {
+            alert(`${templateName}を保存しました`);
+          })
+          .catch(error => {
+            console.error(error);
+            alert('保存に失敗しました');
+          });
       };
 
       //テンプレート削除
       const template_delete = () => {
         let templateName = $("#templateSelector").val()
-        if (localStorage.getItem("templates") === null) localStorage.setItem("templates", JSON.stringify({}))
-        const templates = JSON.parse(localStorage.getItem("templates"))
         if (!templateName) {
           alert("削除するテンプレートが選択されていません");
           return;
         }
         if (confirm(`${templateName}を削除しますか？`)) {
-          delete templates[templateName]
-          localStorage.setItem("templates", JSON.stringify(templates))
-          $("#templateSelector option[value='" + templateName + "']").remove()
+          //fetch("https://shiftup.works/api/schedules")
+          fetch(`https://shiftup.works/api/schedules/${templateName}`, {
+              method: "DELETE",
+            })
+            .then(res => {
+              if (res.status === 204) {
+                $("#templateSelector option[value='" + templateName + "']").remove()
+              } else {
+                alert("テンプレートの削除に失敗しました")
+              }
+            })
+            .catch(err => console.error(err))
         }
       }
+
 
       const ScheduleHTML = class {
         constructor(innerHTML) {
@@ -325,10 +353,10 @@
           oldSchedule.innerHTML = ""
 
           jQuery("#schedule").timeSchedule({
-            today: '2023/02/22', // LIN 追加機能 - 本日
+            today: convertToSlash(selectedDate), // LIN 追加機能 - 本日
             nowTime: '00:00', // LIN 追加機能 - 現在時刻
-            startDate: '2023/02/22', // LIN 追加機能 - 開始日
-            endDate: '2023/02/22', // LIN 追加機能 - 終了日
+            startDate: convertToSlash(selectedDate), // LIN 追加機能 - 開始日
+            endDate: convertToSlash(selectedDate), // LIN 追加機能 - 終了日
             weekday: ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'], // LIN 追加機能 - DOW表示
             startTime: "07:00",
             endTime: "19:00",
@@ -441,11 +469,10 @@
             tasks: tasks[idx]
           }
         });
-        console.log(userTasks);
-        localStorage.setItem("userTasks", JSON.stringify(userTasks));
+
+        return userTasks
       }
 
-      let sampleRows = []
       //スケジュールデータ復元
       const schedule_data_recovery = () => {
         const userTasks = JSON.parse(localStorage.getItem("userTasks"));
@@ -482,7 +509,6 @@
       //ユーザー追加
       const handleButtonClick = () => {
         schedule_save()
-        extractData()
         let userName = $("#user-name").val()
         if (/^[\s\u3000\u3164]*$/.test(userName)) {
           alert("空白文字は入力できません")
@@ -497,93 +523,87 @@
         scheduleData.updateScheduleTable()
       }
 
-      const TaskData = class {
-        constructor(TaskData) {
-          this.TaskData = TaskData;
+      let widthTimeTypes = [360, 60, 15];
+      let selectedType = jQuery('input[name="timeType"]:checked').val();
+      let sampleRows2 = []
+
+      // 時間単位種別（6時間、1時間、１５分）
+      //var widthTimeTypes = [360, 60, 15];
+      //var selectedType = jQuery('input[name="timeType"]:checked').val();
+      jQuery('input[name="timeType"]').change(function () {
+        jQuery('#schedule').empty();
+        if (jQuery('input[name="mutiple"]:checked').val() == '') {
+          scheduleInit(widthTimeTypes[jQuery(this).val()], false);
+        } else {
+          scheduleInit(widthTimeTypes[jQuery(this).val()], true);
         }
+      });
+
+      jQuery('input[name="mutiple"]').change(function () {
+        jQuery('#schedule').empty();
+        selectedType = jQuery('input[name="timeType"]:checked').val();
+        if (jQuery(this).val() == '0') {
+          scheduleInit(widthTimeTypes[selectedType], false);
+        } else {
+          scheduleInit(widthTimeTypes[selectedType], true);
+        }
+      });
+
+      scheduleInit(widthTimeTypes[selectedType], true);
+
+      function scheduleInit(timeType, multiple) {
+        jQuery("#schedule").timeSchedule({
+          today: '2023/02/22', // LIN 追加機能 - 本日
+          nowTime: '00:00', // LIN 追加機能 - 現在時刻
+          startDate: '2023/02/22', // LIN 追加機能 - 開始日
+          endDate: '2023/02/22', // LIN 追加機能 - 終了日
+          weekday: ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'], // LIN 追加機能 - DOW表示
+          startTime: "07:00",
+          endTime: "19:00",
+          widthTimeX: 45,
+          widthTime: 60 * 15,
+          timeLineY: 132,
+          verticalScrollbar: 10,
+          timeLineBorder: 1,
+          dataWidth: 200,
+          nextNo: 1, // LIN 追加機能 - 複数選択初期番号
+          debug: "",
+          multiple: true, // LIN 追加機能-複数選択機能有無
+          rows: sampleRows2,
+          init_data: function (node, data) {
+            $("#logs").append($("<div>").text("init event:" + JSON.stringify(data)));
+          },
+          click: function (node, data) {
+            $("#logs").append($("<div>").text("click event:" + JSON.stringify(data)));
+          },
+          append: function (node, data) {
+            $("#logs").append($("<div>").text("append event:" + JSON.stringify(data)));
+          },
+          timeClick: function (element, data) {
+            // LIN 追加機能-シングルクリックイベント
+            $("#logs").append($("<div>").text("Time click event:" + JSON.stringify(data)));
+          },
+          dateClick: function (date) {
+            // LIN 追加機能-日付クリックイベント
+            $("#logs").append($("<div>").text("Date click event:" + JSON.stringify(date)));
+          },
+          timeDrag: function (data) {
+            // LIN 追加機能-ドラッグイベント
+            $("#logs").append($("<div>").text("Drag event:" + JSON.stringify(data)));
+          },
+          titleClick: function (data) {
+            // LIN 追加機能-行タイトルクリックイベント
+            $("#logs").append($("<div>").text("Title click event:" + JSON.stringify(data)));
+          },
+          change: function (node, data) {
+            $("#logs").append($("<div>").text("Change event:" + JSON.stringify(data)));
+          },
+          delete: function (data) {
+            // LIN 追加機能-削除イベント
+            $("#logs").append($("<div>").text("Delete event:" + JSON.stringify(data)));
+          }
+        });
       }
-
-      jQuery(document).ready(function () {
-        sampleRows = [{}];
-        sampleRows2 = []
-        // 時間単位種別（6時間、1時間、１５分）
-        var widthTimeTypes = [360, 60, 15];
-        var selectedType = jQuery('input[name="timeType"]:checked').val();
-        jQuery('input[name="timeType"]').change(function () {
-          jQuery('#schedule').empty();
-          if (jQuery('input[name="mutiple"]:checked').val() == '') {
-            scheduleInit(widthTimeTypes[jQuery(this).val()], false);
-          } else {
-            scheduleInit(widthTimeTypes[jQuery(this).val()], true);
-          }
-        });
-
-        jQuery('input[name="mutiple"]').change(function () {
-          jQuery('#schedule').empty();
-          selectedType = jQuery('input[name="timeType"]:checked').val();
-          if (jQuery(this).val() == '0') {
-            scheduleInit(widthTimeTypes[selectedType], false);
-          } else {
-            scheduleInit(widthTimeTypes[selectedType], true);
-          }
-        });
-
-        scheduleInit(widthTimeTypes[selectedType], true);
-
-        function scheduleInit(timeType, multiple) {
-          jQuery("#schedule").timeSchedule({
-            today: '2023/02/22', // LIN 追加機能 - 本日
-            nowTime: '00:00', // LIN 追加機能 - 現在時刻
-            startDate: '2023/02/22', // LIN 追加機能 - 開始日
-            endDate: '2023/02/22', // LIN 追加機能 - 終了日
-            weekday: ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'], // LIN 追加機能 - DOW表示
-            startTime: "07:00",
-            endTime: "19:00",
-            widthTimeX: 45,
-            widthTime: 60 * 15,
-            timeLineY: 132,
-            verticalScrollbar: 10,
-            timeLineBorder: 1,
-            dataWidth: 200,
-            nextNo: 1, // LIN 追加機能 - 複数選択初期番号
-            debug: "",
-            multiple: true, // LIN 追加機能-複数選択機能有無
-            rows: sampleRows2,
-            init_data: function (node, data) {
-              $("#logs").append($("<div>").text("init event:" + JSON.stringify(data)));
-            },
-            click: function (node, data) {
-              $("#logs").append($("<div>").text("click event:" + JSON.stringify(data)));
-            },
-            append: function (node, data) {
-              $("#logs").append($("<div>").text("append event:" + JSON.stringify(data)));
-            },
-            timeClick: function (element, data) {
-              // LIN 追加機能-シングルクリックイベント
-              $("#logs").append($("<div>").text("Time click event:" + JSON.stringify(data)));
-            },
-            dateClick: function (date) {
-              // LIN 追加機能-日付クリックイベント
-              $("#logs").append($("<div>").text("Date click event:" + JSON.stringify(date)));
-            },
-            timeDrag: function (data) {
-              // LIN 追加機能-ドラッグイベント
-              $("#logs").append($("<div>").text("Drag event:" + JSON.stringify(data)));
-            },
-            titleClick: function (data) {
-              // LIN 追加機能-行タイトルクリックイベント
-              $("#logs").append($("<div>").text("Title click event:" + JSON.stringify(data)));
-            },
-            change: function (node, data) {
-              $("#logs").append($("<div>").text("Change event:" + JSON.stringify(data)));
-            },
-            delete: function (data) {
-              // LIN 追加機能-削除イベント
-              $("#logs").append($("<div>").text("Delete event:" + JSON.stringify(data)));
-            }
-          });
-        }
-      })
     </script>
 </body>
 
