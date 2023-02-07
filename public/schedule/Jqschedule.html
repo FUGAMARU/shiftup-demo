@@ -66,8 +66,8 @@
     </script>
     <script>
       //役職がCastの場合の編集禁止処理
-      //fetch("https://shiftup.works/api/users/me/roles")
-      fetch("http://localhost:3000/api/dev/role")
+      //fetch("http://localhost:3000/api/dev/role")
+      fetch("https://shiftup.works/api/users/me/roles")
         .then(response => response.json())
         .then(data => {
           let roles = data;
@@ -139,9 +139,9 @@
 
       const setFromApiDataFormat = (date) => {
         (async () => {
-          //const APItemplate = await fetch(`https://shiftup.works/api/schedules/`)
-          const APItemplate = await fetch(
-            `http://localhost:3000/api/dev/schedule/${date}`)
+          /*const APItemplate = await fetch(
+            `http://localhost:3000/api/dev/schedule/${date}`)*/
+          const APItemplate = await fetch(`https://shiftup.works/api/schedules/${date}`)
           const templateData = await APItemplate.json()
 
           const convertedAPITemplateData = convertAPItemplateToTemplateDataFormat(templateData);
@@ -170,8 +170,8 @@
         //console.log(specifiedDate);
         //setFromApiDataFormat(selectedDate)
 
-        //const APItemplate = await fetch("https://shiftup.works/api/schedules/スケジュールId")
-        const APItemplate = await fetch(`http://localhost:3000/api/dev/schedule/`)
+        //const APItemplate = await fetch(`http://localhost:3000/api/dev/schedule/`)
+        const APItemplate = await fetch(`https://shiftup.works/api/schedules/`)
         const templateDates = await APItemplate.json()
 
         $("#templateSelector").datepicker({
@@ -259,8 +259,8 @@
         }
 
         // APIへの保存
-        //fetch("https://shiftup.works/api/schedules")
-        fetch(`http://localhost:3000/api/dev/schedule/`, {
+        //fetch(`http://localhost:3000/api/dev/schedule/`, {
+        fetch(`https://shiftup.works/api/schedules/`, {
             method: 'PUT',
             headers: {
               'Content-Type': 'application/json'
@@ -284,7 +284,7 @@
           return;
         }
         if (confirm(`${templateName}を削除しますか？`)) {
-          //fetch("https://shiftup.works/api/schedules")
+          //fetch(`http://localhost:3000/api/schedules/${templateName}`, {
           fetch(`https://shiftup.works/api/schedules/${templateName}`, {
               method: "DELETE",
             })
