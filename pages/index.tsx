@@ -1,23 +1,58 @@
+// React Hooks
+import { useRef, useCallback, useEffect } from "react"
+
 // Next.js
 import type { NextPage } from "next"
 import Head from "next/head"
 
 // Chakra UI Components
-import { Box, Button, Flex, Text } from "@chakra-ui/react"
+import { Box, Button, Flex, Input, Text } from "@chakra-ui/react"
 
 // Custom Components
-import Header from "../components/header/Header"
-import MyPage from "../components/toppage-view/MyPage"
-import Login from "../components/toppage-view/Login"
+import Header from "components/header/Header"
+import MyPage from "components/view/MyPage"
+import Login from "components/view/Login"
 
 // Global State Management
-import { useRecoilState, useSetRecoilState } from "recoil"
-import { sessionState } from "../atoms/SessionStateAtom"
-import { isManager } from "../atoms/RoleAtom"
+import { useRecoilState } from "recoil"
+import { sessionState } from "atoms/SessionStateAtom"
+import { me } from "atoms/MeAtom"
+
+// Types
+import { Department } from "types/Department"
+import { Position } from "types/Position"
 
 const Home: NextPage = () => {
   const [isInSession, setInSession] = useRecoilState(sessionState)
-  const setIamManager = useSetRecoilState(isManager)
+  const [myInfo, setMyInfo] = useRecoilState(me)
+
+  const nameRef = useRef<HTMLInputElement>(null)
+  const deptRef = useRef<HTMLInputElement>(null)
+  const positionRef = useRef<HTMLInputElement>(null)
+
+  const handleSetButtonClick = useCallback(() => {
+    const c1 = nameRef.current
+    const c2 = deptRef.current
+    const c3 = positionRef.current
+    if (!!!(c1 || c2 || c3)) return
+
+    setMyInfo({
+      name: c1!.value,
+      department: c2!.value as Department,
+      position: c3!.value as Position
+    })
+  }, [setMyInfo])
+
+  useEffect(() => {
+    const c1 = nameRef.current
+    const c2 = deptRef.current
+    const c3 = positionRef.current
+    if (!!!(c1 || c2 || c3) || !!!myInfo) return
+
+    c1!.value = myInfo.name
+    c2!.value = myInfo.department
+    c3!.value = myInfo.position
+  }, [myInfo])
 
   return (
     <Box>
@@ -28,19 +63,27 @@ const Home: NextPage = () => {
 
       {isInSession === null ? null : isInSession === true ? <MyPage /> : <Login />}
 
-      <Box w="7rem" mt={5} py={2} position="fixed" right={0} bottom={10} bg="#dbebff" borderTopLeftRadius={15} borderBottomLeftRadius={15}>
-        <Text className="ksb" textAlign="center">Recoil管理</Text>
-        <Text my={1} textAlign="center" fontSize="0.7rem">セッション</Text>
-        <Flex justifyContent="space-around" alignItems="center">
-          <Button size="xs" colorScheme="whatsapp" onClick={() => setInSession(true)}>登録</Button>
-          <Button size="xs" colorScheme="red" onClick={() => setInSession(false)}>解除</Button>
-        </Flex>
-        <Text my={1} textAlign="center" fontSize="0.7rem">運営チーム</Text>
-        <Flex justifyContent="space-around" alignItems="center">
-          <Button size="xs" colorScheme="whatsapp" onClick={() => setIamManager(true)}>登録</Button>
-          <Button size="xs" colorScheme="red" onClick={() => setIamManager(false)}>解除</Button>
-        </Flex>
-      </Box>
+      {process.env.NODE_ENV !== "production" ?
+        <Box w="7rem" py={3} position="fixed" right={0} bottom={10} bg="#dbebff" borderTopLeftRadius={15} borderBottomLeftRadius={15}>
+          <Text className="ksb" textAlign="center">Recoil管理</Text>
+          <Text my={1} textAlign="center" fontSize="0.7rem">セッション</Text>
+          <Flex justifyContent="space-around" alignItems="center">
+            <Button size="xs" colorScheme="whatsapp" onClick={() => setInSession(true)}>登録</Button>
+            <Button size="xs" colorScheme="red" onClick={() => setInSession(false)}>解除</Button>
+          </Flex>
+          <Flex p={2} direction="column" justifyContent="space-around" alignItems="center">
+            <Text py={1} textAlign="center" fontSize="0.7rem">名前</Text>
+            <Input size="xs" bg="white" borderRadius={7} textAlign="center" ref={nameRef}></Input>
+            <Text py={1} textAlign="center" fontSize="0.7rem">学科記号</Text>
+            <Input size="xs" bg="white" borderRadius={7} textAlign="center" ref={deptRef}></Input>
+            <Text py={1} textAlign="center" fontSize="0.7rem">役職</Text>
+            <Input size="xs" bg="white" borderRadius={7} textAlign="center" ref={positionRef}></Input>
+          </Flex>
+          <Flex px={2} justify="center">
+            <Button size="xs" colorScheme="linkedin" onClick={handleSetButtonClick}>SET</Button>
+          </Flex>
+        </Box>
+        : null}
     </Box>
   )
 }

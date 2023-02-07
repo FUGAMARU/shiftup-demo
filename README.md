@@ -54,7 +54,7 @@
   - スケジュールテンプレート作成
   - [希望日程アンケート作成](https://shiftup.works/management/create-survey)
   - [アンケート集計・出勤可能者リストアップ・確定処理要求送信](https://shiftup.works/management/tally-survey)
-  - 出勤確定者アサイン
+  - [出勤確定リスト確認](https://shiftup.works/management/view-confirmed-attendances)
 - 各種エラーページ
   - [認証エラー](https://shiftup.works/error/authentication-error)
   - [認可エラー](https://shiftup.works/error/invalid-user)

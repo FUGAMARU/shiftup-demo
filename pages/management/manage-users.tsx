@@ -2,27 +2,82 @@
 import { NextPage } from "next"
 import Head from "next/head"
 
+// React Hooks
+import { useState, useCallback, useMemo } from "react"
+
 // Custom Hooks
-import { useResponsive } from "../../hooks/useResponsive"
+import { useResponsive } from "hooks/useResponsive"
+import { useStyledToast } from "hooks/useStyledToast"
+import { useApiConnection } from "hooks/useApiConnection"
 
 // Chakra UI Components
-import { Box, Flex, Text, VStack, StackDivider, Button, Tooltip, Input } from "@chakra-ui/react"
+import { Box, Flex, Text, VStack, StackDivider, Button, Tooltip, Input, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
-import Body from "../../components/Body"
+import Body from "components/view/Body"
+import ButtonModal from "components/modal/ButtonModal"
 
 //Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faXmark } from "@fortawesome/free-solid-svg-icons"
 
 // Functions
-import { resp } from "../../functions"
+import { resp } from "ts/functions"
+
+// Types
+import { Position } from "types/Position"
+
+// Classes
+import Symbol from "classes/Symbol"
 
 // Filter
-import { withSession } from "../../hoc/withSession"
+import { withSession } from "hoc/withSession"
 
 const ManageUsers: NextPage = () => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
+  const { showToast } = useStyledToast()
+  const [usernameInput, setUsernameInput] = useState("")
+  const [clickedUserId, setClickedUserId] = useState("")
+  const { isOpen: isModalOpened, onOpen: openModal, onClose: closeModal } = useDisclosure()
+  const { getAllUsers, switchUserPosition, deleteUser, getSuperUser, getId } = useApiConnection()
+
+  const { data: users, fetchErrorMessage: errMsg1, mutate } = getAllUsers()
+  const { data: superUserId, fetchErrorMessage: errMsg2 } = getSuperUser()
+  const { data: myId, fetchErrorMessage: errMsg3 } = getId()
+  if (errMsg1) showToast("エラー", errMsg1, "error")
+  if (errMsg2) showToast("エラー", errMsg2, "error")
+  if (errMsg3) showToast("エラー", errMsg3, "error")
+
+  const filteredUsers = useMemo(() => usernameInput ? users?.filter(user => user.name?.match(new RegExp(usernameInput))) : users, [users, usernameInput])
+
+  const statusMessage = useMemo(() => {
+    if (!!!users) return ""
+    if (!!!usernameInput) return `${users.length}名のユーザーが存在します`
+
+    const matches = filteredUsers?.length
+    if (!!!matches) return `'${usernameInput}'にマッチするユーザーは存在しません`
+    return `'${usernameInput}'にマッチするユーザーが${matches}名存在します`
+  }, [users, usernameInput, filteredUsers])
+
+  const handleSwitchUserPosition = useCallback(async (userId: string, to: Position) => {
+    try {
+      await switchUserPosition(userId, to)
+      mutate()
+      showToast("成功", `ユーザーの役職を${to === "Manager" ? "運営チーム" : "キャスト"}に切り替えました`, "success")
+    } catch (e) {
+      if (e instanceof Error) showToast("エラー", e.message, "error")
+    }
+  }, [mutate, showToast, switchUserPosition])
+
+  const handleDeleteUser = useCallback(async (userId: string) => {
+    try {
+      await deleteUser(userId)
+      mutate()
+      showToast("成功", "ユーザーを削除しました", "success")
+    } catch (e) {
+      if (e instanceof Error) showToast("エラー", e.message, "error")
+    }
+  }, [mutate, showToast, deleteUser])
 
   return (
     <Box>
@@ -30,67 +85,61 @@ const ManageUsers: NextPage = () => {
         <title>ユーザー管理 | ShiftUP!</title>
       </Head>
 
-      <Body title="ユーザー管理" statusMessage="3名のユーザーが登録されています">
+      <Body title="ユーザー管理" statusMessage={statusMessage}>
         <Box w={resp("100%", "80%", "80%")} mx="auto">
-          <Box textAlign="center" mb={8}>
-            <Input w={resp("80%", "60%", "60%")} variant="flushed" placeholder="名前を入力してユーザーを検索…" textAlign="center" focusBorderColor="#48c3eb" />
-          </Box>
+          {users?.length ?
+            <Box textAlign="center" mb={8}>
+              <Input w={resp("80%", "60%", "60%")} variant="flushed" placeholder="名前を入力してユーザーを検索…" textAlign="center" focusBorderColor="#48c3eb" onChange={e => setUsernameInput(e.target.value)} />
+            </Box>
+            : null}
 
           <VStack
             divider={<StackDivider borderColor="gray.200" />}
             spacing={3}
             align="stretch"
           >
-            <Flex justifyContent="space-between" alignItems="center">
-              <Flex alignItems="center" px={3}>
-                <Box className="kb" mr={2} fontSize={resp("1rem", "1.2rem", "1.2rem")}>宮森あおい</Box>
-                <Text className="kr" ml={2} mr={1} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">◯◯学部 3年</Text>
-                {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" ml={1} fontSize="0.75rem" color="#5f5f5f">C0B19000</Text> : null}
-              </Flex>
-              <Flex alignItems="center">
-                <Tooltip label="運営メンバーに役職を切り替える">
-                  <Button mr={resp(3, 5, 5)} size="xs" colorScheme="cyan" variant="outline">キャスト</Button>
-                </Tooltip>
-                <Tooltip label="ユーザーを削除する">
-                  <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color="#00a4c4" cursor="pointer" />
-                </Tooltip>
-              </Flex>
-            </Flex>
-
-            <Flex justifyContent="space-between" alignItems="center">
-              <Flex alignItems="center" px={3}>
-                <Box className="kb" mr={2} fontSize={resp("1rem", "1.2rem", "1.2rem")}>木春由乃</Box>
-                <Text className="kr" ml={2} mr={1} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">◯◯学部 3年</Text>
-                {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" ml={1} fontSize="0.75rem" color="#5f5f5f">C0B19999</Text> : null}
-              </Flex>
-              <Flex alignItems="center">
-                <Tooltip label="キャストに役職を切り替える">
-                  <Button mr={resp(3, 5, 5)} size="xs" colorScheme="orange" variant="outline">運営メンバー</Button>
-                </Tooltip>
-                <Tooltip label="ユーザーを削除する">
-                  <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color="#c15520" cursor="pointer" />
-                </Tooltip>
-              </Flex>
-            </Flex>
-
-            <Flex justifyContent="space-between" alignItems="center">
-              <Flex alignItems="center" px={3}>
-                <Box className="kb" mr={2} fontSize={resp("1rem", "1.2rem", "1.2rem")}>松前緒花</Box>
-                <Text className="kr" ml={2} mr={1} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">◯◯学部 1年</Text>
-                {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" ml={1} fontSize="0.75rem" color="#5f5f5f">C0B21000</Text> : null}
-              </Flex>
-              <Flex alignItems="center">
-                <Tooltip label="運営メンバーに役職を切り替える">
-                  <Button mr={resp(3, 5, 5)} size="xs" colorScheme="cyan" variant="outline">キャスト</Button>
-                </Tooltip>
-                <Tooltip label="ユーザーを削除する">
-                  <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color="#00a4c4" cursor="pointer" />
-                </Tooltip>
-              </Flex>
-            </Flex>
+            {filteredUsers?.map(user => {
+              return (
+                <Flex key={user.id} justifyContent="space-between" alignItems="center">
+                  <Flex alignItems="center" px={3}>
+                    {user.name ?
+                      <Text className="kb" mr={2} fontSize={resp("1rem", "1.2rem", "1.2rem")}>{user.name}</Text> :
+                      <Tooltip label="このユーザーは未ログインのため名前を取得できませんでした">
+                        <Text className="kb" mr={2} fontSize={resp("1rem", "1.2rem", "1.2rem")} cursor="default">{"認可済みユーザー"}</Text>
+                      </Tooltip>
+                    }
+                    <Text className="kr" ml={2} mr={1} fontSize={resp("0.65rem", "0.70rem", "0.75rem")} color="#5f5f5f">{Symbol.toStringSymbol(user.department)}</Text>
+                    {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" ml={1} fontSize="0.75rem" color="#5f5f5f">{user.studentNumber}</Text> : null}
+                  </Flex>
+                  {user.userId === myId || user.studentNumber === superUserId ?
+                    <Flex alignItems="center">
+                      <Tooltip label="このユーザーの役職を切り替えることはできません">
+                        <Button mr={resp(3, 5, 5)} size="xs" color="#8b8b8b" borderColor="#8b8b8b" variant="outline" cursor="default">運営チーム</Button>
+                      </Tooltip>
+                      <Tooltip label="このユーザーを削除することはできません">
+                        <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color="#8b8b8b" />
+                      </Tooltip>
+                    </Flex>
+                    :
+                    <Flex alignItems="center">
+                      <Tooltip label={user.position === "Manager" ? "キャストに役職を切り替える" : "運営チームに役職を切り替える"}>
+                        <Button mr={resp(3, 5, 5)} size="xs" colorScheme={user.position === "Manager" ? "orange" : "cyan"} variant="outline" onClick={() => handleSwitchUserPosition(user.id, user.position === "Manager" ? "Cast" : "Manager")}>{user.position === "Manager" ? "運営チーム" : "キャスト"}</Button>
+                      </Tooltip>
+                      <Tooltip label="ユーザーを削除する">
+                        <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color={user.position === "Manager" ? "#c15520" : "#00a4c4"} cursor="pointer" onClick={() => { openModal(); setClickedUserId(user.id) }} />
+                      </Tooltip>
+                    </Flex>}
+                </Flex>
+              )
+            })}
           </VStack>
         </Box>
       </Body>
+
+      <ButtonModal isOpen={isModalOpened} onClose={closeModal} title="確認" text="本当にユーザーを削除してもよろしいですか？">
+        <Button mr={1} colorScheme="red" onClick={() => { handleDeleteUser(clickedUserId); closeModal() }}>削除する</Button>
+        <Button ml={1} colorScheme="gray" variant="outline" onClick={closeModal}>削除しない</Button>
+      </ButtonModal>
     </Box>
   )
 }

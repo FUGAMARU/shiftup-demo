@@ -2,7 +2,7 @@
 import { Box } from "@chakra-ui/react"
 
 // CSS Modules
-import styles from "../../styles/button/CancelButton.module.css"
+import styles from "styles/button/CancelButton.module.css"
 
 const CancelButton = (props: { text: string }) => {
   return <Box className={styles.cancelButton}>{props.text}</Box>

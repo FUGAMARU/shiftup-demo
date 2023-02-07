@@ -1,41 +1,50 @@
 // React
-import { memo } from "react"
+import { memo, useCallback } from "react"
 
 // Next.js Components
 import Image from "next/image"
 import Link from "next/link"
+import Router from "next/router"
 
 //Custom Hooks
-import { useResponsive } from "../../hooks/useResponsive"
-import { useStatusCheck } from "../../hooks/useStatusCheck"
+import { useResponsive } from "hooks/useResponsive"
+import { useStatusCheck } from "hooks/useStatusCheck"
 
 // Chakra UI Components
 import { Flex, Text, Box, Drawer, SimpleGrid, DrawerBody, DrawerFooter, DrawerHeader, DrawerOverlay, DrawerContent, DrawerCloseButton, useDisclosure, Popover, PopoverTrigger, PopoverContent, PopoverBody, PopoverArrow } from "@chakra-ui/react"
 
 // Custom Components
-import MenuItem from "./MenuItem"
+import ProfileEditModal from "components/modal/ProfileEditModal"
+import SpongeSlimeButton from "components/button/SpongeSlimeButton"
 
 // Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faChevronCircleRight, faCalendarPlus, faListCheck, faCalendarCheck, faThumbsUp, faUserPlus, faArrowRightFromBracket, faScrewdriverWrench, faUsersGear, faSquarePollHorizontal, faClock } from "@fortawesome/free-solid-svg-icons"
+import { faCheckCircle } from "@fortawesome/free-regular-svg-icons"
 
 // Global State Management
 import { useRecoilValue } from "recoil"
-import { sessionState } from "../../atoms/SessionStateAtom"
-import { isManager } from "../../atoms/RoleAtom"
+import { sessionState } from "atoms/SessionStateAtom"
+import { me } from "atoms/MeAtom"
 
 // Functions
-import { resp } from "../../functions"
+import { resp } from "ts/functions"
 
 const Header = () => {
   useStatusCheck() // ページ遷移の度に呼ばれてかつRecoilが使えるコンポーネント内でこのメソッドを呼ぶ
 
   const isInSession = useRecoilValue(sessionState)
-  const isIamManager = useRecoilValue(isManager)
+  const myInfo = useRecoilValue(me)
 
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
   const { isOpen: isMenuOpened, onOpen: openMenu, onClose: closeMenu } = useDisclosure()
   const { isOpen: isUserMenuOpened, onOpen: openUserMenu, onClose: closeUserMenu } = useDisclosure()
+  const { isOpen: isProfileEditModalOpened, onOpen: openProfileEditModal, onClose: closeProfileEditModal } = useDisclosure()
+
+  const jump = useCallback(async (path: string) => {
+    closeMenu()
+    await Router.push(path)
+  }, [closeMenu])
 
   return (
     <Box>
@@ -48,34 +57,32 @@ const Header = () => {
             {/* メニューコンテンツ */}
           </DrawerHeader>
           <DrawerBody>
-            <Link href="/">
-              <a>
-                <Box className="kb" mt={5} borderRadius={15} border="solid 2px #4a4848" textAlign="center" cursor="pointer" onClick={closeMenu}>トップページに戻る</Box>
-              </a>
-            </Link>
-            {isIamManager ?
+            <SpongeSlimeButton text="トップページに戻る" fontSize={14} func={() => jump("/")} />
+
+            {myInfo.position === "Manager" ?
               <Box pt={5} pb={5}>
                 <Box className="kb" borderBottom="solid 2px #615f5f">管理者メニュー</Box>
                 <SimpleGrid columns={3} spacing={3} pt={3} justifyItems="center">
-                  <MenuItem href="/management/manage-surveys" icon={faSquarePollHorizontal} title={"希望日程\nアンケート管理"} onClose={closeMenu} />
-                  <MenuItem href="/management/create-survey" icon={faCalendarPlus} title={"希望日程\nアンケート作成"} onClose={closeMenu} />
-                  <MenuItem href="/management/tally-survey" icon={faListCheck} title={"希望日程\nアンケート集計"} onClose={closeMenu} />
-                  <MenuItem href="/management/manage-users" icon={faUsersGear} title={"ユーザー管理"} onClose={closeMenu} />
-                  <MenuItem href="/management/add-approved-user" icon={faUserPlus} title={"認可ユーザー\n追加"} onClose={closeMenu} />
+                  <SpongeSlimeButton h="5.1rem" w="5.1rem" text={"希望日程\nアンケート管理"} fontSize={10} icon={faSquarePollHorizontal} iconSize={30} func={() => jump("/management/manage-surveys")} />
+                  <SpongeSlimeButton h="5.1rem" w="5.1rem" text={"希望日程\nアンケート作成"} fontSize={10} icon={faCalendarPlus} iconSize={30} func={() => jump("/management/create-survey")} />
+                  <SpongeSlimeButton h="5.1rem" w="5.1rem" text={"希望日程\nアンケート集計"} fontSize={10} icon={faListCheck} iconSize={30} func={() => jump("/management/tally-survey")} />
+                  <SpongeSlimeButton h="5.1rem" w="5.1rem" text={"出勤確定リスト\n確認"} fontSize={10} icon={faCheckCircle} iconSize={30} func={() => jump("/management/view-confirmed-attendances")} />
+                  <SpongeSlimeButton h="5.1rem" w="5.1rem" text={"ユーザー管理"} fontSize={10} icon={faUsersGear} iconSize={30} func={() => jump("/management/manage-users")} />
+                  <SpongeSlimeButton h="5.1rem" w="5.1rem" text={"認可ユーザー\n追加"} fontSize={10} icon={faUserPlus} iconSize={30} func={() => jump("/management/add-approved-user")} />
                 </SimpleGrid>
               </Box>
               : null}
 
             <Box className="kb" pt={5} borderBottom="solid 2px #615f5f">キャストメニュー</Box>
             <SimpleGrid columns={3} spacing={3} pt={3} justifyItems="center">
-              <MenuItem href="/answer-survey" icon={faCalendarCheck} title={"希望日程\nアンケート回答"} onClose={closeMenu} />
-              <MenuItem href="/confirm-attendance" icon={faThumbsUp} title={"出勤確定処理"} onClose={closeMenu} />
-              <MenuItem href="/manage-schedule" icon={faClock} title={"スケジュール\n管理"} onClose={closeMenu} />
+              <SpongeSlimeButton h="5.1rem" w="5.1rem" text={"希望日程\nアンケート回答"} fontSize={10} icon={faCalendarCheck} iconSize={30} func={() => jump("/answer-survey")} />
+              <SpongeSlimeButton h="5.1rem" w="5.1rem" text={"出勤確定処理"} fontSize={10} icon={faThumbsUp} iconSize={30} func={() => jump("/confirm-attendance")} />
+              <SpongeSlimeButton h="5.1rem" w="5.1rem" text={"スケジュール\n管理"} fontSize={10} icon={faClock} iconSize={30} func={() => jump("/management/manage-schedule")} />
             </SimpleGrid>
 
           </DrawerBody>
           <DrawerFooter>
-            <Text fontSize={12}>© 2022 TrinityTrick team</Text>
+            <Text fontSize={12}>© 2022-2023 TrinityTrick team</Text>
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
@@ -114,7 +121,7 @@ const Header = () => {
             >
               <PopoverTrigger>
                 <Flex className="flex-center" w={resp(90, 150, 150)} h={50} textAlign="center" cursor="pointer" borderRadius={15} _hover={{ background: "rgba(255, 255, 255, 0.2)" }} transition=".2s cubic-bezier(0.250, 0.250, 0.750, 0.750)">
-                  <Text className="ksb" display="inline" fontSize={resp(13, 15, 17)} color="white">柏崎星奈</Text>
+                  <Text className="ksb" display="inline" fontSize={resp(13, 15, 17)} color="white">{myInfo.name}</Text>
                   {responsiveType === "PC" || responsiveType === "Tablet" ? <Text className="kr" display="inline" fontSize={resp(10, 10, 12)} ml={1} color="white">さん</Text> : null}
                 </Flex>
               </PopoverTrigger>
@@ -122,17 +129,8 @@ const Header = () => {
                 <PopoverArrow bg="rgba(98, 168, 228, 0.2)" backdropFilter="blur(5px)" />
                 <PopoverBody borderRadius={20} boxShadow="xl">
                   <Flex alignItems="center" justifyContent="space-around">
-                    <Box className="ksb" w="8rem" p={2} fontSize="0.8rem" textAlign="center" cursor="pointer" borderRadius={15} color="white" bgGradient="linear(to-br, #a39af9, #469fff)" _hover={{ transform: "scale(1.05)" }} transition="all 0.3s 0s ease">
-                      <FontAwesomeIcon icon={faScrewdriverWrench} fontSize="1.3rem" />
-                      <Text>ユーザー情報編集</Text>
-                    </Box>
-
-                    <a href={process.env.NEXT_PUBLIC_SIGNOUT_URL}>
-                      <Box className="ksb" w="8rem" p={2} fontSize="0.8rem" textAlign="center" cursor="pointer" borderRadius={15} color="white" bgGradient="linear(to-br, #a39af9, #469fff)" _hover={{ transform: "scale(1.05)" }} transition="all 0.3s 0s ease">
-                        <FontAwesomeIcon icon={faArrowRightFromBracket} fontSize="1.3rem" />
-                        <Text>サインアウト</Text>
-                      </Box>
-                    </a>
+                    <SpongeSlimeButton w="8.5rem" h="3.8rem" text={"ユーザー情報編集"} fontSize={12} icon={faScrewdriverWrench} iconSize={22} func={openProfileEditModal} />
+                    <SpongeSlimeButton w="8.5rem" h="3.8rem" text={"サインアウト"} fontSize={12} icon={faArrowRightFromBracket} iconSize={22} func={() => Router.push(`${process.env.NEXT_PUBLIC_API_BASE_URL}/logout`)} />
                   </Flex>
                 </PopoverBody>
               </PopoverContent>
@@ -143,6 +141,8 @@ const Header = () => {
 
         </Flex>
       </Box>
+
+      <ProfileEditModal isOpen={isProfileEditModalOpened} onClose={closeProfileEditModal} />
     </Box>
   )
 }

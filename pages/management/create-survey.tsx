@@ -3,39 +3,41 @@ import type { NextPage } from "next"
 import Head from "next/head"
 
 // React Hooks
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useCallback } from "react"
 
 // Custom Hooks
-import { useGetElementProperty } from "../../hooks/useGetElementProperty"
+import { useApiConnection } from "hooks/useApiConnection"
+import { useStyledToast } from "hooks/useStyledToast"
 
 // Chakra UI Components
 import { Box, Input, Flex, Grid, Tooltip, VStack, StackDivider, Text, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
-import Body from "../../components/Body"
-import SendButton from "../../components/button/SendButton"
-import PopOver from "../../components/PopOver"
+import Body from "components/view/Body"
+import SendButton from "components/button/SendButton"
+import PopOver from "components/PopOver"
 
 //Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faPen, faCalendar, faCheck, faCirclePlus, faXmark } from "@fortawesome/free-solid-svg-icons"
 import { subMonths } from "date-fns"
-import axios from "axios"
-import useSWRImmutable from "swr/immutable"
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 // Functions
-import { resp, formatDateForDisplay, standBy } from "../../functions"
+import { resp, formatDateForDisplay, standBy, isDateOrderCorrect, isBlank } from "ts/functions"
 
 // Filter
-import { withSession } from "../../hoc/withSession"
+import { withSession } from "hoc/withSession"
 
 // Types
-import { SendButtonState } from "../../types/SendButtonState"
+import { SendButtonState } from "types/SendButtonState"
 
 const CreateSurvey: NextPage = () => {
+  const { showToast } = useStyledToast()
   const [sendButtonState, setSendButtonState] = useState<SendButtonState>("text")
-  const { data } = useSWRImmutable(process.env.NEXT_PUBLIC_WORLD_TIME_API_URL, fetcher)
+  const { getCurrentTime, createSurvey, getAllSchedules } = useApiConnection()
+  const { time } = getCurrentTime()
+  const { allSchedules, fetchErrorMessage } = getAllSchedules()
+  if (fetchErrorMessage) showToast("エラー", fetchErrorMessage, "error")
 
   // アンケートタイトル入力欄
   const surveyTitleRef = useRef<HTMLInputElement>(null)
@@ -48,114 +50,85 @@ const CreateSurvey: NextPage = () => {
   const [scheduleListErrorMessage, setScheduleListErrorMessage] = useState("")
   const { isOpen: isScheduleListPopoverOpened, onOpen: openScheduleListPopover, onClose: closeScheduleListPopover } = useDisclosure()
 
-  // 日程リストとドットの高さの同期
-  const scheduleListRef = useRef(null)
-  const [scheduleListHeight, setScheduleListHeight] = useState(0)
-  const { getElementProperty: scheduleListProperty } = useGetElementProperty<HTMLDivElement>(scheduleListRef)
-  useEffect(() => setScheduleListHeight(scheduleListProperty("height")), [scheduleListRef, scheduleListProperty, scheduleListHeight])
-
-  const isDateOrderCorrect = (current: Date, target: Date) => new Date(current.toDateString()) <= new Date(target.toDateString())
-
   const handlePlusButtonClick = () => {
     if (!!!dateInputRef.current) return
 
+    let errorMessage = ""
     const datePattern = /^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/
-    if (!!!datePattern.test(dateInputRef.current.value)) {
-      setScheduleListErrorMessage("日付が正しく指定されていません")
-      openScheduleListPopover()
-      return
-    }
 
-    if (scheduleList.includes(dateInputRef.current.value)) {
-      setScheduleListErrorMessage("既に追加されている日付です")
-      openScheduleListPopover()
-      return
-    }
+    if (!!!datePattern.test(dateInputRef.current.value)) errorMessage = "日付が正しく指定されていません"
+    if (scheduleList.includes(dateInputRef.current.value)) errorMessage = "既に追加されている日付です"
+    if (allSchedules?.includes(dateInputRef.current.value)) errorMessage = "既に他のアンケートで使用されている日付です"
+    if (!!!isDateOrderCorrect(time, new Date(dateInputRef.current.value))) errorMessage = "現在より過去の日付が指定されています"
 
-    if (!!!isDateOrderCorrect(new Date(data.datetime), new Date(dateInputRef.current.value))) {
-      setScheduleListErrorMessage("現在より過去の日付が指定されています")
+    if (errorMessage) {
+      setScheduleListErrorMessage(errorMessage)
       openScheduleListPopover()
       return
     }
 
     setScheduleList([...scheduleList, dateInputRef.current.value])
-    setScheduleListHeight(0)
   }
 
-  const handleRemoveButtonClick = (target: string) => {
-    setScheduleList(scheduleList.filter(val => (val !== target)))
-    setScheduleListHeight(0)
-  }
+  const handleRemoveButtonClick = (target: string) => setScheduleList(scheduleList.filter(val => (val !== target)))
 
-  const checkValidation = () => {
+  const checkValidation = useCallback(() => {
     if (!!!surveyTitleRef.current) return false
 
-    let valid = true
+    let tmpSurveyTitleErrorMessage = ""
+    let tmpScheduleListErrorMessage = ""
 
-    const isValidSchedules = !!!scheduleList.some((schedule) => {
-      if (!!!isDateOrderCorrect(new Date(data.datetime), new Date(schedule))) {
-        setScheduleListErrorMessage("現在より過去の日付が指定されています")
-        openScheduleListPopover()
-        return true
-      }
-    })
+    if (isBlank(surveyTitleRef.current.value)) tmpSurveyTitleErrorMessage = "タイトルが入力されていません"
 
-    if (!!!isValidSchedules) valid = false
+    const isValidSchedules = scheduleList.every((schedule) => isDateOrderCorrect(time, new Date(schedule)))
+    if (!isValidSchedules) tmpScheduleListErrorMessage = "現在より過去の日付が指定されています"
 
-    const surveyTitlePattern = /^[ 　\r\n\t]*$/
-    if (surveyTitlePattern.test(surveyTitleRef.current.value)) {
-      setSurveyTitleErrorMessage("タイトルが入力されていません")
-      openSurveyTitlePopover()
-      valid = false
-    }
-
-    if (!!!scheduleList.length) {
-      setScheduleListErrorMessage("日程が追加されていません")
-      openScheduleListPopover()
-      valid = false
-    }
+    if (!!!scheduleList.length) tmpScheduleListErrorMessage = "日程が追加されていません"
 
     const academicYears: number[] = []
     scheduleList.forEach(date => {
       academicYears.push(subMonths(new Date(date), 3).getFullYear())
     })
-    if (!!!academicYears.every(val => val === academicYears[0])) {
-      setScheduleListErrorMessage("年度を跨いだ日程を設定することはできません")
-      openScheduleListPopover()
-      valid = false
+    if (!!!academicYears.every(val => val === academicYears[0])) tmpScheduleListErrorMessage = "年度を跨いだ日程を設定することはできません"
+
+    if (tmpSurveyTitleErrorMessage) {
+      setSurveyTitleErrorMessage(tmpSurveyTitleErrorMessage)
+      openSurveyTitlePopover()
     }
 
-    return valid
-  }
+    if (tmpScheduleListErrorMessage) {
+      setScheduleListErrorMessage(tmpScheduleListErrorMessage)
+      openScheduleListPopover()
+    }
 
-  const handleSendButtonClick = async () => {
-    if (!!!checkValidation() || !!!surveyTitleRef.current) return
+    return !!!(tmpSurveyTitleErrorMessage || tmpScheduleListErrorMessage)
+  }, [openScheduleListPopover, openSurveyTitlePopover, scheduleList, time])
+
+  const handleSendButtonClick = useCallback(async () => {
+    if (!!!checkValidation()) return
 
     setSendButtonState("spinner")
     await standBy(1000)
 
-    const requestBody = {
-      name: surveyTitleRef.current.value,
-      openCampusSchedule: scheduleList
-    }
-
     try {
-      const res = await axios.post(process.env.NEXT_PUBLIC_SURVEYS_URL as string, requestBody)
+      await createSurvey({
+        name: surveyTitleRef.current!.value,
+        openCampusSchedule: scheduleList
+      })
 
-      if (res.status === 201) {
-        setSendButtonState("checkmark")
-        setTimeout(() => {
-          if (!!!surveyTitleRef.current || !!!dateInputRef.current) return
-          surveyTitleRef.current.value = ""
-          dateInputRef.current.value = ""
-          setScheduleList([])
-          setScheduleListHeight(0)
-        }, 1000)
-      }
-    } catch (e) {
+      setSendButtonState("checkmark")
+
+      setTimeout(() => {
+        if (!!!surveyTitleRef.current || !!!dateInputRef.current) return
+        surveyTitleRef.current.value = ""
+        dateInputRef.current.value = ""
+        setScheduleList([])
+      }, 1000)
+
+    } catch {
       setSendButtonState("error")
     }
-  }
+  }, [checkValidation, scheduleList, createSurvey])
 
   return (
     <Box>
@@ -187,9 +160,9 @@ const CreateSurvey: NextPage = () => {
               <Text className="kb" fontSize={resp("1.5rem", "1.8rem", "1.9rem")}>日程を追加</Text>
             </Flex>
             <Flex className="flex-center">
-              <Box className="secondary-color" h={scheduleListHeight} borderLeft="dotted 4px"></Box>
+              <Box className="secondary-color" h="100%" borderLeft="dotted 4px"></Box>
             </Flex>
-            <Flex pl={resp(9, 16, 16)} py={5} alignItems="center" ref={scheduleListRef}>
+            <Flex pl={resp(9, 16, 16)} py={5} alignItems="center">
               <Box>
                 <Flex>
                   <PopOver isOpen={isScheduleListPopoverOpened} onClose={closeScheduleListPopover} errorMessage={scheduleListErrorMessage}>

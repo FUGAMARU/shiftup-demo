@@ -1,0 +1,1 @@
+export type RequestState = "Blank" | "Accepted" | "Declined"

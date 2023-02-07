@@ -3,33 +3,29 @@ import { NextPage } from "next"
 import Head from "next/head"
 
 // React Hooks
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, useMemo } from "react"
 
 // Custom Hooks
-import { useResponsive } from "../../hooks/useResponsive"
+import { useResponsive } from "hooks/useResponsive"
+import { useStyledToast } from "hooks/useStyledToast"
+import { useApiConnection } from "hooks/useApiConnection"
 
 // Chakra UI Components
-import { Box, Flex, Text, VStack, StackDivider, Button, Tooltip, Input, useToast, Popover, PopoverTrigger, PopoverContent, PopoverBody, PopoverArrow, useDisclosure } from "@chakra-ui/react"
+import { Box, Flex, Text, VStack, StackDivider, Button, Tooltip, Input, Popover, PopoverTrigger, PopoverContent, PopoverBody, PopoverArrow, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
-import Body from "../../components/Body"
-import ConfirmationModal from "../../components/ConfirmationModal"
+import Body from "components/view/Body"
+import ButtonModal from "components/modal/ButtonModal"
 
 //Libraries
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faXmark } from "@fortawesome/free-solid-svg-icons"
-import axios from "axios"
-import useSWR from "swr"
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 // Functions
-import { resp, formatDateForDisplay } from "../../functions"
-
-// Interfaces
-import { Survey } from "../../interfaces/Survey"
+import { resp, formatDateForDisplay } from "ts/functions"
 
 // Filter
-import { withSession } from "../../hoc/withSession"
+import { withSession } from "hoc/withSession"
 
 interface DynamicObject {
   [key: string]: boolean
@@ -37,11 +33,26 @@ interface DynamicObject {
 
 const ManageSurveys: NextPage = () => {
   const responsiveType = useResponsive() // SmartPhone, Tablet, PC
-  const toast = useToast()
+  const { showToast } = useStyledToast()
+  const [surveyNameInput, setSurveyNameInput] = useState("")
   const [clickedSurveyId, setClickedSurveyId] = useState("")
   const [popoverState, setPopoverState] = useState<DynamicObject>({})
   const { isOpen: isModalOpened, onOpen: openModal, onClose: closeModal } = useDisclosure()
-  const { data: surveys, error: fetchError, mutate } = useSWR<Survey[], Error>(process.env.NEXT_PUBLIC_SURVEYS_URL, fetcher, { fallback: [] })
+  const { getAllSurveys, switchSurveyAvailability, deleteSurvey } = useApiConnection()
+
+  const { data: surveys, fetchErrorMessage, mutate } = getAllSurveys()
+  if (fetchErrorMessage) showToast("エラー", fetchErrorMessage, "error")
+
+  const filteredSurveys = useMemo(() => surveys?.filter(survey => survey.name.match(new RegExp(surveyNameInput))), [surveys, surveyNameInput])
+
+  const statusMessage = useMemo(() => {
+    if (!!!surveys) return ""
+    if (!!!surveyNameInput) return `${surveys.length}件のアンケートが存在します`
+
+    const matches = filteredSurveys?.length
+    if (!!!matches) return `'${surveyNameInput}'にマッチするアンケートは存在しません`
+    return `'${surveyNameInput}'にマッチするアンケートが${matches}件存在します`
+  }, [surveys, surveyNameInput, filteredSurveys])
 
   useEffect(() => {
     if (!!!surveys) return
@@ -54,71 +65,31 @@ const ManageSurveys: NextPage = () => {
     setPopoverState(baseObj)
   }, [surveys])
 
-  if (fetchError) {
-    toast({
-      title: "エラー",
-      description: "アンケートの一覧の取得に失敗しました",
-      status: "error",
-      variant: "left-accent",
-      position: "top-right"
-    })
-  }
-
   const changePopover = (id: string, to: boolean) => {
     const currentObj: DynamicObject = Object.assign({}, popoverState)
     currentObj[id] = to
     setPopoverState(currentObj)
   }
 
-  const toggleAvailable = async (target: string, to: boolean) => {
+  const toggleAvailable = useCallback(async (target: string, to: boolean) => {
     try {
-      const res = await axios.put(`${process.env.NEXT_PUBLIC_SURVEYS_URL}/${target}/available`, to.toString())
-
-      if (res.status === 204) {
-        mutate()
-        toast({
-          title: "切替完了",
-          description: "アンケートの受付状態を切り替えました",
-          status: "success",
-          variant: "left-accent",
-          position: "top-right"
-        })
-      }
+      await switchSurveyAvailability(target, to)
+      mutate()
+      showToast("成功", "アンケートの受付状態を切り替えました", "success")
     } catch (e) {
-      toast({
-        title: "切替失敗",
-        description: "アンケートの受付状態を切り替えできませんでした",
-        status: "error",
-        variant: "left-accent",
-        position: "top-right"
-      })
+      if (e instanceof Error) showToast("エラー", e.message, "error")
     }
-  }
+  }, [showToast, switchSurveyAvailability, mutate])
 
-  const deleteSurvey = async (target: string) => {
+  const handleDeleteSurvey = useCallback(async (surveyId: string) => {
     try {
-      const res = await axios.delete(`${process.env.NEXT_PUBLIC_SURVEYS_URL}/${target}`)
-
-      if (res.status === 204) {
-        mutate()
-        toast({
-          title: "削除完了",
-          description: "アンケートを削除しました",
-          status: "success",
-          variant: "left-accent",
-          position: "top-right"
-        })
-      }
+      await deleteSurvey(surveyId)
+      mutate()
+      showToast("成功", "アンケートを削除しました", "success")
     } catch (e) {
-      toast({
-        title: "削除失敗",
-        description: "アンケートを削除できませんでした",
-        status: "error",
-        variant: "left-accent",
-        position: "top-right"
-      })
+      if (e instanceof Error) showToast("エラー", e.message, "error")
     }
-  }
+  }, [mutate, showToast, deleteSurvey])
 
   return (
     <Box>
@@ -126,18 +97,20 @@ const ManageSurveys: NextPage = () => {
         <title>希望日程アンケート管理 | ShiftUP!</title>
       </Head>
 
-      <Body title="アンケート管理" statusMessage={surveys ? `${surveys.length}件のアンケートが存在します` : ""}>
+      <Body title="アンケート管理" statusMessage={statusMessage}>
         <Box w={resp("100%", "80%", "80%")} mx="auto">
-          <Box textAlign="center" mb={8}>
-            <Input w={resp("80%", "60%", "60%")} variant="flushed" placeholder="タイトルを入力してアンケートを検索…" textAlign="center" focusBorderColor="#48c3eb" />
-          </Box>
+          {surveys?.length ?
+            <Box textAlign="center" mb={8}>
+              <Input w={resp("80%", "60%", "60%")} variant="flushed" placeholder="タイトルを入力してアンケートを検索…" textAlign="center" focusBorderColor="#48c3eb" onChange={e => setSurveyNameInput(e.target.value)} />
+            </Box>
+            : null}
 
           <VStack
             divider={<StackDivider borderColor="gray.200" />}
             spacing={3}
             align="stretch"
           >
-            {surveys?.map(survey => {
+            {filteredSurveys?.map(survey => {
               return (
                 <Flex key={survey.id} justifyContent="space-between" alignItems="center">
                   <Popover isOpen={popoverState[survey.id]}>
@@ -145,8 +118,8 @@ const ManageSurveys: NextPage = () => {
                       <Box className="kb" mr={2} px={3} maxW={resp("20rem", "17rem", "25rem")} fontSize={resp("1rem", "1.2rem", "1.2rem")} cursor="default" onMouseEnter={() => changePopover(survey.id, true)} onMouseLeave={() => changePopover(survey.id, false)}>{survey.name}</Box>
                     </PopoverTrigger>
                     <PopoverContent>
-                      <PopoverArrow />
-                      <PopoverBody px={8} boxShadow="lg">
+                      <PopoverArrow bg="#2d3748" />
+                      <PopoverBody className="kr" px={8} boxShadow="lg" bg="#2d3748" color="#efeff1">
                         <ul>
                           {survey.openCampusSchedule.map(schedule => {
                             return <li key={schedule}>{formatDateForDisplay(schedule)}</li>
@@ -160,22 +133,28 @@ const ManageSurveys: NextPage = () => {
                     <Tooltip label={survey.available ? "回答を締め切る" : "回答の受付を再開する"}>
                       <Button mr={resp(3, 5, 5)} size="xs" colorScheme={survey.available ? "whatsapp" : "red"} variant="outline" onClick={() => toggleAvailable(survey.id, !!!survey.available)}>{survey.available ? "回答受付中" : "締切済み"}</Button>
                     </Tooltip>
-                    <Tooltip label="アンケートを削除する">
-                      <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color={survey.available ? "#159848" : "#c43030"} cursor="pointer" onClick={() => { openModal(); setClickedSurveyId(survey.id) }} />
-                    </Tooltip>
+                    {survey.canDelete ?
+                      <Tooltip label="アンケートを削除する">
+                        <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color={survey.available ? "#159848" : "#c43030"} cursor="pointer" onClick={() => { openModal(); setClickedSurveyId(survey.id) }} />
+                      </Tooltip>
+                      :
+                      <Tooltip label="このアンケートは過去に集計されたことがあるため削除できません">
+                        <FontAwesomeIcon icon={faXmark} fontSize="1.5rem" color="#8b8b8b" />
+                      </Tooltip>
+                    }
                   </Flex>
                 </Flex>
               )
             })}
           </VStack>
         </Box>
-      </Body>
+      </Body >
 
-      <ConfirmationModal isOpen={isModalOpened} onClose={closeModal} text="本当にアンケートを削除してもよろしいですか？">
-        <Button mr={1} colorScheme="red" onClick={() => { deleteSurvey(clickedSurveyId); closeModal() }}>削除する</Button>
+      <ButtonModal isOpen={isModalOpened} onClose={closeModal} title="確認" text="本当にアンケートを削除してもよろしいですか？">
+        <Button mr={1} colorScheme="red" onClick={() => { handleDeleteSurvey(clickedSurveyId); closeModal() }}>削除する</Button>
         <Button ml={1} colorScheme="gray" variant="outline" onClick={closeModal}>削除しない</Button>
-      </ConfirmationModal>
-    </Box>
+      </ButtonModal>
+    </Box >
   )
 }
 

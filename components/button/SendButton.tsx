@@ -1,5 +1,5 @@
-// React Hooks
-import { useState, useEffect, useCallback } from "react"
+// React
+import { useState, useEffect, useCallback, memo } from "react"
 
 // Chakra UI Components
 import { Flex, Text, Spinner, Fade, useDisclosure } from "@chakra-ui/react"
@@ -9,10 +9,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faCircleExclamation, faCircleCheck } from "@fortawesome/free-solid-svg-icons"
 
 // CSS Modules
-import styles from "../../styles/button/SendButton.module.css"
+import styles from "styles/button/SendButton.module.css"
 
 // Types
-import { SendButtonState } from "../../types/SendButtonState"
+import { SendButtonState } from "types/SendButtonState"
 
 interface Props {
   text: string,
@@ -21,6 +21,8 @@ interface Props {
 }
 
 const SendButton = (props: Props) => {
+  const { text, state, onClick } = props
+
   const [showText, setShowText] = useState(true)
   const [showSpinner, setShowSpinner] = useState(false)
   const [showCheckmark, setShowCheckmark] = useState(false)
@@ -60,13 +62,13 @@ const SendButton = (props: Props) => {
   }, [fadeInText, hideAll])
 
   useEffect(() => {
-    if (props.state === "text") return
+    if (state === "text") return
 
     hideAll()
 
     //表示・フェードイン
     setTimeout(() => {
-      switch (props.state) {
+      switch (state) {
         case "spinner":
           setShowSpinner(true)
           fadeInSpinner()
@@ -84,15 +86,15 @@ const SendButton = (props: Props) => {
       }
     }, 550)
 
-  }, [props.state, changeToText, fadeInCheckmark, fadeInError, fadeInSpinner, hideAll])
+  }, [state, changeToText, fadeInCheckmark, fadeInError, fadeInSpinner, hideAll])
 
-  const handleButtonClick = () => {
-    if (props.onClick) props.onClick()
-  }
+  const handleButtonClick = useCallback(() => {
+    if (onClick) onClick()
+  }, [onClick])
 
   return (
     <Flex className={styles.sendButton} w="13rem" h="3rem" _hover={{ backgroundColor: showError ? "#ee7578" : "#23c483", boxShadow: showError ? "0px 15px 20px rgba(238, 117, 120, 0.4)" : "0px 15px 20px rgba(46, 229, 157, 0.4)" }} textAlign="center" justifyContent="center" alignItems="center" onClick={handleButtonClick} onMouseEnter={() => setForceWhite(true)} onMouseLeave={() => setForceWhite(false)}>
-      {showText ? <Fade in={textFade} style={{ transition: textFade ? "" : "all 0.4s linear" }}><Text>{props.text}</Text></Fade> : null}
+      {showText ? <Fade in={textFade} style={{ transition: textFade ? "" : "all 0.4s linear" }}><Text>{text}</Text></Fade> : null}
       {showSpinner ? <Fade in={spinnerFade} style={{ paddingTop: "3px", transition: "all 0.4s linear" }}><Spinner /></Fade> : null}
       {showCheckmark ? <Fade in={checkmarkFade} style={{ paddingTop: "3px", transition: "all 0.4s linear" }}>
         <FontAwesomeIcon icon={faCircleCheck} color={forceWhite ? "white" : "#23c483"} fontSize="1.4rem" />
@@ -106,4 +108,4 @@ const SendButton = (props: Props) => {
   )
 }
 
-export default SendButton
+export default memo(SendButton)

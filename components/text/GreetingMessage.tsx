@@ -1,15 +1,14 @@
 // React Hooks
 import { useState, useEffect } from "react"
 
+// Custom Hooks
+import { useApiConnection } from "hooks/useApiConnection"
+
 // Chakra UI Components
 import { Text } from "@chakra-ui/react"
 
-// Libraries
-import useSWRImmutable from "swr/immutable"
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
-
 // Functions
-import { resp } from "../../functions"
+import { resp } from "ts/functions"
 
 interface Props {
   name: string,
@@ -17,13 +16,14 @@ interface Props {
 }
 
 const GreetingMessage = (props: Props) => {
-  const { data: apiData, error } = useSWRImmutable("https://worldtimeapi.org/api/timezone/Asia/Tokyo", fetcher)
   const [greeting, setGreeting] = useState("")
   const [classNameChanger, setClassNameChanger] = useState(false)
   const { name, fireCardAnimationTrigger } = props
+  const { getCurrentTime } = useApiConnection()
+  const { time, error } = getCurrentTime()
 
   useEffect(() => {
-    if (apiData) {
+    if (time) {
       const fourOclock = new Date()
       fourOclock.setHours(4)
       fourOclock.setMinutes(0)
@@ -39,11 +39,9 @@ const GreetingMessage = (props: Props) => {
       seventeenOclock.setMinutes(0)
       seventeenOclock.setSeconds(0)
 
-      const datetime = new Date(apiData.datetime)
-
-      if (datetime >= fourOclock && datetime < tenOclock) { //4時〜9時59分
+      if (time >= fourOclock && time < tenOclock) { //4時〜9時59分
         setGreeting(`おはようございます、${name}さん。`)
-      } else if (datetime >= tenOclock && datetime < seventeenOclock) { //10時〜16時59分
+      } else if (time >= tenOclock && time < seventeenOclock) { //10時〜16時59分
         setGreeting(`こんにちは、${name}さん。`)
       } else {
         setGreeting(`こんばんは、${name}さん。`)
@@ -56,7 +54,7 @@ const GreetingMessage = (props: Props) => {
 
     setClassNameChanger(true)
     fireCardAnimationTrigger()
-  }, [apiData, error, name, fireCardAnimationTrigger])
+  }, [time, error, name, fireCardAnimationTrigger])
 
   return <Text className={classNameChanger ? "keb animate__animated greeting" : "hidden"} h={resp("1.8rem", "3rem", "3rem")} mb="1rem" fontSize={resp("1.2rem", "2rem", "2rem")} borderBottom="solid 1px gray">{greeting}</Text>
 }

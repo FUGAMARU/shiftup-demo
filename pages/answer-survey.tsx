@@ -2,93 +2,92 @@
 import type { NextPage } from "next"
 import Head from "next/head"
 
-// React Hooks
-import { ChangeEvent, useState } from "react"
+// React
+import { ChangeEvent, useState, useCallback } from "react"
+
+// Custom Hooks
+import { useStyledToast } from "hooks/useStyledToast"
+import { useApiConnection } from "hooks/useApiConnection"
 
 // Chakra UI Components
-import { Box, Flex, Text, VStack, StackDivider, Checkbox, Select, useToast, useCheckboxGroup, useDisclosure } from "@chakra-ui/react"
+import { Box, Flex, Text, VStack, StackDivider, Checkbox, Select, useCheckboxGroup, Button, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
-import Body from "../components/Body"
-import BumpHeading from "../components/heading/BumpHeading"
-import SendButton from "../components/button/SendButton"
-import PopOver from "../components/PopOver"
+import Body from "components/view/Body"
+import GizaHeading from "components/heading/GizaHeading"
+import SendButton from "components/button/SendButton"
+import ButtonModal from "components/modal/ButtonModal"
 
 // Libraries
-import { toggle } from "slide-element"
-import axios from "axios"
-import useSWR from "swr"
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
+import { up, down } from "slide-element"
 
 // Functions
-import { resp, standBy, formatDateForDisplay } from "../functions"
+import { resp, standBy, formatDateForDisplay } from "ts/functions"
 
 // Filter
-import { withSession } from "../hoc/withSession"
+import { withSession } from "hoc/withSession"
 
 // Types
-import { SendButtonState } from "../types/SendButtonState"
+import { SendButtonState } from "types/SendButtonState"
 
 // Interfaces
-import { Survey } from "../interfaces/Survey"
+import { AvailableSurvey } from "interfaces/Survey"
 
 const AnswerSurvey: NextPage = () => {
-  const toast = useToast()
+  const { showToast } = useStyledToast()
   const { value: selectedSchedules, getCheckboxProps } = useCheckboxGroup()
+  const [selectedSurveyTitle, setSelectedSurveyTitle] = useState("")
   const [sendButtonState, setSendButtonState] = useState<SendButtonState>("text")
-  const { data: surveys, error: fetchError } = useSWR<Survey[], Error>(process.env.NEXT_PUBLIC_SURVEYS_URL, fetcher, { fallback: [] })
+  const { isOpen: isModalOpened, onOpen: openModal, onClose: closeModal } = useDisclosure()
+  const { getAnswerableSurveys, answerSurvey } = useApiConnection()
 
-  if (fetchError) {
-    toast({
-      title: "エラー",
-      description: "アンケートの一覧の取得に失敗しました",
-      status: "error",
-      variant: "left-accent",
-      position: "top-right"
-    })
-  }
+  const { data: surveys, fetchErrorMessage, mutate } = getAnswerableSurveys()
+  if (fetchErrorMessage) showToast("エラー", fetchErrorMessage, "error")
 
   // チェックボックス
-  const [schedulesErrorMessage, setSchedulesErrorMessage] = useState("")
-  const { isOpen: isSchedulesPopoverOpened, onOpen: openSchedulesPopover, onClose: closeSchedulesPopover } = useDisclosure()
-  const [selectedSurvey, setSelectedSurvey] = useState<Survey>()
+  const [selectedSurvey, setSelectedSurvey] = useState<AvailableSurvey>()
 
-  const handleSurveySelect = (e: ChangeEvent<HTMLSelectElement>) => {
-    if (!!!e.target.value) return
+  const handleSurveySelect = async (e: ChangeEvent<HTMLSelectElement>) => {
+    setSelectedSurveyTitle(e.target.value)
+
+    if (!!!e.target.value) {
+      up(document.getElementById("selector") as HTMLElement, { duration: 500, easing: "ease-in-out" })
+      return
+    }
+
     setSelectedSurvey(surveys?.filter(survey => survey.id === e.target.value)[0])
-    toggle(document.getElementById("selector") as HTMLElement, { duration: 500, easing: "ease-in-out" })
+
+    if (selectedSurveyTitle === "") down(document.getElementById("selector") as HTMLElement, { duration: 500, easing: "ease-in-out" })
   }
 
-  const checkValidation = () => {
+  const checkValidation = useCallback(() => {
     if (!!!selectedSchedules.length) {
-      setSchedulesErrorMessage("日程が1つも選択されていません")
-      openSchedulesPopover()
+      openModal()
       return false
     }
 
     return true
-  }
+  }, [selectedSchedules, openModal])
 
-  const handleSendButtonClick = async () => {
-    if (!!!checkValidation()) return
+  const handleSendButtonClick = useCallback(async (fromModal: boolean) => {
+    if (!!!checkValidation() && !!!fromModal) return
 
     setSendButtonState("spinner")
     await standBy(1000)
 
     try {
-      const res = await axios.put(`${process.env.NEXT_PUBLIC_SURVEYS_URL}/${selectedSurvey?.id}/answers`, selectedSchedules)
+      await answerSurvey(selectedSurvey!.id, selectedSchedules)
 
-      if (res.status === 204) {
-        setSendButtonState("checkmark")
-        setTimeout(() => {
-          toggle(document.getElementById("selector") as HTMLElement, { duration: 500, easing: "ease-in-out" })
-          setSelectedSurvey(undefined)
-        }, 1500)
-      }
-    } catch (e) {
+      setSendButtonState("checkmark")
+      setTimeout(() => {
+        up(document.getElementById("selector") as HTMLElement, { duration: 500, easing: "ease-in-out" })
+        setSelectedSurveyTitle("")
+        mutate()
+      }, 1500)
+    } catch {
       setSendButtonState("error")
     }
-  }
+  }, [answerSurvey, setSendButtonState, mutate, setSelectedSurveyTitle, checkValidation, selectedSchedules, selectedSurvey])
 
   return (
     <Box>
@@ -96,36 +95,33 @@ const AnswerSurvey: NextPage = () => {
         <title>希望日程アンケート回答 | ShiftUP!</title>
       </Head>
 
-      <Body title="アンケート回答" statusMessage={!!!(surveys?.length && selectedSurvey) ? "回答するアンケートを選択" : undefined}>
-        <Box display={surveys?.length ? "block" : "none"}>
-          <Box id="selector">
-            <Select w={resp("90%", 270, 320)} mx="auto" mb={5} placeholder="回答するアンケートを選択…" onChange={(e) => handleSurveySelect(e)}>
-              {surveys?.filter(survey => survey.available).map(survey => {
-                return <option key={survey.id} value={survey.id} label={survey.name} />
-              })}
-            </Select>
-          </Box>
+      <Body title="アンケート回答">
+        <Box>
+          <Select w={resp("90%", 270, 320)} mx="auto" placeholder="回答するアンケートを選択…" value={selectedSurveyTitle} onChange={(e) => handleSurveySelect(e)}>
+            {surveys?.map(survey => <option key={survey.id} value={survey.id} label={survey.name} />)}
+          </Select>
 
-          <Box className={selectedSurvey ? "animate__animated animate__fadeIn" : ""} display={selectedSurvey ? "block" : "none"} style={{ animationDelay: ".2s" }}>
-            <BumpHeading title={selectedSurvey?.name as string} />
+          <Box h="0.5rem" />
+
+          <Box id="selector" display="none">
+            <GizaHeading />
             <Text className="kr" textAlign="center" fontSize={13}>出勤可能な日にちにチェックを入れてください</Text>
 
-            <PopOver isOpen={isSchedulesPopoverOpened} onClose={closeSchedulesPopover} errorMessage={schedulesErrorMessage}>
-              <VStack maxW={resp(250, 300, 300)} mt={5} mx="auto" divider={<StackDivider borderColor="gray.200" />} spacing={3} align="stretch">
-                {selectedSurvey?.openCampusSchedule.map(schedule => {
-                  return (
-                    <Checkbox key={schedule} className="kr" justifyContent="center" {...getCheckboxProps({ value: `${schedule}` })}>{formatDateForDisplay(schedule)}</Checkbox>
-                  )
-                })}
-              </VStack>
-            </PopOver>
+            <VStack maxW={resp(250, 300, 300)} mt={5} mx="auto" divider={<StackDivider borderColor="gray.200" />} spacing={3} align="stretch">
+              {selectedSurvey?.openCampusSchedule.map(schedule => <Checkbox key={schedule} className="kr" justifyContent="center" {...getCheckboxProps({ value: `${schedule}` })}>{formatDateForDisplay(schedule)}</Checkbox>)}
+            </VStack>
 
             <Flex mt={7} justifyContent="center">
-              <SendButton text="アンケート送信" state={sendButtonState} onClick={handleSendButtonClick}></SendButton>
+              <SendButton text="アンケート送信" state={sendButtonState} onClick={() => handleSendButtonClick(false)}></SendButton>
             </Flex>
           </Box>
         </Box>
       </Body>
+
+      <ButtonModal isOpen={isModalOpened} onClose={closeModal} title="確認" text="日程が1つも選択されていませんが送信してもよろしいですか？">
+        <Button mr={1} colorScheme="orange" onClick={() => { handleSendButtonClick(true); closeModal() }}>送信する</Button>
+        <Button ml={1} colorScheme="gray" variant="outline" onClick={closeModal}>送信しない</Button>
+      </ButtonModal>
     </Box>
   )
 }

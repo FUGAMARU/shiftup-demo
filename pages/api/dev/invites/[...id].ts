@@ -5,6 +5,9 @@ export default function handler(
   res: NextApiResponse
 ) {
   switch (req.method) {
+    case "PUT":
+      res.status(204).send("")
+      break
     case "DELETE":
       res.status(204).send("")
       break

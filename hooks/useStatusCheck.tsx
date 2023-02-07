@@ -4,23 +4,22 @@ import Router from "next/router"
 // React Hooks
 import { useEffect } from "react"
 
-// Libraries
-import useSWR from "swr"
-import useSWRImmutable from "swr/immutable"
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
-const statusCodeFetcher = (url: string) => fetch(url).then((res) => res.status)
+// Custom Hooks
+import { useApiConnection } from "hooks/useApiConnection"
 
 // Global State Management
 import { useSetRecoilState } from "recoil"
-import { sessionState } from "../atoms/SessionStateAtom"
-import { isManager } from "../atoms/RoleAtom"
+import { sessionState } from "atoms/SessionStateAtom"
+import { me } from "atoms/MeAtom"
 
 export const useStatusCheck = () => {
-  const { data: statusCode, error: sessionCheckError } = useSWR(process.env.NEXT_PUBLIC_CHECK_SESSION_AVAILABLE_URL, statusCodeFetcher)
-  const { data: role, error: roleCheckError } = useSWRImmutable(process.env.NEXT_PUBLIC_CHECK_ROLE_URL, fetcher)
+  const { getSession, getMyInfo } = useApiConnection()
+
+  const { statusCode, error: sessionCheckError } = getSession()
+  const { data: myInfo, error: fetchMyInfoError } = getMyInfo()
 
   const setSessionState = useSetRecoilState(sessionState)
-  const setManager = useSetRecoilState(isManager)
+  const setMyInfo = useSetRecoilState(me)
 
   // ログイン状態チェック
   useEffect(() => {
@@ -39,20 +38,15 @@ export const useStatusCheck = () => {
     setSessionState(true)
   }, [statusCode, sessionCheckError])
 
-  // 役職チェック
+  // ユーザー情報取得
   useEffect(() => {
-    if (role === undefined) return
+    if (!!!myInfo) return
 
-    if (role && !!!role.includes("Manager")) {
-      setManager(false)
-      return
-    }
-
-    if (roleCheckError) {
+    if (fetchMyInfoError) {
       Router.push("/error/unknown-error")
       return
     }
 
-    setManager(true)
-  }, [role, roleCheckError])
+    setMyInfo(myInfo)
+  }, [myInfo, setMyInfo])
 }
