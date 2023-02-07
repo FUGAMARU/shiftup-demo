@@ -511,10 +511,8 @@
 
             $("#task-name").on("input", function() {
                 if(/^[\s\u3000\u3164]*$/.test(this.value)) {
-                console.log("true")
                 val = true;
                 } else {
-                console.log("false")
                 val = false;
                 }
                 });
@@ -560,7 +558,6 @@
                                 return;
                             }
                             if (!setting.multiple && liveDataNo.length > 0) {
-                                console.log('not support multiple!');
                                 return false;
                             }
                             $startElement = jQuery(this);
@@ -602,7 +599,6 @@
                             return;
                         }
                         
-                        console.log("い")
                         $("#task-name").val(""); // テキストエリアをリセット}
                         val = true;
                         isMouseDown = false;
@@ -610,8 +606,6 @@
                         var startTime = $startElement.data('time_start');
                         var endDate = ($endElement === undefined) ? startDate : $endElement.data('date');
                         var endTime = ($endElement === undefined) ? $startElement.data('time_end') : $endElement.data('time_end');
-                        console.log(`StartTime: ${startDate} : ${startTime}`)
-                        console.log(`EndTime: ${endDate} : ${endTime}`)
                         if (!$startElement.hasClass('cant_res') && ($endElement == undefined || !$endElement.hasClass('cant_res'))) {
                         var timelintnum = (lineId - 1);
                         var addTempData = {
@@ -652,7 +646,6 @@
                     }
                     if (isMouseDown) {
                         
-                        console.log("あ")
                         var nowX = event.pageX;
                         var setSelectedTime = function ($element, nowX) {
                             var elementPositionX = $element.offset().left;
@@ -792,8 +785,6 @@
             startDateTime.setSeconds(startDateTime.getSeconds() + start);
             endDateTime.setSeconds(endDateTime.getSeconds() + end);
 
-            console.log(`ChangedStartTime: ${this.dateToString(startDateTime)}`)
-            console.log(`ChangedEndTime: ${this.dateToString(endDateTime)}`)
             jQuery(node).find(".startTime").html(this.dateToString(startDateTime));
             jQuery(node).find(".endTime").html(this.dateToString(endDateTime));
         }
