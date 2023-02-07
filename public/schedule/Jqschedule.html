@@ -139,8 +139,7 @@
 
       const setFromApiDataFormat = (date) => {
         (async () => {
-          /*const APItemplate = await fetch(
-            `http://localhost:3000/api/dev/schedule/${date}`)*/
+          //const APItemplate = await fetch(`http://localhost:3000/api/dev/schedule/${date}`)
           const APItemplate = await fetch(`https://shiftup.works/api/schedules/${date}`)
           const templateData = await APItemplate.json()
 
@@ -473,7 +472,7 @@
 
       //スケジュールデータ復元
       const schedule_data_recovery = () => {
-        const userTasks = JSON.parse(localStorage.getItem("userTasks"));
+        const userTasks = extractData();
         let finalData = [];
         userTasks.forEach(data => {
           let tasks = [];

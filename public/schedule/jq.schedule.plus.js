@@ -194,8 +194,8 @@
                 var et = Math.ceil((data["end"] - tableStartTime) / setting.widthTime) + endMultiples;
 
                 var $deleteBtn = jQuery('<span style="float: right; padding: 5px">✖</span>');
-                fetch("https://shiftup.works/api/users/me/roles")
                     //fetch("http://localhost:3000/api/dev/role")
+                    fetch("https://shiftup.works/api/users/me/roles")
                         .then(response => response.json())
                         .then(data => {
                             var roles = data;
@@ -204,8 +204,8 @@
                             }
                         });
                 $deleteBtn.click(function (event) {
-                    fetch("https://shiftup.works/api/users/me/roles")
                     //fetch("http://localhost:3000/api/dev/role")
+                    fetch("https://shiftup.works/api/users/me/roles")
                     .then(response => response.json())
                     .then(data => {
                         var roles = data;
@@ -279,8 +279,8 @@
 
                 // var $node = $element.find(".sc_Bar");
                 // move bar.
-                fetch("https://shiftup.works/api/users/me/roles")
                 //fetch("http://localhost:3000/api/dev/role")
+                fetch("https://shiftup.works/api/users/me/roles")
                 .then(response => response.json())
                 .then(data => {
                     if (data.length === 1 && data[0] === "Cast") {
@@ -523,8 +523,8 @@
             // クリックイベント
             // left click
             $timeline.find(".tl").click(function () {
-                fetch("https://shiftup.works/api/users/me/roles")
                 //fetch("http://localhost:3000/api/dev/role")
+                fetch("https://shiftup.works/api/users/me/roles")
                 .then(response => response.json())
                 .then(data => {
                     var roles = data;
@@ -550,8 +550,8 @@
                 var $startElement;
                 var $endElement;
                 $timeline.find(".tl").bind("mousedown", function (event) {
-                    fetch("https://shiftup.works/api/users/me/roles")
                     //fetch("http://localhost:3000/api/dev/role")
+                    fetch("https://shiftup.works/api/users/me/roles")
                         .then(response => response.json())
                         .then(data => {
                             var roles = data;
