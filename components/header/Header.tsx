@@ -77,7 +77,7 @@ const Header = () => {
             <SimpleGrid columns={3} spacing={3} pt={3} justifyItems="center">
               <SpongeSlimeButton h="5.1rem" w="5.1rem" text={"希望日程\nアンケート回答"} fontSize={10} icon={faCalendarCheck} iconSize={30} func={() => jump("/answer-survey")} />
               <SpongeSlimeButton h="5.1rem" w="5.1rem" text={"出勤確定処理"} fontSize={10} icon={faThumbsUp} iconSize={30} func={() => jump("/confirm-attendance")} />
-              <SpongeSlimeButton h="5.1rem" w="5.1rem" text={"スケジュール\n管理"} fontSize={10} icon={faClock} iconSize={30} func={() => jump("/management/manage-schedule")} />
+              <SpongeSlimeButton h="5.1rem" w="5.1rem" text={"スケジュール\n管理"} fontSize={10} icon={faClock} iconSize={30} func={() => jump("/manage-schedule")} />
             </SimpleGrid>
 
           </DrawerBody>

@@ -24,7 +24,6 @@ const ManageSchedule: NextPage = () => {
         <Box as="iframe" h="100%" w="100%"  border="0" src="../schedule/Jqschedule.html"></Box>
       </Box>
 
-
     </Box>
   )
 }
