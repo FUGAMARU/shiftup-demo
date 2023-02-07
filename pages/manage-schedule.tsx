@@ -14,7 +14,6 @@ import { withSession } from "hoc/withSession"
 
 const ManageSchedule: NextPage = () => {
   const router = useRouter()
-  console.log(router.query.date)
 
   return (
     <Box>
@@ -24,8 +23,8 @@ const ManageSchedule: NextPage = () => {
 
       <Box mb={5}><Header /></Box>
 
-      <Box h="100vh"  m={0} p={0} overflow="hidden">
-        <Box as="iframe" h="100%" w="100%"  border="0" src={`../schedule/Jqschedule.html?date=${router.query.date}`}></Box>
+      <Box h="100vh" m={0} p={0} overflow="hidden">
+        <Box as="iframe" h="100%" w="100%" border="0" src={`../schedule/Jqschedule.html?date=${router.query.date}`}></Box>
       </Box>
 
     </Box>

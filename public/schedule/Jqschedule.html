@@ -9,8 +9,8 @@
   <title>タイムテーブル</title>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/css/bootstrap.min.css" media="screen">
-  <link rel="stylesheet" href="https://code.jquery.com/ui/1.9.2/themes/base/jquery-ui.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/css/bootstrap.min.css"
+    media="screen">
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -36,12 +36,9 @@
       <div id="schedule" style="margin: 0 auto;"></div>
     </div>
 
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/2.3.2/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
     <script src="jq.schedule.plus.js"></script>
 
     <script type="text/javascript">
@@ -52,31 +49,9 @@
         return `${y}-${m}-${d}`
       }
     </script>
-    <script>
-      //役職がCastの場合の編集禁止処理
-      //fetch("http://localhost:3000/api/dev/role")
-      fetch("https://shiftup.works/api/users/me/roles")
-        .then(response => response.json())
-        .then(data => {
-          let roles = data;
-          let templateSelector = document.getElementById("templateSelector");
-          let templateSaveButton = document.getElementsByClassName("template_save_btn")[0];
-          let deleteTemplateButton = document.getElementsByClassName("deleteTemplateButton")[0];
-          let taskName = document.getElementById("task-name");
-          let userName = document.getElementById("user-name");
-          let AddUserBtn = document.getElementsByClassName("add_user_btn")[0];
-          if (roles.length === 1 && roles[0] === "Cast") {
-            //templateSelector.style.display = "none";
-            templateSaveButton.style.display = "none";
-            deleteTemplateButton.style.display = "none";
-            taskName.style.display = "none";
-            userName.style.display = "none";
-            AddUserBtn.style.display = "none";
-          }
-        });
-    </script>
 
     <script>
+      const IS_PROD_ENV = true
       let selectedDate = ""
       let sampleRows = [];
 
@@ -136,8 +111,7 @@
 
       const setFromApiDataFormat = (date) => {
         (async () => {
-          //const APItemplate = await fetch(`http://localhost:3000/api/dev/schedule/${date}`)
-          const APItemplate = await fetch(`https://shiftup.works/api/schedules/${date}`)
+          const APItemplate = await fetch(IS_PROD_ENV ? `https://shiftup.works/api/schedules/${date}` : `http://localhost:3000/api/dev/schedule/${date}`)
           const templateData = await APItemplate.json()
 
           const convertedAPITemplateData = convertAPItemplateToTemplateDataFormat(templateData);
@@ -163,12 +137,32 @@
         //const urlParams = new URLSearchParams(url.search);
         //const urlParams = new URLSearchParams(window.location.search);
         //const specifiedDate = urlParams.get('date');
-        //console.log(specifiedDate);
         //setFromApiDataFormat(selectedDate)
 
         //const APItemplate = await fetch(`http://localhost:3000/api/dev/schedule/`)
 
-        const APItemplate = await fetch(`https://shiftup.works/api/schedules/`)
+        //役職がCastの場合の編集禁止処理
+        fetch(IS_PROD_ENV ? "https://shiftup.works/api/users/me/roles" : "http://localhost:3000/api/dev/role")
+          .then(response => response.json())
+          .then(data => {
+            let roles = data;
+            let templateSelector = document.getElementById("templateSelector");
+            let templateSaveButton = document.getElementsByClassName("template_save_btn")[0];
+            let deleteTemplateButton = document.getElementsByClassName("deleteTemplateButton")[0];
+            let taskName = document.getElementById("task-name");
+            let userName = document.getElementById("user-name");
+            let AddUserBtn = document.getElementsByClassName("add_user_btn")[0];
+            if (roles.length === 1 && roles[0] === "Cast") {
+              //templateSelector.style.display = "none";
+              templateSaveButton.style.display = "none";
+              deleteTemplateButton.style.display = "none";
+              taskName.style.display = "none";
+              userName.style.display = "none";
+              AddUserBtn.style.display = "none";
+            }
+          });
+
+        const APItemplate = await fetch(IS_PROD_ENV ? "https://shiftup.works/api/schedules/" : "http://localhost:3000/api/dev/schedule/")
         const templateDates = await APItemplate.json()
 
         if (getParam("date") !== "Undefined" && templateDates.includes(getParam("date"))) {
@@ -276,8 +270,7 @@
 
         // APIへの保存
 
-        //fetch(`http://localhost:3000/api/dev/schedule/`, {
-        fetch(`https://shiftup.works/api/schedules/`, {
+        fetch(IS_PROD_ENV ? "https://shiftup.works/api/schedules/" : "http://localhost:3000/api/dev/schedule/", {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
@@ -304,8 +297,7 @@
           return;
         }
         if (confirm(`${templateName}を削除しますか？`)) {
-          //fetch(`http://localhost:3000/api/schedules/${templateName}`, {
-          fetch(`https://shiftup.works/api/schedules/${templateName}`, {
+          fetch(IS_PROD_ENV ? `https://shiftup.works/api/schedules/${templateName}` : `http://localhost:3000/api/schedules/${templateName}`, {
             method: "DELETE",
           })
             .then(res => {
@@ -455,7 +447,7 @@
         })
         return workerList
       }
-      //タスク取得                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+      //タスク取得                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
       const getTaskList = () => {
         const divElement = document.createElement("div");
         divElement.style.display = "none";

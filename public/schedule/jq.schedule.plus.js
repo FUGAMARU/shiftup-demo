@@ -1,4 +1,6 @@
 (function ($) {
+    const IS_PROD_ENV = true
+
     $.fn.timeSchedule = function (options) {
         // LIN 日時初期値
         var date = new Date();
@@ -194,54 +196,52 @@
                 var et = Math.ceil((data["end"] - tableStartTime) / setting.widthTime) + endMultiples;
 
                 var $deleteBtn = jQuery('<span style="float: right; padding: 5px">✖</span>');
-                    //fetch("http://localhost:3000/api/dev/role")
-                    fetch("https://shiftup.works/api/users/me/roles")
-                        .then(response => response.json())
-                        .then(data => {
-                            var roles = data;
-                            if (roles.length === 1 && roles[0] === "Cast") {
-                                $deleteBtn.hide();
-                            }
-                        });
-                $deleteBtn.click(function (event) {
-                    //fetch("http://localhost:3000/api/dev/role")
-                    fetch("https://shiftup.works/api/users/me/roles")
+                fetch(IS_PROD_ENV ? "https://shiftup.works/api/users/me/roles" : "http://localhost:3000/api/dev/role")
                     .then(response => response.json())
                     .then(data => {
                         var roles = data;
                         if (roles.length === 1 && roles[0] === "Cast") {
-                            event.preventDefault();
                             $deleteBtn.hide();
-                            return;
-                        }
-                        // LIN 削除した列の高さを調整する
-                        var sc_key = $bar.data("sc_key");
-                        var deleteTimelineNum = scheduleData[sc_key].timeline;
-                        var tempDeleteData = scheduleData[sc_key];
-                        $bar.remove();
-                        element.resetBarPosition(deleteTimelineNum);
-                
-                        // LIN 追加したエレメントの削除は追加番号を削除する
-                        if (tempDeleteData['data']['No'] !== undefined) {
-                            var key = jQuery.inArray(tempDeleteData['data']['No'], liveDataNo);
-                            liveDataNo.splice(key, 1);
-                        }
-                
-                        if (setting.delete) {
-                            if (jQuery(this).data("dragCheck") !== true && jQuery(this).data("resizeCheck") !== true) {
-                                setting.delete(tempDeleteData);
-                            }
                         }
                     });
+                $deleteBtn.click(function (event) {
+                    fetch(IS_PROD_ENV ? "https://shiftup.works/api/users/me/roles" : "http://localhost:3000/api/dev/role")
+                        .then(response => response.json())
+                        .then(data => {
+                            var roles = data;
+                            if (roles.length === 1 && roles[0] === "Cast") {
+                                event.preventDefault();
+                                $deleteBtn.hide();
+                                return;
+                            }
+                            // LIN 削除した列の高さを調整する
+                            var sc_key = $bar.data("sc_key");
+                            var deleteTimelineNum = scheduleData[sc_key].timeline;
+                            var tempDeleteData = scheduleData[sc_key];
+                            $bar.remove();
+                            element.resetBarPosition(deleteTimelineNum);
+
+                            // LIN 追加したエレメントの削除は追加番号を削除する
+                            if (tempDeleteData['data']['No'] !== undefined) {
+                                var key = jQuery.inArray(tempDeleteData['data']['No'], liveDataNo);
+                                liveDataNo.splice(key, 1);
+                            }
+
+                            if (setting.delete) {
+                                if (jQuery(this).data("dragCheck") !== true && jQuery(this).data("resizeCheck") !== true) {
+                                    setting.delete(tempDeleteData);
+                                }
+                            }
+                        });
                 });
-                
+
                 // ブロック内容の追加
                 var $content = jQuery('<span class="all"><span class="head"><span class="startTime time"></span>～<span class="endTime time"></span></span><span class="text"></span><span class="balloon"><span class="head"><span class="startTime time"></span>～<span class="endTime time"></span></span><span class="text"></span>');
                 var $bar = jQuery('<div class="sc_Bar ' + data['class'] + '"></div>').append($deleteBtn).append($content);
                 var stext = startDate + ' ' + element.formatTime(data["start"]);
                 var etext = endDate + ' ' + element.formatTime(data["end"]);
                 var snum = element.getScheduleCount(data["timeline"]);
-                
+
                 // $bar.find(".startTime").text(stext).css("display", "none");
                 ;
 
@@ -279,20 +279,19 @@
 
                 // var $node = $element.find(".sc_Bar");
                 // move bar.
-                //fetch("http://localhost:3000/api/dev/role")
-                fetch("https://shiftup.works/api/users/me/roles")
-                .then(response => response.json())
-                .then(data => {
-                    if (data.length === 1 && data[0] === "Cast") {
-                      // Cast の場合、ドラッグ処理を実行しない
-                        $bar.draggable({
-                            disabled: true
-                        });
-                      $bar.css("opacity", 1); // Castの場合に透過率を1に設定
-                    }
-                });
-        $bar.css("opacity", 1); // Castの場合に透過率を1に設定
-    
+                fetch(IS_PROD_ENV ? "https://shiftup.works/api/users/me/roles" : "http://localhost:3000/api/dev/role")
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length === 1 && data[0] === "Cast") {
+                            // Cast の場合、ドラッグ処理を実行しない
+                            $bar.draggable({
+                                disabled: true
+                            });
+                            $bar.css("opacity", 1); // Castの場合に透過率を1に設定
+                        }
+                    });
+                $bar.css("opacity", 1); // Castの場合に透過率を1に設定
+
                 $bar.draggable({
                     grid: [setting.widthTimeX, setting.timeLineY],
                     containment: ".sc_main",
@@ -507,38 +506,37 @@
                     $timeline.append($tl);
                 }
             }
-            
 
-            $("#task-name").on("input", function() {
-                if(/^[\s\u3000\u3164]*$/.test(this.value)) {
-                val = true;
+
+            $("#task-name").on("input", function () {
+                if (/^[\s\u3000\u3164]*$/.test(this.value)) {
+                    val = true;
                 } else {
-                val = false;
+                    val = false;
                 }
-                });
-            
+            });
+
 
             // クリックイベント
             // left click
             $timeline.find(".tl").click(function () {
-                //fetch("http://localhost:3000/api/dev/role")
-                fetch("https://shiftup.works/api/users/me/roles")
-                .then(response => response.json())
-                .then(data => {
-                    var roles = data;
-                    if (roles.length === 1 && roles[0] === "Cast") {
-                        event.preventDefault();
-                        return;
-                    }
-                    if (setting.timeClick) {
-                        setting.timeClick(this, [jQuery(this).data("date") + " " + jQuery(this).data('time_start')]);
-                        event.preventDefault();
-                        return;
-                    }
-                });
+                fetch(IS_PROD_ENV ? "https://shiftup.works/api/users/me/roles" : "http://localhost:3000/api/dev/role")
+                    .then(response => response.json())
+                    .then(data => {
+                        var roles = data;
+                        if (roles.length === 1 && roles[0] === "Cast") {
+                            event.preventDefault();
+                            return;
+                        }
+                        if (setting.timeClick) {
+                            setting.timeClick(this, [jQuery(this).data("date") + " " + jQuery(this).data('time_start')]);
+                            event.preventDefault();
+                            return;
+                        }
+                    });
             });
-            
-            
+
+
 
             // LIN ドラッグイベント
             if (setting.timeDrag) {
@@ -548,8 +546,7 @@
                 var $startElement;
                 var $endElement;
                 $timeline.find(".tl").bind("mousedown", function (event) {
-                    //fetch("http://localhost:3000/api/dev/role")
-                    fetch("https://shiftup.works/api/users/me/roles")
+                    fetch(IS_PROD_ENV ? "https://shiftup.works/api/users/me/roles" : "http://localhost:3000/api/dev/role")
                         .then(response => response.json())
                         .then(data => {
                             var roles = data;
@@ -573,7 +570,7 @@
                                     }
                                     isMouseDown = true;
                                     event.preventDefault();
-                                return;
+                                    return;
                                     $startElement.toggleClass("selected_time", true);
                                     if (setting.multiple) {
                                         $startElement.html('');
@@ -583,22 +580,22 @@
                             }
                         });
                 });
-                
-                
+
+
                 jQuery('#schedule').mouseup(function (event) {
-                    if(val) {
+                    if (val) {
                         event.preventDefault();
                         return;
                     }
                     if (isMouseDown) {
                         const taskName = $("#task-name").val();
-                        if (/^[\s\u3000\u3164]*$/.test(taskName)){
+                        if (/^[\s\u3000\u3164]*$/.test(taskName)) {
                             alert("空白文字は入力できません");
                             event.stopPropagation();
                             event.preventDefault();
                             return;
                         }
-                        
+
                         $("#task-name").val(""); // テキストエリアをリセット}
                         val = true;
                         isMouseDown = false;
@@ -607,17 +604,17 @@
                         var endDate = ($endElement === undefined) ? startDate : $endElement.data('date');
                         var endTime = ($endElement === undefined) ? $startElement.data('time_end') : $endElement.data('time_end');
                         if (!$startElement.hasClass('cant_res') && ($endElement == undefined || !$endElement.hasClass('cant_res'))) {
-                        var timelintnum = (lineId - 1);
-                        var addTempData = {
-                        timeline: timelintnum,
-                        start: element.calcStringTime(startTime),
-                        end: element.calcStringTime(endTime),
-                        class: 'newAdd',
-                        text: taskName,
-                        data: {
-                        'No': addNo
-                        }
-                        };
+                            var timelintnum = (lineId - 1);
+                            var addTempData = {
+                                timeline: timelintnum,
+                                start: element.calcStringTime(startTime),
+                                end: element.calcStringTime(endTime),
+                                class: 'newAdd',
+                                text: taskName,
+                                data: {
+                                    'No': addNo
+                                }
+                            };
                             element.addScheduleData(addTempData, startDate, endDate);
                             element.resetBarPosition(timelintnum);
                             jQuery('.selected_no_' + addNo)
@@ -640,12 +637,12 @@
                     }
                 });
                 jQuery('body').mousemove(function (event) {
-                    if(val) {
+                    if (val) {
                         event.preventDefault();
                         return;
                     }
                     if (isMouseDown) {
-                        
+
                         var nowX = event.pageX;
                         var setSelectedTime = function ($element, nowX) {
                             var elementPositionX = $element.offset().left;
