@@ -217,6 +217,22 @@
       });
 
       //テンプレート保存
+      const savedTemplates = {};
+
+      function saveTemplate(date, template) {
+        // 日付のテンプレートが既に存在するかどうかを確認しますs
+        if (savedTemplates[date]) {
+          // 存在する場合は、上書きを確認するアラートを表示します
+          if (confirm(`${date} は既に存在します。上書きしますか？`)) {
+            savedTemplates[date] = template;
+          }
+        } else {
+          // 存在しない場合は、テンプレートを保存します
+          savedTemplates[date] = template;
+        }
+      }
+
+      //テンプレート保存
       const template_save = () => {
         let templateName = formatDate($("#templateSelector").datepicker("getDate"));
         if (!/\S/.test(templateName)) {
@@ -224,11 +240,6 @@
           return;
         }
 
-        if (scheduleData[templateName]) {
-          if (!confirm(`${templateName} は既に存在します。上書きしますか？`)) {
-            return;
-          }
-        }
 
         schedule_save();
         schedule_data_recovery();
@@ -255,6 +266,9 @@
           "openCampusDate": selectedDate,
           "castSchedules": converted
         }
+
+        // Save the template to savedTemplates
+        saveTemplate(templateName, container);
 
         // APIへの保存
         //fetch(`http://localhost:3000/api/dev/schedule/`, {
