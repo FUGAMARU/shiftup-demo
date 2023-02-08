@@ -90,19 +90,19 @@
               "2022/08/17"
             ],
             businessHours: [{
-              dow: [
-                "0"
-              ],
-              start: "07:00",
-              end: "19:00"
-            },
-            {
-              dow: [
-                "1"
-              ],
-              end: "19:00",
-              start: "07:00"
-            }
+                dow: [
+                  "0"
+                ],
+                start: "07:00",
+                end: "19:00"
+              },
+              {
+                dow: [
+                  "1"
+                ],
+                end: "19:00",
+                start: "07:00"
+              }
             ],
             templateName: apiTemplate.id,
             openCampusDate: apiTemplate.openCampusDate,
@@ -177,7 +177,8 @@
     <script>
       const setFromApiDataFormat = (date) => {
         (async () => {
-          const APItemplate = await fetch(IS_PROD_ENV ? `https://shiftup.works/api/schedules/${date}` : `http://localhost:3000/api/dev/schedule/${date}`)
+          const APItemplate = await fetch(IS_PROD_ENV ? `https://shiftup.works/api/schedules/${date}` :
+            `http://localhost:3000/api/dev/schedule/${date}`)
           const templateData = await APItemplate.json()
 
           const convertedAPITemplateData = convertAPItemplateToTemplateDataFormat(templateData);
@@ -228,12 +229,12 @@
 
         // APIへの保存
         fetch(IS_PROD_ENV ? "https://shiftup.works/api/schedules/" : "http://localhost:3000/api/dev/schedule/", {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(container)
-        })
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(container)
+          })
           .then(response => {
             alert(`${templateName}を保存しました。ページをリロードします。`);
             window.location.reload();
@@ -252,9 +253,10 @@
           return;
         }
         if (confirm(`${templateName}を削除しますか？`)) {
-          fetch(IS_PROD_ENV ? `https://shiftup.works/api/schedules/${templateName}` : `http://localhost:3000/api/dev/schedule/${templateName}`, {
-            method: "DELETE",
-          })
+          fetch(IS_PROD_ENV ? `https://shiftup.works/api/schedules/${templateName}` :
+              `http://localhost:3000/api/dev/schedule/${templateName}`, {
+                method: "DELETE",
+              })
             .then(res => {
               if (res.status === 204) {
                 $("#templateSelector option[value='" + templateName + "']").remove()
@@ -320,21 +322,37 @@
         scheduleData.updateScheduleTable();
       };
 
+      //XSS対策
+      function escapeHTML(string) {
+        return string.replace(/&/g, '&lt;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, "&#x27;");
+      }
       //ユーザー追加
       const handleButtonClick = () => {
-        schedule_save()
-        let userName = $("#user-name").val()
+        schedule_save();
+        let userName = $("#user-name").val();
+
+        // 空白文字の判定
         if (/^[\s\u3000\u3164]*$/.test(userName)) {
-          alert("空白文字は入力できません")
-          return
+          alert("空白文字は入力できません");
+          return;
         }
-        scheduleData.addUser(userName)
-        scheduleData.updateScheduleTable()
+
+        if (/[><'"]/.test(userName)) {
+          alert("不正な文字が含まれています");
+          return;
+        }
+
+        scheduleData.addUser(userName);
+        scheduleData.updateScheduleTable();
 
         schedule_data_recovery()
 
-        scheduleData.addUser(userName)
-        scheduleData.updateScheduleTable()
+        scheduleData.addUser(userName);
+        scheduleData.updateScheduleTable();
       }
     </script>
 
@@ -481,7 +499,8 @@
             }
           });
 
-        const APItemplate = await fetch(IS_PROD_ENV ? "https://shiftup.works/api/schedules/" : "http://localhost:3000/api/dev/schedule/")
+        const APItemplate = await fetch(IS_PROD_ENV ? "https://shiftup.works/api/schedules/" :
+          "http://localhost:3000/api/dev/schedule/")
         const templateDates = await APItemplate.json()
 
         if (getParam("date") !== "Undefined" && templateDates.includes(getParam("date"))) {
