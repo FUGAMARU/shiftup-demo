@@ -322,14 +322,6 @@
         scheduleData.updateScheduleTable();
       };
 
-      //XSS対策
-      function escapeHTML(string) {
-        return string.replace(/&/g, '&lt;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;')
-          .replace(/'/g, "&#x27;");
-      }
       //ユーザー追加
       const handleButtonClick = () => {
         schedule_save();
