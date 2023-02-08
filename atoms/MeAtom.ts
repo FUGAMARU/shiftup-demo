@@ -9,3 +9,8 @@ export const me = atom<Me>({
     position: "Cast"
   }
 })
+
+export const isFetchingMyInfo = atom<boolean>({
+  key: "isFetchingMyInfo",
+  default: true
+})

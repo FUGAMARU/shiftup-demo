@@ -10,7 +10,7 @@ import { useApiConnection } from "hooks/useApiConnection"
 // Global State Management
 import { useSetRecoilState } from "recoil"
 import { sessionState } from "atoms/SessionStateAtom"
-import { me } from "atoms/MeAtom"
+import { me, isFetchingMyInfo } from "atoms/MeAtom"
 
 export const useStatusCheck = () => {
   const { getSession, getMyInfo } = useApiConnection()
@@ -20,6 +20,7 @@ export const useStatusCheck = () => {
 
   const setSessionState = useSetRecoilState(sessionState)
   const setMyInfo = useSetRecoilState(me)
+  const setFetchingMyInfoState = useSetRecoilState(isFetchingMyInfo)
 
   // ログイン状態チェック
   useEffect(() => {
@@ -41,6 +42,8 @@ export const useStatusCheck = () => {
   // ユーザー情報取得
   useEffect(() => {
     if (!!!myInfo) return
+
+    setFetchingMyInfoState(false)
 
     if (fetchMyInfoError) {
       Router.push("/error/unknown-error")
