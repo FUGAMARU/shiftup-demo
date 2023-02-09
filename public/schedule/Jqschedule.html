@@ -197,7 +197,6 @@
           templateName = prompt("テンプレート名を入力してください");
         }
 
-
         schedule_save();
         schedule_data_recovery();
         const convertable = extractData()
@@ -228,22 +227,31 @@
         saveTemplate(templateName, container);
 
         // APIへの保存
-        fetch(IS_PROD_ENV ? "https://shiftup.works/api/schedules/" : "http://localhost:3000/api/dev/schedule/", {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(container)
-          })
+        fetch(
+            IS_PROD_ENV ?
+            "https://shiftup.works/api/schedules/" :
+            "http://localhost:3000/api/dev/schedule/", {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(container)
+            }
+          )
           .then(response => {
+            if (!response.ok) {
+              throw new Error("API request failed");
+            }
             alert(`${templateName}を保存しました。ページをリロードします。`);
             window.location.reload();
           })
           .catch(error => {
             console.error(error);
-            alert('保存に失敗しました');
+            schedule_data_recovery();
+            alert('保存に失敗しました。元の状態に戻しました');
           });
       };
+
 
       //テンプレート削除
       const template_delete = () => {
