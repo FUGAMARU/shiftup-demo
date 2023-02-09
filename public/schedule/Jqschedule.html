@@ -123,14 +123,14 @@
         // 日付のテンプレートが既に存在するかどうかを確認しますs
         if (savedTemplates[date]) {
           // 存在する場合は、上書きを確認するアラートを表示します
-          if (confirm(`${date} は既に存在します。上書きしますか？`)) {
-            savedTemplates[date] = template;
+          if (!confirm(`${date} は既に存在します。上書きしますか？`)) {
+            return;
           }
-        } else {
-          // 存在しない場合は、テンプレートを保存します
-          savedTemplates[date] = template;
         }
+        // 存在する場合も存在しない場合もテンプレートを保存します
+        savedTemplates[date] = template;
       }
+
 
       //ユーザー取得
       const getUserList = () => {
@@ -193,10 +193,10 @@
       //テンプレート保存
       const template_save = () => {
         let templateName = formatDate($("#templateSelector").datepicker("getDate"));
-        if (!/\S/.test(templateName)) {
-          alert("テンプレート名が入力されていません");
-          return;
+        if (!templateName) {
+          templateName = prompt("テンプレート名を入力してください");
         }
+
 
         schedule_save();
         schedule_data_recovery();
