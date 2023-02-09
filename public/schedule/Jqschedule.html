@@ -213,8 +213,11 @@
               endTime: toOnlyTime(task.endAt),
               name: task.taskName
             })
-            base["tasks"] = tasks
           })
+          // タスクが存在する場合はbaseにtasksを追加する
+          if (tasks.length > 0) {
+            base["tasks"] = tasks;
+          }
           converted.push(base)
         })
 
