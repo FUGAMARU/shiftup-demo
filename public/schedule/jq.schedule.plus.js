@@ -1,5 +1,5 @@
 (function ($) {
-    const IS_PROD_ENV = true
+    const IS_PROD_ENV = false
 
     function fetchRoles() {
         return fetch(IS_PROD_ENV ? "https://shiftup.works/api/users/me/roles" : "http://localhost:3000/api/dev/role")

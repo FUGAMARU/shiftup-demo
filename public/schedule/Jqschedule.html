@@ -43,7 +43,7 @@
 
     <!-- グローバル変数 -->
     <script>
-      const IS_PROD_ENV = true
+      const IS_PROD_ENV = false
       let selectedDate = ""
       let sampleRows = [];
       let savedTemplates = {};
@@ -119,17 +119,7 @@
         return templateData;
       }
 
-      const saveTemplate = (date, template) => {
-        // 日付のテンプレートが既に存在するかどうかを確認しますs
-        if (savedTemplates[date]) {
-          // 存在する場合は、上書きを確認するアラートを表示します
-          if (!confirm(`${date} は既に存在します。上書きしますか？`)) {
-            return;
-          }
-        }
-        // 存在する場合も存在しない場合もテンプレートを保存します
-        savedTemplates[date] = template;
-      }
+
 
 
       //ユーザー取得
@@ -191,61 +181,67 @@
       }
 
       //テンプレート保存
-      const template_save = () => {
-        let templateName = formatDate($("#templateSelector").datepicker("getDate"));
-        if (!templateName) {
-          templateName = prompt("テンプレート名を入力してください");
-        }
-
-        schedule_save();
-        schedule_data_recovery();
-        const convertable = extractData()
-
-        let converted = []
-
-        convertable.forEach((userData, idx) => {
-          let base = {}
-          base["castName"] = userData.name
-          let tasks = []
-          userData.tasks.forEach(task => {
-            tasks.push({
-              startTime: toOnlyTime(task.startAt),
-              endTime: toOnlyTime(task.endAt),
-              name: task.taskName
-            })
-          })
-          // タスクが存在する場合はbaseにtasksを追加する
-          if (tasks.length > 0) {
-            base["tasks"] = tasks;
-          }
-          converted.push(base)
-        })
-
-        const container = {
-          "openCampusDate": selectedDate,
-          "castSchedules": converted
-        }
-
-        // Save the template to savedTemplates
-        saveTemplate(templateName, container);
-
-        // APIへの保存
-        fetch(
+      const saveTemplate = (date, template) => {
+        return fetch(
             IS_PROD_ENV ?
-            "https://shiftup.works/api/schedules/" :
-            "http://localhost:3000/api/dev/schedule/", {
-              method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify(container)
-            }
+            `https://shiftup.works/api/schedules/${date}` :
+            `http://localhost:3000/api/dev/schedule/${date}`
           )
+          .then(response => response.json())
+          .then(data => {
+            if (data !== null && Object.keys(data).length > 0) {
+              if (confirm(`${date}は既に存在します。上書きしますか？`)) {
+                return fetch(
+                  IS_PROD_ENV ?
+                  `https://shiftup.works/api/schedules/` :
+                  `http://localhost:3000/api/dev/schedule/`, {
+                    method: 'PUT',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(template)
+                  }
+                );
+              }
+              return Promise.reject(new Error('上書きがキャンセルされました'));
+            } else {
+              return fetch(
+                IS_PROD_ENV ?
+                `https://shiftup.works/api/schedules/` :
+                `http://localhost:3000/api/dev/schedule/`, {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(template)
+                }
+              );
+            }
+          });
+      };
+
+
+
+      const saveTemplateAndSendRequest = (date, template) => {
+        saveTemplate(date, template)
+          .then(() => {
+            return fetch(
+              IS_PROD_ENV ?
+              "https://shiftup.works/api/schedules/" :
+              "http://localhost:3000/api/dev/schedule/", {
+                method: 'PUT',
+                headers: {
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(template)
+              }
+            );
+          })
           .then(response => {
             if (!response.ok) {
               throw new Error("API request failed");
             }
-            alert(`${templateName}を保存しました。ページをリロードします。`);
+            alert(`${date}を保存しました。ページをリロードします。`);
             window.location.reload();
           })
           .catch(error => {
@@ -254,6 +250,47 @@
             alert('保存に失敗しました。元の状態に戻しました');
           });
       };
+
+      const template_save = () => {
+        let templateName = formatDate($("#templateSelector").datepicker("getDate"));
+        if (!templateName) {
+          templateName = prompt("テンプレート名を入力してください");
+        }
+
+        schedule_save();
+        schedule_data_recovery();
+
+        const convertable = extractData();
+        let converted = [];
+
+        convertable.forEach((userData) => {
+          const base = {
+            castName: userData.name,
+            tasks: []
+          };
+
+          userData.tasks.forEach((task) => {
+            const convertedTask = {
+              startTime: toOnlyTime(task.startAt),
+              endTime: toOnlyTime(task.endAt),
+              name: task.taskName
+            };
+            base.tasks.push(convertedTask);
+          });
+
+          converted.push(base);
+        });
+
+        const container = {
+          openCampusDate: selectedDate,
+          castSchedules: converted
+        };
+
+        saveTemplateAndSendRequest(templateName, container);
+
+      };
+
+
 
 
       //テンプレート削除
