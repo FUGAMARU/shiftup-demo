@@ -43,7 +43,7 @@
 
     <!-- グローバル変数 -->
     <script>
-      const IS_PROD_ENV = false
+      const IS_PROD_ENV = true
       let selectedDate = ""
       let sampleRows = [];
       let savedTemplates = {};
@@ -579,9 +579,13 @@
 
           },
           onSelect: function (selected) {
-            selectedDate = selected
+            selectedDate = selected;
             if (templateDates.includes(selectedDate)) {
-              setFromApiDataFormat(selectedDate)
+              try {
+                setFromApiDataFormat(selectedDate);
+              } catch (e) {
+                alert("テンプレートデータの取得に失敗しました。");
+              }
             } else {
               // テンプレート新規作成
               scheduleData.setSchedule = [];
@@ -591,6 +595,7 @@
               $(".add_user_btn").prop("disabled", false);
             }
           }
+
         })
       });
 
