@@ -265,19 +265,18 @@
 
         convertable.forEach((userData) => {
           const base = {
-            castName: userData.name,
-            tasks: []
+            castName: userData.name
           };
-
-          userData.tasks.forEach((task) => {
-            const convertedTask = {
-              startTime: toOnlyTime(task.startAt),
-              endTime: toOnlyTime(task.endAt),
-              name: task.taskName
-            };
-            base.tasks.push(convertedTask);
-          });
-
+          if (userData.tasks.length > 0) {
+            const tasks = userData.tasks.map((task) => {
+              return {
+                startTime: toOnlyTime(task.startAt),
+                endTime: toOnlyTime(task.endAt),
+                name: task.taskName
+              };
+            });
+            base.tasks = tasks;
+          }
           converted.push(base);
         });
 
@@ -287,6 +286,7 @@
         };
 
         saveTemplateAndSendRequest(templateName, container);
+
 
       };
 
