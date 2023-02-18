@@ -202,8 +202,8 @@
         }
         schedule_save();
         schedule_data_recovery();
-        const convertable = extractData()
-        let converted = []
+        const convertable = extractData();
+        let converted = [];
         convertable.forEach((userData, idx) => {
           let base = {}
           base["castName"] = userData.name
@@ -213,15 +213,15 @@
               startTime: toOnlyTime(task.startAt),
               endTime: toOnlyTime(task.endAt),
               name: task.taskName
-            })
-            base["tasks"] = tasks
-          })
-          converted.push(base)
-        })
+            });
+          });
+          base["tasks"] = tasks;
+          converted.push(base);
+        });
         const container = {
           "openCampusDate": selectedDate,
           "castSchedules": converted
-        }
+        };
         // Save the template to savedTemplates
         saveTemplate(templateName, container);
         // APIへの保存
@@ -241,6 +241,7 @@
             alert('保存に失敗しました');
           });
       };
+
 
 
 
