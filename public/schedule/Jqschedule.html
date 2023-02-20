@@ -43,13 +43,15 @@
 
     <!-- グローバル変数 -->
     <script>
-      const IS_PROD_ENV = true
+      const IS_PROD_ENV = false
       let selectedDate = ""
       let sampleRows = [];
       let savedTemplates = {};
       let widthTimeTypes = [360, 60, 15];
       let selectedType = jQuery('input[name="timeType"]:checked').val();
       let sampleRows2 = []
+      let APItemplate;
+      let templateDates;
     </script>
 
     <!-- 汎用関数群 -->
@@ -181,17 +183,23 @@
       }
 
       const saveTemplate = (date, template) => {
-        // 日付のテンプレートが既に存在するかどうかを確認しますs
+        // 日付のテンプレートが既に存在するかどうかを確認します
         if (savedTemplates[date]) {
           // 存在する場合は、上書きを確認するアラートを表示します
-          if (confirm(`${date} は既に存在します。上書きしますか？`)) {
+          if (templateDates.includes(date)) {
+            if (confirm(`${date} は既に存在します。上書きしますか？`)) {
+              savedTemplates[date] = template;
+            }
+          } else {
             savedTemplates[date] = template;
           }
         } else {
           // 存在しない場合は、テンプレートを保存します
           savedTemplates[date] = template;
         }
-      }
+      };
+
+
 
       //テンプレート保存
       const template_save = () => {
@@ -222,24 +230,28 @@
           "openCampusDate": selectedDate,
           "castSchedules": converted
         };
-        // Save the template to savedTemplates
-        saveTemplate(templateName, container);
-        // APIへの保存
-        fetch(IS_PROD_ENV ? "https://shiftup.works/api/schedules/" : "http://localhost:3000/api/dev/schedule/", {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(container)
-          })
-          .then(response => {
-            alert(`${templateName}を保存しました。ページをリロードします。`);
-            window.location.reload();
-          })
-          .catch(error => {
-            console.error(error);
-            alert('保存に失敗しました');
-          });
+
+        // Check if the template already exists and call the saveTemplate function
+        if (savedTemplates.hasOwnProperty(templateName)) {
+          saveTemplate(templateName, container);
+        } else {
+          // APIへの保存
+          fetch(IS_PROD_ENV ? "https://shiftup.works/api/schedules/" : "http://localhost:3000/api/dev/schedule/", {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(container)
+            })
+            .then(response => {
+              alert(`${templateName}を保存しました。ページをリロードします。`);
+              window.location.reload();
+            })
+            .catch(error => {
+              console.error(error);
+              alert('保存に失敗しました');
+            });
+        }
       };
 
 
@@ -493,9 +505,13 @@
           });
 
         try {
-          const APItemplate = await fetch(IS_PROD_ENV ? "https://shiftup.works/api/schedules/" :
-            "http://localhost:3000/api/dev/schedule/");
-          const templateDates = await APItemplate.json();
+          if (IS_PROD_ENV) {
+            APItemplate = await fetch("https://shiftup.works/api/schedules/");
+          } else {
+            APItemplate = await fetch("http://localhost:3000/api/dev/schedule/");
+          }
+
+          templateDates = await APItemplate.json();
 
           if (getParam("date") !== "Undefined" && templateDates.includes(getParam("date"))) {
             selectedDate = getParam("date");
@@ -537,6 +553,7 @@
                 $("#task-name").prop("disabled", false);
                 $("#user-name").prop("disabled", false);
                 $(".add_user_btn").prop("disabled", false);
+                alert("テンプレートの読み込みに失敗しました。");
               }
             }
           });
@@ -545,6 +562,7 @@
           console.error(error);
         }
       })
+
 
 
       // 時間単位種別（6時間、1時間、１５分）
