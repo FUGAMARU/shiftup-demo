@@ -43,7 +43,7 @@
 
     <!-- グローバル変数 -->
     <script>
-      const IS_PROD_ENV = true
+      const IS_PROD_ENV = false
       let selectedDate = ""
       let sampleRows = [];
       let savedTemplates = {};
@@ -516,19 +516,12 @@
           } else {
             APItemplate = await fetch("http://localhost:3000/api/dev/schedule/");
           }
-
-          if (!APItemplate.ok) {
-            throw new Error("ネットワークエラーが発生しました。");
-          }
-
           templateDates = await APItemplate.json();
-
           if (getParam("date") !== "Undefined" && templateDates.includes(getParam("date"))) {
             selectedDate = getParam("date");
             setFromApiDataFormat(getParam("date"));
             document.getElementById("templateSelector").value = selectedDate;
           }
-
           $("#templateSelector").datepicker({
             closeText: "閉じる",
             prevText: "&#x3C;前",
@@ -556,11 +549,14 @@
               selectedDate = selected;
               if (templateDates.includes(selectedDate)) {
                 setFromApiDataFormat(selectedDate);
-              } else {
                 // Check if template is loaded from API
                 if (templateDates.length === 0) {
                   // Display error message if template not loaded
                   alert("テンプレートの読み込みに失敗しました。");
+                } else if (!navigator.onLine) {
+                  // Template is not available offline
+                  alert("この日付のテンプレートはオフラインで利用できません。");
+
                 } else {
                   // テンプレート新規作成
                   scheduleData.setSchedule = [];
@@ -570,25 +566,23 @@
                   $(".add_user_btn").prop("disabled", false);
                 }
               }
+
+              function handleOffline() {
+                alert("オフラインになりました。");
+              }
+
+              function handleOnline() {
+                alert("オンラインに戻りました。");
+              }
+
+              window.addEventListener("offline", handleOffline);
+              window.addEventListener("online", handleOnline);
             }
           });
         } catch (error) {
           alert("テンプレートデータの取得に失敗しました。");
           console.error(error);
         }
-
-        // テンプレートに対応する日付を選択する際に、ユーザーがオフラインであるか、ネットワークエラーがあるかどうかを確認する
-        window.addEventListener('offline', function (e) {
-          if (templateDates.includes(selectedDate)) {
-            alert("テンプレートの読み込みに失敗しました。");
-          }
-        });
-
-        window.addEventListener('online', function (e) {
-          if (templateDates.includes(selectedDate)) {
-            alert("ネットワークエラーにより、テンプレートの読み込みに失敗しました。");
-          }
-        });
       })
 
 
