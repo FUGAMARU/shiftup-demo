@@ -517,6 +517,10 @@
             APItemplate = await fetch("http://localhost:3000/api/dev/schedule/");
           }
 
+          if (!APItemplate.ok) {
+            throw new Error("ネットワークエラーが発生しました。");
+          }
+
           templateDates = await APItemplate.json();
 
           if (getParam("date") !== "Undefined" && templateDates.includes(getParam("date"))) {
@@ -572,6 +576,19 @@
           alert("テンプレートデータの取得に失敗しました。");
           console.error(error);
         }
+
+        // テンプレートに対応する日付を選択する際に、ユーザーがオフラインであるか、ネットワークエラーがあるかどうかを確認する
+        window.addEventListener('offline', function (e) {
+          if (templateDates.includes(selectedDate)) {
+            alert("テンプレートの読み込みに失敗しました。");
+          }
+        });
+
+        window.addEventListener('online', function (e) {
+          if (templateDates.includes(selectedDate)) {
+            alert("ネットワークエラーにより、テンプレートの読み込みに失敗しました。");
+          }
+        });
       })
 
 

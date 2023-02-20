@@ -564,6 +564,17 @@
                 }
             })
 
+            function escapeHtml(text) {
+                return text
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+            
+            const taskName = escapeHtml($("#task-name").val());
+            
 
                 jQuery('#schedule').mouseup(function (event) {
                     if (val) {
@@ -578,6 +589,13 @@
                             event.preventDefault();
                             return;
                         }
+                        if (/[><'"]/.test("#task-name")) {
+                            alert("不正な文字が含まれています");
+                            return;
+                        }
+
+                        $("#task-list").append("<li>" + $("<div>").text(taskName).html() + "</li>");
+
 
                         $("#task-name").val(""); // テキストエリアをリセット}
                         val = true;
