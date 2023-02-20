@@ -43,7 +43,7 @@
 
     <!-- グローバル変数 -->
     <script>
-      const IS_PROD_ENV = false
+      const IS_PROD_ENV = true
       let selectedDate = ""
       let sampleRows = [];
       let savedTemplates = {};
@@ -351,12 +351,15 @@
           return;
         }
 
-        scheduleData.addUser(userName);
+        // 出力する前にユーザ名をエスケープする
+        let escapedUserName = $('<div>').text(userName).html();
+
+        scheduleData.addUser(escapedUserName);
         scheduleData.updateScheduleTable();
 
         schedule_data_recovery()
 
-        scheduleData.addUser(userName);
+        scheduleData.addUser(escapedUserName);
         scheduleData.updateScheduleTable();
       }
     </script>
