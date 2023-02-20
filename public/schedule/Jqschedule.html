@@ -550,13 +550,18 @@
               if (templateDates.includes(selectedDate)) {
                 setFromApiDataFormat(selectedDate);
               } else {
-                // テンプレート新規作成
-                scheduleData.setSchedule = [];
-                scheduleData.updateScheduleTable();
-                $("#task-name").prop("disabled", false);
-                $("#user-name").prop("disabled", false);
-                $(".add_user_btn").prop("disabled", false);
-                alert("テンプレートの読み込みに失敗しました。");
+                // Check if template is loaded from API
+                if (templateDates.length === 0) {
+                  // Display error message if template not loaded
+                  alert("テンプレートの読み込みに失敗しました。");
+                } else {
+                  // テンプレート新規作成
+                  scheduleData.setSchedule = [];
+                  scheduleData.updateScheduleTable();
+                  $("#task-name").prop("disabled", false);
+                  $("#user-name").prop("disabled", false);
+                  $(".add_user_btn").prop("disabled", false);
+                }
               }
             }
           });
