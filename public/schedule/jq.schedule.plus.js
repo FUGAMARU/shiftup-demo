@@ -453,11 +453,20 @@
 
             var title = this.unescapeHtml(row["title"]);
             var id = $element.find('.sc_main .timeline').length;
+            function escapeHtml(text) {
+                return text
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
 
             var html;
 
             var $data = jQuery('<div class="timeline">');
-            var $title_span = jQuery('<span class="title_' + lineId + '" data-id="' + lineId + '">' + title + '</span>').appendTo($data);
+            var $title_span = jQuery('<span class="title_' + lineId + '" data-id="' + lineId + '">' + escapeHtml(title) + '</span>').appendTo($data);
             if (setting.titleClick) {
                 $title_span.css('cursor', 'pointer');
                 $title_span.click(function () {

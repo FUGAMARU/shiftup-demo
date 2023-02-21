@@ -349,10 +349,7 @@
           return;
         }
 
-        if (/[><'"]/.test(userName)) {
-          alert("不正な文字が含まれています");
-          return;
-        }
+
 
         // 出力する前にユーザ名をエスケープする
         let escapedUserName = $('<div>').text(userName).html();
