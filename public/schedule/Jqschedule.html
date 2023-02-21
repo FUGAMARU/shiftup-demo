@@ -556,20 +556,24 @@
                 } else if (!navigator.onLine) {
                   // Template is not available offline
                   alert("この日付のテンプレートはオフラインで利用できません。");
-
-                } else {
-                  // テンプレート新規作成
-                  scheduleData.setSchedule = [];
-                  scheduleData.updateScheduleTable();
-                  $("#task-name").prop("disabled", false);
-                  $("#user-name").prop("disabled", false);
-                  $(".add_user_btn").prop("disabled", false);
                 }
+              } else {
+                // テンプレート新規作成
+                scheduleData.setSchedule = [];
+                scheduleData.updateScheduleTable();
+                $("#task-name").prop("disabled", false);
+                $("#user-name").prop("disabled", false);
+                $(".add_user_btn").prop("disabled", false);
+
               }
 
+              function handleOffline() {
+                alert("オフラインになりました。");
+              }
 
-
-
+              function handleOnline() {
+                alert("オンラインに戻りました。");
+              }
 
               window.addEventListener("offline", handleOffline);
               window.addEventListener("online", handleOnline);
