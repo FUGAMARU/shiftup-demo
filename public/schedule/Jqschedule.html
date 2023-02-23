@@ -50,6 +50,8 @@
       let widthTimeTypes = [360, 60, 15];
       let selectedType = jQuery('input[name="timeType"]:checked').val();
       let sampleRows2 = []
+      let APItemplate;
+      let templateDates;
     </script>
 
     <!-- 汎用関数群 -->
@@ -90,19 +92,19 @@
               "2022/08/17"
             ],
             businessHours: [{
-              dow: [
-                "0"
-              ],
-              start: "07:00",
-              end: "19:00"
-            },
-            {
-              dow: [
-                "1"
-              ],
-              end: "19:00",
-              start: "07:00"
-            }
+                dow: [
+                  "0"
+                ],
+                start: "07:00",
+                end: "19:00"
+              },
+              {
+                dow: [
+                  "1"
+                ],
+                end: "19:00",
+                start: "07:00"
+              }
             ],
             templateName: apiTemplate.id,
             openCampusDate: apiTemplate.openCampusDate,
@@ -119,18 +121,8 @@
         return templateData;
       }
 
-      const saveTemplate = (date, template) => {
-        // 日付のテンプレートが既に存在するかどうかを確認しますs
-        if (savedTemplates[date]) {
-          // 存在する場合は、上書きを確認するアラートを表示します
-          if (confirm(`${date} は既に存在します。上書きしますか？`)) {
-            savedTemplates[date] = template;
-          }
-        } else {
-          // 存在しない場合は、テンプレートを保存します
-          savedTemplates[date] = template;
-        }
-      }
+
+
 
       //ユーザー取得
       const getUserList = () => {
@@ -177,7 +169,8 @@
     <script>
       const setFromApiDataFormat = (date) => {
         (async () => {
-          const APItemplate = await fetch(IS_PROD_ENV ? `https://shiftup.works/api/schedules/${date}` : `http://localhost:3000/api/dev/schedule/${date}`)
+          const APItemplate = await fetch(IS_PROD_ENV ? `https://shiftup.works/api/schedules/${date}` :
+            `http://localhost:3000/api/dev/schedule/${date}`)
           const templateData = await APItemplate.json()
 
           const convertedAPITemplateData = convertAPItemplateToTemplateDataFormat(templateData);
@@ -189,20 +182,36 @@
         })()
       }
 
-      //テンプレート保存
-      const template_save = () => {
+      const saveTemplate = (date, template) => {
+        // 日付のテンプレートが既に存在するかどうかを確認します
+        if (savedTemplates[date]) {
+          // 存在する場合は、上書きを確認するアラートを表示します
+          if (templateDates.includes(date)) {
+            if (confirm(`${date} は既に存在します。上書きしますか？`)) {
+              savedTemplates[date] = template;
+            }
+          } else {
+            savedTemplates[date] = template;
+          }
+        } else {
+          // 存在しない場合は、テンプレートを保存します
+          savedTemplates[date] = template;
+        }
+      };
+
+
+
+      // テンプレート保存
+      const template_save = async () => {
         let templateName = formatDate($("#templateSelector").datepicker("getDate"));
         if (!/\S/.test(templateName)) {
           alert("テンプレート名が入力されていません");
           return;
         }
-
         schedule_save();
         schedule_data_recovery();
-        const convertable = extractData()
-
-        let converted = []
-
+        const convertable = extractData();
+        let converted = [];
         convertable.forEach((userData, idx) => {
           let base = {}
           base["castName"] = userData.name
@@ -212,37 +221,45 @@
               startTime: toOnlyTime(task.startAt),
               endTime: toOnlyTime(task.endAt),
               name: task.taskName
-            })
-            base["tasks"] = tasks
-          })
-          converted.push(base)
-        })
-
+            });
+          });
+          base["tasks"] = tasks;
+          converted.push(base);
+        });
         const container = {
           "openCampusDate": selectedDate,
           "castSchedules": converted
+        };
+
+        if (templateDates.includes(selectedDate) && !confirm("テンプレートを上書きしますか？")) {
+          return;
         }
 
-        // Save the template to savedTemplates
-        saveTemplate(templateName, container);
-
-        // APIへの保存
-        fetch(IS_PROD_ENV ? "https://shiftup.works/api/schedules/" : "http://localhost:3000/api/dev/schedule/", {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(container)
-        })
-          .then(response => {
+        try {
+          const response = await fetch(IS_PROD_ENV ? "https://shiftup.works/api/schedules/" :
+            "http://localhost:3000/api/dev/schedule/", {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(container)
+            });
+          if (response.ok) {
             alert(`${templateName}を保存しました。ページをリロードします。`);
             window.location.reload();
-          })
-          .catch(error => {
-            console.error(error);
+          } else {
             alert('保存に失敗しました');
-          });
+          }
+        } catch (error) {
+          console.error(error);
+          alert('保存に失敗しました');
+        }
       };
+
+
+
+
+
 
       //テンプレート削除
       const template_delete = () => {
@@ -252,9 +269,10 @@
           return;
         }
         if (confirm(`${templateName}を削除しますか？`)) {
-          fetch(IS_PROD_ENV ? `https://shiftup.works/api/schedules/${templateName}` : `http://localhost:3000/api/dev/schedule/${templateName}`, {
-            method: "DELETE",
-          })
+          fetch(IS_PROD_ENV ? `https://shiftup.works/api/schedules/${templateName}` :
+              `http://localhost:3000/api/dev/schedule/${templateName}`, {
+                method: "DELETE",
+              })
             .then(res => {
               if (res.status === 204) {
                 $("#templateSelector option[value='" + templateName + "']").remove()
@@ -264,7 +282,7 @@
                 alert("テンプレートの削除に失敗しました")
               }
             })
-            .catch(err => console.error(err))
+
         }
       }
 
@@ -322,19 +340,27 @@
 
       //ユーザー追加
       const handleButtonClick = () => {
-        schedule_save()
-        let userName = $("#user-name").val()
+        schedule_save();
+        let userName = $("#user-name").val();
+
+        // 空白文字の判定
         if (/^[\s\u3000\u3164]*$/.test(userName)) {
-          alert("空白文字は入力できません")
-          return
+          alert("空白文字は入力できません");
+          return;
         }
-        scheduleData.addUser(userName)
-        scheduleData.updateScheduleTable()
+
+
+
+        // 出力する前にユーザ名をエスケープする
+        let escapedUserName = $('<div>').text(userName).html();
+
+        scheduleData.addUser(escapedUserName);
+        scheduleData.updateScheduleTable();
 
         schedule_data_recovery()
 
-        scheduleData.addUser(userName)
-        scheduleData.updateScheduleTable()
+        scheduleData.addUser(escapedUserName);
+        scheduleData.updateScheduleTable();
       }
     </script>
 
@@ -481,57 +507,82 @@
             }
           });
 
-        const APItemplate = await fetch(IS_PROD_ENV ? "https://shiftup.works/api/schedules/" : "http://localhost:3000/api/dev/schedule/")
-        const templateDates = await APItemplate.json()
-
-        if (getParam("date") !== "Undefined" && templateDates.includes(getParam("date"))) {
-          selectedDate = getParam("date")
-          setFromApiDataFormat(getParam("date"))
-        }
-
-        $("#templateSelector").datepicker({
-          closeText: "閉じる",
-          prevText: "&#x3C;前",
-          nextText: "次&#x3E;",
-          currentText: "今日",
-          monthNames: ["1月", "2月", "3月", "4月", "5月", "6月",
-            "7月", "8月", "9月", "10月", "11月", "12月"
-          ],
-          monthNamesShort: ["1月", "2月", "3月", "4月", "5月", "6月",
-            "7月", "8月", "9月", "10月", "11月", "12月"
-          ],
-          dayNames: ["日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"],
-          dayNamesShort: ["日", "月", "火", "水", "木", "金", "土"],
-          dayNamesMin: ["日", "月", "火", "水", "木", "金", "土"],
-          weekHeader: "週",
-          firstDay: 0,
-          isRTL: false,
-          showMonthAfterYear: true,
-          yearSuffix: "年",
-          dateFormat: "yy-mm-dd",
-          beforeShowDay: function (date) {
-            const strDate = formatDate(date)
-
-            if (templateDates.includes(strDate)) return [true, "template-date", "Test"]
-
-            return [true, "", "Test2"]
-
-          },
-          onSelect: function (selected) {
-            selectedDate = selected
-            if (templateDates.includes(selectedDate)) {
-              setFromApiDataFormat(selectedDate)
-            } else {
-              // テンプレート新規作成
-              scheduleData.setSchedule = [];
-              scheduleData.updateScheduleTable();
-              $("#task-name").prop("disabled", false);
-              $("#user-name").prop("disabled", false);
-              $(".add_user_btn").prop("disabled", false);
-            }
+        try {
+          if (IS_PROD_ENV) {
+            APItemplate = await fetch("https://shiftup.works/api/schedules/");
+          } else {
+            APItemplate = await fetch("http://localhost:3000/api/dev/schedule/");
           }
-        })
-      });
+          templateDates = await APItemplate.json();
+          if (getParam("date") !== "Undefined" && templateDates.includes(getParam("date"))) {
+            selectedDate = getParam("date");
+            setFromApiDataFormat(getParam("date"));
+            document.getElementById("templateSelector").value = selectedDate;
+          }
+          $("#templateSelector").datepicker({
+            closeText: "閉じる",
+            prevText: "&#x3C;前",
+            nextText: "次&#x3E;",
+            currentText: "今日",
+            monthNames: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+            monthNamesShort: ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"],
+            dayNames: ["日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"],
+            dayNamesShort: ["日", "月", "火", "水", "木", "金", "土"],
+            dayNamesMin: ["日", "月", "火", "水", "木", "金", "土"],
+            weekHeader: "週",
+            firstDay: 0,
+            isRTL: false,
+            showMonthAfterYear: true,
+            yearSuffix: "年",
+            dateFormat: "yy-mm-dd",
+            beforeShowDay: function (date) {
+              const strDate = formatDate(date);
+              if (templateDates.includes(strDate)) {
+                return [true, "template-date", "Test"];
+              }
+              return [true, "", "Test2"];
+            },
+            onSelect: function (selected) {
+              selectedDate = selected;
+              if (templateDates.includes(selectedDate)) {
+                setFromApiDataFormat(selectedDate);
+                // Check if template is loaded from API
+                if (templateDates.length === 0) {
+                  // Display error message if template not loaded
+                  alert("テンプレートの読み込みに失敗しました。");
+                } else if (!navigator.onLine) {
+                  // Template is not available offline
+                  alert("この日付のテンプレートはオフラインで利用できません。");
+                }
+              } else {
+                // テンプレート新規作成
+                scheduleData.setSchedule = [];
+                scheduleData.updateScheduleTable();
+                $("#task-name").prop("disabled", false);
+                $("#user-name").prop("disabled", false);
+                $(".add_user_btn").prop("disabled", false);
+
+              }
+
+              function handleOffline() {
+                alert("オフラインになりました。");
+              }
+
+              function handleOnline() {
+                alert("オンラインに戻りました。");
+              }
+
+              window.addEventListener("offline", handleOffline);
+              window.addEventListener("online", handleOnline);
+            }
+          });
+        } catch (error) {
+          alert("テンプレートデータの取得に失敗しました。");
+          console.error(error);
+        }
+      })
+
+
 
       // 時間単位種別（6時間、1時間、１５分）
       //var widthTimeTypes = [360, 60, 15];
