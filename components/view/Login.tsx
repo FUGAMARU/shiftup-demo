@@ -1,5 +1,6 @@
 // Next.js
 import Image from "next/image"
+import Link from "next/link"
 
 // Chakra UI Components
 import { Box, Flex, Text } from "@chakra-ui/react"
@@ -20,9 +21,11 @@ const Login = () => {
             <Image src="/logos/google-logo.svg" width={26} height={26} alt="Google logo" />
           </Flex>
 
-          <a href="/">
-            <Text className="kb" h="2.5rem" px={2} lineHeight="2.5rem" fontSize="0.85rem" color="white" bg="#4484f5" borderRightRadius={7}>Googleアカウントでサインイン</Text>
-          </a>
+          <Link href="/">
+            <a>
+              <Text className="kb" h="2.5rem" px={2} lineHeight="2.5rem" fontSize="0.85rem" color="white" bg="#4484f5" borderRightRadius={7}>Googleアカウントでサインイン</Text>
+            </a>
+          </Link>
         </Flex>
 
         <Box maxW="75%" mx="auto">

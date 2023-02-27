@@ -33,7 +33,7 @@ const API_BASE_URL = "http://localhost:3000/api/dev"
 export const useApiConnection = () => {
   /* Fetch Functions */
   const getSession = useCallback(() => {
-    const url = "http://httpbin.org/status/200"
+    const url = `${API_BASE_URL}/session`
     const { data: statusCode, error } = useSWR(url, statusCodeFetcher)
     return { statusCode, error }
   }, [])
@@ -52,9 +52,9 @@ export const useApiConnection = () => {
   }, [])
 
   const getCurrentTime = useCallback(() => {
-    const { data, error } = useSWR(`${process.env.NEXT_PUBLIC_WORLD_TIME_API_URL}`, fetcher)
+    const { data, error } = useSWR(`${API_BASE_URL}/time`, fetcher)
     let time = new Date(0)
-    if (data) time = new Date(data.datetime)
+    if (data) time = new Date(Number(data))
     return { time, error }
   }, [])
 
