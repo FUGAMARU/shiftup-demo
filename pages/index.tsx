@@ -6,12 +6,13 @@ import type { NextPage } from "next"
 import Head from "next/head"
 
 // Chakra UI Components
-import { Box, Button, Flex, Input, Text } from "@chakra-ui/react"
+import { Box, Button, Flex, Input, Text, useDisclosure } from "@chakra-ui/react"
 
 // Custom Components
 import Header from "components/header/Header"
 import MyPage from "components/view/MyPage"
 import Login from "components/view/Login"
+import ButtonModal from "components/modal/ButtonModal"
 
 // Global State Management
 import { useRecoilState } from "recoil"
@@ -23,6 +24,14 @@ import { Department } from "types/Department"
 import { Position } from "types/Position"
 
 const Home: NextPage = () => {
+  const { isOpen: isModalOpened, onOpen: openModal, onClose: closeModal } = useDisclosure()
+  useEffect(() => {
+    if (sessionStorage.getItem("isShownAlert") === null) {
+      openModal()
+      sessionStorage.setItem("isShownAlert", "")
+    }
+  }, [])
+
   const [isInSession, setInSession] = useRecoilState(sessionState)
   const [myInfo, setMyInfo] = useRecoilState(me)
 
@@ -88,6 +97,10 @@ const Home: NextPage = () => {
           <Button size="xs" colorScheme="linkedin" onClick={handleSetButtonClick}>SET</Button>
         </Flex>
       </Box>
+
+      <ButtonModal isOpen={isModalOpened} onClose={closeModal} title="このサイトについて" text={"現在ご覧になっているのはデモ版のShiftUP!です。このデモ版はバックエンドとの接続が切り離されているため、データーの保存などは行えません。操作感などをお試しいただく目的でお使いいただけます。"}>
+        <Button ml={1} colorScheme="gray" variant="outline" onClick={closeModal}>OK</Button>
+      </ButtonModal>
     </Box>
   )
 }
