@@ -30,7 +30,7 @@ const Home: NextPage = () => {
       openModal()
       sessionStorage.setItem("isShownAlert", "")
     }
-  }, [])
+  }, [openModal])
 
   const [isInSession, setInSession] = useRecoilState(sessionState)
   const [myInfo, setMyInfo] = useRecoilState(me)
