@@ -70,7 +70,7 @@ const MyPage = () => {
               <Visualizer color="#f8d800" icon={faBell} title="今月の残り出勤予定回数" gradientColor1="#fdeb71" gradientColor2="#f8d800" value={personalizedData?.currentMonthWorkScheduleDayCount} unit="回" isShowButton={false} />
             </Box>
             <Box className={cardAnimationTrigger ? "animate__animated card-in card6" : "hidden"}>
-              <Visualizer color="#9f44d3" icon={faDiscord as IconDefinition} title="Discord" gradientColor1="#e2b0ff" gradientColor2="#9f44d3" value="専門OC" unit="" isShowButton={true} linkURL={process.env.NEXT_PUBLIC_DISCORD_LINK} />
+              <Visualizer color="#9f44d3" icon={faDiscord as IconDefinition} title="Discord" gradientColor1="#e2b0ff" gradientColor2="#9f44d3" value="専門OC" unit="" isShowButton={true} linkURL="https://discord.com/" />
             </Box>
           </SimpleGrid>
         </Box>
