@@ -63,27 +63,31 @@ const Home: NextPage = () => {
 
       {isInSession === null ? null : isInSession === true ? <MyPage /> : <Login />}
 
-      {process.env.NODE_ENV !== "production" ?
-        <Box w="7rem" py={3} position="fixed" right={0} bottom={10} bg="#dbebff" borderTopLeftRadius={15} borderBottomLeftRadius={15}>
-          <Text className="ksb" textAlign="center">Recoil管理</Text>
-          <Text my={1} textAlign="center" fontSize="0.7rem">セッション</Text>
-          <Flex justifyContent="space-around" alignItems="center">
-            <Button size="xs" colorScheme="whatsapp" onClick={() => setInSession(true)}>登録</Button>
-            <Button size="xs" colorScheme="red" onClick={() => setInSession(false)}>解除</Button>
-          </Flex>
-          <Flex p={2} direction="column" justifyContent="space-around" alignItems="center">
-            <Text py={1} textAlign="center" fontSize="0.7rem">名前</Text>
-            <Input size="xs" bg="white" borderRadius={7} textAlign="center" ref={nameRef}></Input>
-            <Text py={1} textAlign="center" fontSize="0.7rem">学科記号</Text>
-            <Input size="xs" bg="white" borderRadius={7} textAlign="center" ref={deptRef}></Input>
-            <Text py={1} textAlign="center" fontSize="0.7rem">役職</Text>
-            <Input size="xs" bg="white" borderRadius={7} textAlign="center" ref={positionRef}></Input>
-          </Flex>
-          <Flex px={2} justify="center">
-            <Button size="xs" colorScheme="linkedin" onClick={handleSetButtonClick}>SET</Button>
-          </Flex>
-        </Box>
-        : null}
+      <Box w="7rem" py={3} position="fixed" right={0} bottom={10} bg="#dbebff" borderTopLeftRadius={15} borderBottomLeftRadius={15}>
+        <Text className="ksb" textAlign="center">状態管理</Text>
+        <Text className="kr" fontSize="0.6rem" textAlign="center">( 開発・デモ用 )</Text>
+
+        <Box mx={3} my={2} borderBottom="solid 0.1px #b5b5b5"></Box>
+
+        <Text my={1} textAlign="center" fontSize="0.7rem">セッション</Text>
+        <Flex justifyContent="space-around" alignItems="center">
+          <Button size="xs" colorScheme="whatsapp" onClick={() => setInSession(true)}>登録</Button>
+          <Button size="xs" colorScheme="red" onClick={() => setInSession(false)}>解除</Button>
+        </Flex>
+
+        <Flex p={2} direction="column" justifyContent="space-around" alignItems="center">
+          <Text py={1} textAlign="center" fontSize="0.7rem">名前</Text>
+          <Input size="xs" bg="white" borderRadius={7} textAlign="center" ref={nameRef}></Input>
+          <Text py={1} textAlign="center" fontSize="0.7rem">学科記号</Text>
+          <Input size="xs" bg="white" borderRadius={7} textAlign="center" ref={deptRef}></Input>
+          <Text py={1} textAlign="center" fontSize="0.7rem">役職</Text>
+          <Input size="xs" bg="white" borderRadius={7} textAlign="center" ref={positionRef} placeholder="Manager | Cast"></Input>
+        </Flex>
+
+        <Flex px={2} justify="center">
+          <Button size="xs" colorScheme="linkedin" onClick={handleSetButtonClick}>SET</Button>
+        </Flex>
+      </Box>
     </Box>
   )
 }
