@@ -1,5 +1,5 @@
 // React Hooks
-import { useCallback, useMemo } from "react"
+import { useCallback } from "react"
 
 // Fetch
 import useSWR from "swr"
@@ -28,52 +28,50 @@ import Symbol from "classes/Symbol"
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 const statusCodeFetcher = (url: string) => fetch(url).then((res) => res.status)
 
-const API_BASE_URL = "http://localhost:3000/api/dev"
-
 export const useApiConnection = () => {
   /* Fetch Functions */
   const getSession = useCallback(() => {
-    const url = `${API_BASE_URL}/session`
+    const url = "/api/dev/session"
     const { data: statusCode, error } = useSWR(url, statusCodeFetcher)
     return { statusCode, error }
   }, [])
 
   const getId = useCallback(() => {
-    const url = `${API_BASE_URL}/id`
+    const url = "/api/dev/id"
     const { data, error } = useSWR<string, Error>(url, fetcher)
     const fetchErrorMessage = error ? "ユーザーIDの取得に失敗しました" : ""
     return { data, fetchErrorMessage }
   }, [])
 
   const getMyInfo = useCallback(() => {
-    const url = `${API_BASE_URL}/me`
+    const url = "/api/dev/me"
     const { data, error } = useSWR<Me, Error>(url, fetcher)
     return { data, error }
   }, [])
 
   const getCurrentTime = useCallback(() => {
-    const { data, error } = useSWR(`${API_BASE_URL}/time`, fetcher)
+    const { data, error } = useSWR("/api/dev/time", fetcher)
     let time = new Date(0)
     if (data) time = new Date(Number(data))
     return { time, error }
   }, [])
 
   const getPersonalizedData = useCallback(() => {
-    const url = `${API_BASE_URL}/toppage`
+    const url = "/api/dev/toppage"
     const { data, error } = useSWR<PersonalizedData, Error>(url, fetcher)
     const fetchErrorMessage = error ? "個人用データーの取得に失敗しました" : ""
     return { data, fetchErrorMessage }
   }, [])
 
   const getSuperUser = useCallback(() => {
-    const url = `${API_BASE_URL}/invites/superuser`
+    const url = "/api/dev/invites/superuser"
     const { data, error } = useSWR<string, Error>(url, fetcher)
     const fetchErrorMessage = error ? "特殊権限ユーザーの取得に失敗しました" : ""
     return { data, fetchErrorMessage }
   }, [])
 
   const getAllSurveys = useCallback(() => {
-    const url = `${API_BASE_URL}/surveys`
+    const url = "/api/dev/surveys"
     const { data, error, mutate } = useSWR<Survey[], Error>(url, fetcher, { fallback: [] })
     const fetchErrorMessage = error ? "アンケート一覧の取得に失敗しました" : ""
     return { data, fetchErrorMessage, mutate }
@@ -88,7 +86,7 @@ export const useApiConnection = () => {
 
   // 受付状態のアンケートのみ取得
   const getAnswerableSurveys = useCallback(() => {
-    const url = `${API_BASE_URL}/surveys/me`
+    const url = "/api/dev/surveys/me"
     const { data, error, mutate } = useSWR<AvailableSurvey[], Error>(url, fetcher, { fallback: [] })
     const fetchErrorMessage = error ? "アンケート一覧の取得に失敗しました" : ""
     return { data, fetchErrorMessage, mutate }
@@ -97,7 +95,7 @@ export const useApiConnection = () => {
   // 日程選択する度に取得する & 取得したデーターはそのブロックでしか使わない(stateなどでグローバルにする必要がない)のでSWRではなくAxiosを使用
   const getSurveyResult = useCallback(async (surveyId: string) => {
     try {
-      const url = `${API_BASE_URL}/surveys/${surveyId}`
+      const url = `/api/dev/surveys/${surveyId}`
       return (await axios.get<SurveyResult>(url)).data
     } catch {
       throw new Error("アンケート情報の取得に失敗しました")
@@ -105,14 +103,14 @@ export const useApiConnection = () => {
   }, [])
 
   const getAllUsers = useCallback(() => {
-    const url = `${API_BASE_URL}/invites`
+    const url = "/api/dev/invites"
     const { data, error, mutate } = useSWR<Invite[], Error>(url, fetcher, { fallback: [] })
     const fetchErrorMessage = error ? "ユーザー一覧の取得に失敗しました" : ""
     return { data, fetchErrorMessage, mutate }
   }, [])
 
   const getAllRequests = useCallback(() => {
-    const url = `${API_BASE_URL}/requests`
+    const url = "/api/dev/requests"
     const { data, error, mutate } = useSWR<AttendanceRequest, Error>(url, fetcher, { fallback: [] })
     const fetchErrorMessage = error ? "出勤依頼一覧の取得に失敗しました" : ""
     return { data, fetchErrorMessage, mutate }
@@ -121,7 +119,7 @@ export const useApiConnection = () => {
   // リクエストを2回送る関係でuseSWRではなくAxiosを使用
   const getConfirmedUsers = useCallback(async (date: string) => {
     try {
-      const baseUrl = `${API_BASE_URL}/requests/${date}?state=`
+      const baseUrl = `/api/dev/requests/${date}?state=`
       const acceptedUsers = date ? (await axios.get<User[]>(baseUrl + "Accepted")).data : undefined
       const declinedUsers = date ? (await axios.get<User[]>(baseUrl + "Declined")).data : undefined
       return { acceptedUsers, declinedUsers }
@@ -133,7 +131,7 @@ export const useApiConnection = () => {
   /* Request Functions */
   const sendRequests = useCallback(async (date: string, users: string[]) => {
     try {
-      const url = `${API_BASE_URL}/requests/${date}`
+      const url = `/api/dev/requests/${date}`
       await axios.put(url, users)
     } catch {
       throw new Error("確定依頼の送信に失敗しました")
@@ -142,7 +140,7 @@ export const useApiConnection = () => {
 
   const createSurvey = useCallback(async (requestBody: CreateSurvey) => {
     try {
-      const url = `${API_BASE_URL}/surveys`
+      const url = "/api/dev/surveys"
       await axios.post(url, requestBody)
     } catch {
       throw new Error("アンケートの作成に失敗しました")
@@ -151,7 +149,7 @@ export const useApiConnection = () => {
 
   const answerSurvey = useCallback(async (surveyId: string, schedules: UseCheckboxGroupReturn["value"]) => {
     try {
-      const url = `${API_BASE_URL}/surveys/${surveyId}`
+      const url = `/api/dev/surveys/${surveyId}`
       await axios.put(url, schedules)
     } catch {
       throw new Error("アンケートの回答に失敗しました")
@@ -160,7 +158,7 @@ export const useApiConnection = () => {
 
   const switchSurveyAvailability = useCallback(async (surveyId: string, to: boolean) => {
     try {
-      const url = `${API_BASE_URL}/surveys/${surveyId}`
+      const url = `/api/dev/surveys/${surveyId}`
       await axios.put(url, to.toString())
     } catch {
       throw new Error("アンケートの受付状態の切り替えに失敗しました")
@@ -169,7 +167,7 @@ export const useApiConnection = () => {
 
   const deleteSurvey = useCallback(async (surveyId: string) => {
     try {
-      const url = `${API_BASE_URL}/surveys/${surveyId}`
+      const url = `/api/dev/surveys/${surveyId}`
       await axios.delete(url)
     } catch {
       throw new Error("アンケートの削除に失敗しました")
@@ -178,7 +176,7 @@ export const useApiConnection = () => {
 
   const addApprovedUser = useCallback(async (requestBody: AddApprovedUser) => {
     try {
-      const url = `${API_BASE_URL}/invites`
+      const url = "/api/dev/invites"
       await axios.post(url, requestBody)
     } catch (e) {
       if (isAxiosError(e) && e.response?.status === 405) throw new AlreadyAddedError("既に認可ユーザーとして追加済みです",)
@@ -188,7 +186,7 @@ export const useApiConnection = () => {
 
   const switchUserPosition = useCallback(async (userId: string, to: Position) => {
     try {
-      const url = `${API_BASE_URL}/invites/${userId}`
+      const url = `/api/dev/invites/${userId}`
       await axios.put(url, to)
     } catch {
       throw new Error("ユーザーの役職の切り替えに失敗しました")
@@ -197,7 +195,7 @@ export const useApiConnection = () => {
 
   const deleteUser = useCallback(async (userId: string) => {
     try {
-      const url = `${API_BASE_URL}/invites/${userId}`
+      const url = `/api/dev/invites/${userId}`
       await axios.delete(url)
     } catch {
       throw new Error("ユーザーの削除に失敗しました")
@@ -206,7 +204,7 @@ export const useApiConnection = () => {
 
   const confirmAttendance = useCallback(async (schedule: string, action: Exclude<RequestState, "Blank">) => {
     try {
-      const url = `${API_BASE_URL}/requests`
+      const url = "/api/dev/requests"
       await axios.post(url, action)
     } catch {
       throw new Error(`出勤${action === "Accepted" ? "確定" : "辞退"}に失敗しました`)
@@ -215,7 +213,7 @@ export const useApiConnection = () => {
 
   const changeRequestState = useCallback(async (date: string, userId: string, state: RequestState) => {
     try {
-      const url = `${API_BASE_URL}/requests/${date}`
+      const url = `/api/dev/requests/${date}`
       await axios.put(url, state)
     } catch {
       throw new Error("出勤依頼の確定状態の変更に失敗しました")
@@ -224,7 +222,7 @@ export const useApiConnection = () => {
 
   const updateName = useCallback(async (newName: string) => {
     try {
-      const nameUpdateUrl = `${API_BASE_URL}/name`
+      const nameUpdateUrl = "/api/dev/name"
       await axios.put(nameUpdateUrl, newName)
     } catch {
       throw new Error("名前の更新に失敗しました")
@@ -233,7 +231,7 @@ export const useApiConnection = () => {
 
   const updateDept = useCallback(async (newDept: Department) => {
     try {
-      const url = `${API_BASE_URL}/name`
+      const url = "/api/dev/name"
       await axios.put(url, newDept)
     } catch {
       throw new Error(`${Symbol.getSchoolType(newDept) === "NEEC" ? "学科" : "学部"}の更新に失敗しました`)
