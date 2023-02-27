@@ -130,7 +130,7 @@ const Header = () => {
                 <PopoverBody borderRadius={20} boxShadow="xl">
                   <Flex alignItems="center" justifyContent="space-around">
                     <SpongeSlimeButton w="8.5rem" h="3.8rem" text={"ユーザー情報編集"} fontSize={12} icon={faScrewdriverWrench} iconSize={22} func={openProfileEditModal} />
-                    <SpongeSlimeButton w="8.5rem" h="3.8rem" text={"サインアウト"} fontSize={12} icon={faArrowRightFromBracket} iconSize={22} func={() => Router.push(`${process.env.NEXT_PUBLIC_API_BASE_URL}/logout`)} />
+                    <SpongeSlimeButton w="8.5rem" h="3.8rem" text={"サインアウト"} fontSize={12} icon={faArrowRightFromBracket} iconSize={22} func={() => Router.push("/")} />
                   </Flex>
                 </PopoverBody>
               </PopoverContent>
